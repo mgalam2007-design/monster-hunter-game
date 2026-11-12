@@ -7,6 +7,7 @@
 #include "Quests/HunterQuestSubsystem.h"
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "Quests/HunterQuestSubsystem.h"
 
 UHunterCampaignSubsystem::UHunterCampaignSubsystem()
 {
@@ -81,6 +82,34 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
     }
 
     CurrentChapterNumber = ChapterNumber;
+
+    // Chapter 1 is the first fully authored quest loop in the campaign.
+    if (ChapterNumber == 1)
+    {
+        if (UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+        {
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("ClearBreachCreatures");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 3 creatures inside the breach"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("MonsterDefeated");
+            DefeatObjective.RequiredCount = 3;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective RecoverObjective;
+            RecoverObjective.ObjectiveId = TEXT("RecoverBreachShard");
+            RecoverObjective.Description = FText::FromString(TEXT("Recover the breach shard"));
+            RecoverObjective.Type = EHunterObjectiveType::Collect;
+            RecoverObjective.EventTag = TEXT("BreachShardCollected");
+            RecoverObjective.RequiredCount = 1;
+            Objectives.Add(RecoverObjective);
+
+            Quest->StartQuest(TEXT("CH01_FirstBreach"), Objectives);
+        }
+    }
+
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
 }
@@ -91,6 +120,18 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
     if (!Chapters.IsValidIndex(Index) || Chapters[Index].bCompleted)
     {
         return false;
+    }
+
+    // Do not allow the first mission to be marked complete before its objectives are done.
+    if (CurrentChapterNumber == 1)
+    {
+        if (const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+        {
+            if (Quest->GetActiveQuestId() == FName(TEXT("CH01_FirstBreach")) && !Quest->IsQuestComplete())
+            {
+                return false;
+            }
+        }
     }
 
     Chapters[Index].bCompleted = true;
