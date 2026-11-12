@@ -312,12 +312,23 @@ void AArinValeCharacter::ToggleInventoryMenu()
 
 void AArinValeCharacter::HandleArinDeath()
 {
-    if (!IsLocallyControlled() || !GetWorld())
+    if (!IsLocallyControlled() || !GetWorld() || bRespawnPending)
     {
         return;
     }
 
-    GetCharacterMovement()->DisableMovement();
+    bRespawnPending = true;
+    GetWorldTimerManager().ClearTimer(AttackCooldownHandle);
+    GetWorldTimerManager().ClearTimer(DodgeCooldownHandle);
+    GetWorldTimerManager().ClearTimer(WeaponTraceHandle);
+    EndWeaponTrace();
+    bCanAttack = false;
+    bCanDodge = false;
+    if (GetCharacterMovement())
+    {
+        GetCharacterMovement()->StopMovementImmediately();
+        GetCharacterMovement()->DisableMovement();
+    }
     GetWorldTimerManager().ClearTimer(RespawnTimerHandle);
     GetWorldTimerManager().SetTimer(
         RespawnTimerHandle,
@@ -329,7 +340,7 @@ void AArinValeCharacter::HandleArinDeath()
 
 void AArinValeCharacter::RespawnAtLastCheckpoint()
 {
-    if (!IsLocallyControlled() || !HealthComponent)
+    if (!IsLocallyControlled() || !HealthComponent || !bRespawnPending)
     {
         return;
     }
@@ -350,6 +361,12 @@ void AArinValeCharacter::RespawnAtLastCheckpoint()
 
     HealthComponent->ReviveFullHealth();
     ApplyEvolutionStats();
-    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-    GetCharacterMovement()->StopMovementImmediately();
+    if (GetCharacterMovement())
+    {
+        GetCharacterMovement()->StopMovementImmediately();
+        GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    }
+    bCanAttack = true;
+    bCanDodge = true;
+    bRespawnPending = false;
 }
