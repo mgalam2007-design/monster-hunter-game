@@ -59,6 +59,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Quest")
     void ClearActiveQuest();
 
+    UFUNCTION(BlueprintCallable, Category="Quest|Save")
+    bool RestoreQuestState(FName QuestId, const TArray<FHunterObjective>& SavedObjectives, bool bWasCompleted);
+
     UFUNCTION(BlueprintPure, Category="Quest")
     bool IsQuestActive() const { return ActiveQuestId != NAME_None; }
 
