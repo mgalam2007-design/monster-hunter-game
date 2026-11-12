@@ -51,6 +51,9 @@ public:
     bool EquipItem(const FHunterEquipmentItem& Item);
 
     UFUNCTION(BlueprintCallable, Category="Equipment")
+    bool EquipInventoryItem(FName ItemId);
+
+    UFUNCTION(BlueprintCallable, Category="Equipment")
     bool UnequipSlot(EHunterEquipmentSlot Slot);
 
     UFUNCTION(BlueprintPure, Category="Equipment")
