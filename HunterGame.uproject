@@ -1,0 +1,12 @@
+{
+  "FileVersion": 3,
+  "Category": "Games",
+  "Description": "HUNTER 2.0 - Original third-person anime action RPG",
+  "Modules": [
+    {
+      "Name": "HunterGame",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}
