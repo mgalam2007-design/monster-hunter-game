@@ -10,18 +10,19 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Reusable monster base with health, player detection, AI-controller pursuit, attack cooldown, damage, death event and Blueprint hooks.
 - Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress and completion delegates.
-- Stackable inventory component attached to Arin, with item types, add/remove operations, quantity queries and change events.
+- Stackable inventory component attached to Arin, with item types, add/remove operations, quantity queries, change events and save/restore support.
+- Monster defeat rewards now award Arin XP and report configurable tagged events to the active quest subsystem.
 - 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions.
-- Save-game data object for campaign progress and Arin progression.
+- Versioned save-game data object for campaign progress, Arin progression and inventory contents; version 1 campaign saves remain loadable.
 - Blender procedural static blockout generator for Arin Vale and a character rigging/animation production specification.
 
 ## Current gameplay limitations
-- The boss and quest systems are code foundations only; no authored boss Blueprints, encounter maps, quest content or rewards are included yet.
+- The boss and quest systems are code foundations only; no authored boss Blueprints, encounter maps, quest content or reward tables are included yet. Monster defeats grant configurable XP and a configurable quest event tag.
 - The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation.
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
 - No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, pickup actors, shop or UI yet.
-- Save/load functions exist, but checkpoint and menu integration still need to be authored in Unreal.
+- Save/load functions persist chapter state, progression and inventory data, but checkpoint and menu integration still need to be authored in Unreal.
 - Arin's Blender output is static primitive blockout geometry, not a finished rigged hero asset.
 
 ## Required Unreal Editor integration
