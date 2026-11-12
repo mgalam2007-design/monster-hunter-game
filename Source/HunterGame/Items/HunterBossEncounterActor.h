@@ -48,6 +48,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Boss Encounter|Trigger")
     bool bStartAutomatically = true;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Boss Encounter|Progression")
+    FName BossDefeatQuestEventTag = TEXT("BossDefeated");
+
     UFUNCTION(BlueprintImplementableEvent, Category="Boss Encounter")
     void BP_OnBossEncounterStarted(AHunterBossBase* Boss);
 
