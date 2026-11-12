@@ -137,7 +137,7 @@ void AArinValeCharacter::SwordAttack()
     }
 
     BeginWeaponTrace();
-    GetWorldTimerManager().SetTimer(WeaponTraceHandle, this, &AArinValeCharacter::EndWeaponTrace, 0.22f, false);
+    GetWorldTimerManager().SetTimer(WeaponTraceHandle, this, &AArinValeCharacter::EndWeaponTrace, FMath::Max(0.05f, DefaultWeaponTraceWindow), false);
     GetWorldTimerManager().SetTimer(AttackCooldownHandle, this, &AArinValeCharacter::ResetAttack, SwordAttackCooldown, false);
 }
 
