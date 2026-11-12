@@ -4,6 +4,8 @@
 #include "Characters/HunterBossBase.h"
 #include "Components/SphereComponent.h"
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
+#include "Quests/HunterQuestSubsystem.h"
 
 AHunterBossEncounterActor::AHunterBossEncounterActor()
 {
@@ -85,6 +87,17 @@ void AHunterBossEncounterActor::HandleBossDied(AActor* DeadBoss)
     }
 
     bEncounterComplete = true;
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        if (UHunterQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UHunterQuestSubsystem>())
+        {
+            if (!BossDefeatQuestEventTag.IsNone())
+            {
+                QuestSubsystem->RegisterQuestEvent(BossDefeatQuestEventTag, 1);
+            }
+        }
+    }
+
     if (SpawnedBoss)
     {
         SpawnedBoss->OnMonsterDied.RemoveDynamic(this, &AHunterBossEncounterActor::HandleBossDied);
