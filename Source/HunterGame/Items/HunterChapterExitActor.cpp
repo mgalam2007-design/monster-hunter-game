@@ -63,10 +63,18 @@ bool AHunterChapterExitActor::TryCompleteChapter(AArinValeCharacter* Arin)
         return false;
     }
 
-    const int32 ChapterToComplete = Campaign->GetCurrentChapterNumber();
-    const bool bCompleted = Campaign->CompleteCurrentChapter();
-    if (bCompleted)
+    // If progression was committed but the disk save failed, retry only the save.
+    // Never complete the newly unlocked chapter or grant the reward twice.
+    if (!bCompletionCommitted)
     {
+        CommittedChapterNumber = Campaign->GetCurrentChapterNumber();
+        bCompletionCommitted = Campaign->CompleteCurrentChapter();
+        if (!bCompletionCommitted)
+        {
+            BP_OnChapterExitResult(CommittedChapterNumber, false, false);
+            return false;
+        }
+
         if (CompletionExperienceReward > 0)
         {
             if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
@@ -84,13 +92,12 @@ bool AHunterChapterExitActor::TryCompleteChapter(AArinValeCharacter* Arin)
         }
     }
 
-    const bool bSaved = bCompleted && Campaign->SaveCampaign(Arin, SaveSlotName, UserIndex);
-
-    if (bCompleted)
+    const bool bSaved = Campaign->SaveCampaign(Arin, SaveSlotName, UserIndex);
+    if (bSaved)
     {
         bHasActivated = true;
     }
 
-    BP_OnChapterExitResult(ChapterToComplete, bCompleted, bSaved);
-    return bCompleted;
+    BP_OnChapterExitResult(CommittedChapterNumber, true, bSaved);
+    return bSaved;
 }
