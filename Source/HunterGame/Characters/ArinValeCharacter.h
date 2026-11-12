@@ -69,6 +69,11 @@ protected:
     void SwordAttack();
     UFUNCTION()
     void HandleEvolutionStageChanged(EArinEvolutionStage PreviousStage, EArinEvolutionStage NewStage);
+
+    UFUNCTION()
+    void HandleArinDeath();
+
+    void RespawnAtLastCheckpoint();
     void ApplyEvolutionStats();
     void UseEnergyStrike();
     void UseShadowStep();
@@ -112,6 +117,15 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float DodgeUpwardStrength = 90.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn", meta=(ClampMin="0.0"))
+    float RespawnDelay = 3.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn")
+    FString CampaignSaveSlot = TEXT("HunterCampaign");
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn")
+    int32 CampaignSaveUserIndex = 0;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
     TSubclassOf<UUserWidget> HUDWidgetClass;
 
@@ -149,6 +163,7 @@ private:
     FTimerHandle DodgeCooldownHandle;
     FTimerHandle AttackCooldownHandle;
     FTimerHandle WeaponTraceHandle;
+    FTimerHandle RespawnTimerHandle;
 
     void ResetDodge();
     void ResetAttack();
