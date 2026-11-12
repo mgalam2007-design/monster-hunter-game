@@ -123,6 +123,12 @@ protected:
     UPROPERTY(Transient)
     TObjectPtr<UUserWidget> ActiveQuestTrackerWidget;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
+    TSubclassOf<UUserWidget> InventoryWidgetClass;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UUserWidget> ActiveInventoryWidget;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
     TObjectPtr<UAnimMontage> SwordAttackMontage;
 
