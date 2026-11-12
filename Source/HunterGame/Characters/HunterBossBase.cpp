@@ -9,7 +9,10 @@ float AHunterBossBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
     AController* EventInstigator, AActor* DamageCauser)
 {
     const float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-    UpdateBossPhase();
+    if (!IsMonsterDead())
+    {
+        UpdateBossPhase();
+    }
     return AppliedDamage;
 }
 
