@@ -10,6 +10,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Reusable monster base with health, player detection, AI-controller pursuit, attack cooldown, damage, death event and Blueprint hooks.
 - Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress and completion delegates.
+- Stackable inventory component attached to Arin, with item types, add/remove operations, quantity queries and change events.
 - 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions.
 - Save-game data object for campaign progress and Arin progression.
 - Blender procedural static blockout generator for Arin Vale and a character rigging/animation production specification.
@@ -19,7 +20,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation.
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
-- No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, inventory/equipment system or finished environments are committed.
+- No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, pickup actors, shop or UI yet.
 - Save/load functions exist, but checkpoint and menu integration still need to be authored in Unreal.
 - Arin's Blender output is static primitive blockout geometry, not a finished rigged hero asset.
 
@@ -30,7 +31,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 4. Import/assign a skeletal mesh and configure weapon_r and weapon_tip sockets.
 5. Create Blueprint children for regular monsters and bosses; assign meshes, animation blueprints, AI controllers and attack/death presentation.
 6. Add a NavMeshBoundsVolume and verify enemy navigation.
-7. Build UMG HUD, quest tracker, chapter menu, inventory/equipment and save/load UI.
+7. Build UMG HUD, quest tracker, chapter menu, inventory/equipment and save/load UI; create item definitions, pickups, loot and shop content.
 8. Create and populate the 20 campaign maps, objectives, encounters, dialogue, rewards and boss fights.
 9. Import final Arin model, materials, animations, weapon and modular armor assets; configure animation notifies and VFX.
 
