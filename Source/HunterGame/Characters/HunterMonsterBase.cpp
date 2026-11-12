@@ -3,6 +3,7 @@
 
 #include "ArinValeCharacter.h"
 #include "ArinProgressionComponent.h"
+#include "Components/HunterCurrencyComponent.h"
 #include "Quests/HunterQuestSubsystem.h"
 #include "Engine/GameInstance.h"
 
@@ -152,6 +153,10 @@ void AHunterMonsterBase::Die()
         if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
         {
             Progression->AddExperience(FMath::Max(0, ExperienceReward));
+        }
+        if (UHunterCurrencyComponent* Currency = Arin->GetCurrencyComponent())
+        {
+            Currency->AddCurrency(FMath::Max<int64>(0, CurrencyReward));
         }
     }
 
