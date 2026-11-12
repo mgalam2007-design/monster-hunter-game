@@ -11,6 +11,7 @@ class UArinProgressionComponent;
 class UHunterHealthComponent;
 class UHunterWeaponTraceComponent;
 class UHunterInventoryComponent;
+class UHunterEquipmentComponent;
 
 UCLASS()
 class HUNTERGAME_API AArinValeCharacter : public ACharacter
@@ -34,6 +35,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Arin|Inventory")
     UHunterInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
+    UFUNCTION(BlueprintPure, Category="Arin|Equipment")
+    UHunterEquipmentComponent* GetEquipmentComponent() const { return EquipmentComponent; }
 
     UFUNCTION(BlueprintCallable, Category="Arin|Combat")
     void BeginWeaponTrace();
@@ -71,6 +75,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory")
     TObjectPtr<UHunterInventoryComponent> InventoryComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
+    TObjectPtr<UHunterEquipmentComponent> EquipmentComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float SprintSpeed = 850.0f;
