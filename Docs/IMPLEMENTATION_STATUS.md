@@ -9,7 +9,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Socket-based melee trace component with per-swing hit de-duplication and point-damage application.
 - Reusable monster base with health, player detection, AI-controller pursuit, attack cooldown, damage, death event and Blueprint hooks.
 - Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
-- Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress and completion delegates.
+- Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress, completion delegates and validated progress restoration.
 - Stackable inventory component attached to Arin, with item types, add/remove operations, quantity queries, change events and save/restore support.
 - Reusable world pickup actor with overlap collection, inventory insertion and Blueprint pickup presentation hook.
 - Weapon/armor equipment component with inventory-backed equip/unequip, evolution-stage requirements, weapon damage bonuses and armor damage reduction.
@@ -17,10 +17,10 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage, Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
 - Evolution stage changes apply health-capacity, movement-speed and melee-damage multipliers.
 - Consumable inventory items can restore health and/or energy; item data stores the restore amounts and Arin consumes one item per use.
-- Version 3 save data persists inventory and equipped weapon/armor while loading version 1 and 2 saves.
+- Version 4 save data persists campaign progress, Arin progression, inventory, equipped weapon/armor and active quest objective counters; older version 1–3 saves remain accepted.
 - Monster defeat rewards now award Arin XP and report configurable tagged events to the active quest subsystem.
 - 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions.
-- Versioned save-game data object for campaign progress, Arin progression and inventory contents; version 1 campaign saves remain loadable.
+- Versioned save-game data object for campaign, progression, inventory, equipment and active quest progress; version 1–3 saves remain loadable.
 - Blender procedural static blockout generator for Arin Vale and a character rigging/animation production specification.
 
 ## Current gameplay limitations
@@ -29,7 +29,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
 - No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, configured pickup Blueprints, shop or UI yet; the pickup actor must be configured with an item ID and mesh. Equipment currently changes combat stats but does not yet swap visible weapon/armor meshes. Ability gameplay effects are implemented as simple C++ foundations; Shadow Echo still requires a configured actor Blueprint, and polished animations, targeting, hit reactions, Niagara VFX and audio remain outstanding. Consumables require item entries configured with restoration values.
-- Save/load functions persist chapter state, progression and inventory data, but checkpoint and menu integration still need to be authored in Unreal.
+- Save/load functions persist chapter state, progression, inventory, equipment and active quest objective counters, but checkpoint and menu integration still need to be authored in Unreal.
 - Arin's Blender output is static primitive blockout geometry, not a finished rigged hero asset.
 
 ## Required Unreal Editor integration
@@ -51,7 +51,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Verify sword socket traces hit enemies once per swing and respect collision channels.
 - Verify monster pursuit, attacks, damage, death and despawn with navigation enabled.
 - Verify boss phase transitions and attack scaling at configured health thresholds.
-- Verify quest objective event matching, counters and one-time quest completion.
+- Verify quest objective event matching, counters, one-time quest completion and save/restore of partial quest progress.
 - Complete chapters in order and verify unlocking, saving and loading.
 - Profile performance on the actual minimum target PC.
 
