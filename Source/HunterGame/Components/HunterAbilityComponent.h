@@ -25,6 +25,7 @@ class HUNTERGAME_API UHunterAbilityComponent : public UActorComponent
 public:
     UHunterAbilityComponent();
 
+    virtual void BeginPlay() override;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     UFUNCTION(BlueprintCallable, Category="Abilities")
@@ -38,6 +39,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Abilities")
     float GetEnergyPercent() const { return MaxEnergy > 0.0f ? CurrentEnergy / MaxEnergy : 0.0f; }
+
+    UFUNCTION(BlueprintCallable, Category="Abilities")
+    float RestoreEnergy(float Amount);
 
     UFUNCTION(BlueprintPure, Category="Abilities")
     float GetCooldownRemaining(EHunterAbility Ability) const;
