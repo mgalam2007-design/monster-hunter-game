@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "Engine/EngineTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/DamageType.h"
 
 UHunterAbilityComponent::UHunterAbilityComponent()
 {
