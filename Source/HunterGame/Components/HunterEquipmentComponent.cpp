@@ -36,7 +36,13 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
 
     if (!ReturnEquippedItem(SlotItem))
     {
-        Inventory->AddItem(FHunterInventoryItem{});
+        FHunterInventoryItem RollbackItem;
+        RollbackItem.ItemId = NewItem.ItemId;
+        RollbackItem.DisplayName = NewItem.DisplayName;
+        RollbackItem.ItemType = NewItem.Slot == EHunterEquipmentSlot::Weapon ? EHunterItemType::Weapon : EHunterItemType::Armor;
+        RollbackItem.MaxStack = 1;
+        RollbackItem.Quantity = 1;
+        Inventory->AddItem(RollbackItem);
         return false;
     }
 
