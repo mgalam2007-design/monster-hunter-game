@@ -4,6 +4,7 @@
 #include "HunterShopWidget.h"
 #include "Components/HunterShopComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerInput.h"
