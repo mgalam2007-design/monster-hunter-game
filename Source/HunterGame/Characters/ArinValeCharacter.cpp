@@ -12,6 +12,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
 #include "Animation/AnimInstance.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
 
@@ -60,6 +62,17 @@ void AArinValeCharacter::BeginPlay()
         ProgressionComponent->OnStageChanged.AddDynamic(this, &AArinValeCharacter::HandleEvolutionStageChanged);
     }
     ApplyEvolutionStats();
+    if (IsLocallyControlled() && HUDWidgetClass)
+    {
+        if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+        {
+            ActiveHUDWidget = CreateWidget<UUserWidget>(PlayerController, HUDWidgetClass);
+            if (ActiveHUDWidget)
+            {
+                ActiveHUDWidget->AddToViewport();
+            }
+        }
+    }
     UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
 }
 
