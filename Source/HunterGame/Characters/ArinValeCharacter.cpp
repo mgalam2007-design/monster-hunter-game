@@ -62,22 +62,24 @@ void AArinValeCharacter::BeginPlay()
         ProgressionComponent->OnStageChanged.AddDynamic(this, &AArinValeCharacter::HandleEvolutionStageChanged);
     }
     ApplyEvolutionStats();
-    if (IsLocallyControlled() && HUDWidgetClass)
+    if (IsLocallyControlled())
     {
         if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
         {
-            ActiveHUDWidget = CreateWidget<UUserWidget>(PlayerController, HUDWidgetClass);
-            if (ActiveHUDWidget)
+            if (HUDWidgetClass)
             {
-                ActiveHUDWidget->AddToViewport();
+                ActiveHUDWidget = CreateWidget<UUserWidget>(PlayerController, HUDWidgetClass);
+                if (ActiveHUDWidget) ActiveHUDWidget->AddToViewport();
             }
             if (QuestTrackerWidgetClass)
             {
                 ActiveQuestTrackerWidget = CreateWidget<UUserWidget>(PlayerController, QuestTrackerWidgetClass);
-                if (ActiveQuestTrackerWidget)
-                {
-                    ActiveQuestTrackerWidget->AddToViewport();
-                }
+                if (ActiveQuestTrackerWidget) ActiveQuestTrackerWidget->AddToViewport();
+            }
+            if (InventoryWidgetClass)
+            {
+                ActiveInventoryWidget = CreateWidget<UUserWidget>(PlayerController, InventoryWidgetClass);
+                if (ActiveInventoryWidget) ActiveInventoryWidget->AddToViewport();
             }
         }
     }
