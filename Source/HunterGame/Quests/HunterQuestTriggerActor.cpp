@@ -41,15 +41,16 @@ void AHunterQuestTriggerActor::HandleOverlap(UPrimitiveComponent* OverlappedComp
         return;
     }
 
-    bHasTriggered = true;
     BP_OnQuestEventTriggered(OtherActor);
 
     if (bDestroyAfterTrigger)
     {
+        bHasTriggered = true;
         Destroy();
     }
     else if (bTriggerOnce)
     {
+        bHasTriggered = true;
         SetActorEnableCollision(false);
     }
 }
