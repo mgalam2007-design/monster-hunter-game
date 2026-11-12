@@ -10,13 +10,22 @@ void UHunterShopWidget::InitializeShop(UHunterShopComponent* InShop, AArinValeCh
     {
         ShopComponent->OnShopChanged.RemoveDynamic(this, &UHunterShopWidget::HandleShopChanged);
     }
+    if (CurrencyComponent)
+    {
+        CurrencyComponent->OnCurrencyChanged.RemoveDynamic(this, &UHunterShopWidget::HandleCurrencyChanged);
+    }
 
     ShopComponent = InShop;
     BuyerCharacter = InBuyer;
+    CurrencyComponent = BuyerCharacter ? BuyerCharacter->GetCurrencyComponent() : nullptr;
 
     if (ShopComponent)
     {
         ShopComponent->OnShopChanged.AddUniqueDynamic(this, &UHunterShopWidget::HandleShopChanged);
+    }
+    if (CurrencyComponent)
+    {
+        CurrencyComponent->OnCurrencyChanged.AddUniqueDynamic(this, &UHunterShopWidget::HandleCurrencyChanged);
     }
 
     RefreshShop();
@@ -28,10 +37,19 @@ void UHunterShopWidget::NativeDestruct()
     {
         ShopComponent->OnShopChanged.RemoveDynamic(this, &UHunterShopWidget::HandleShopChanged);
     }
+    if (CurrencyComponent)
+    {
+        CurrencyComponent->OnCurrencyChanged.RemoveDynamic(this, &UHunterShopWidget::HandleCurrencyChanged);
+    }
     Super::NativeDestruct();
 }
 
 void UHunterShopWidget::HandleShopChanged()
+{
+    RefreshShop();
+}
+
+void UHunterShopWidget::HandleCurrencyChanged(int64 NewBalance)
 {
     RefreshShop();
 }
@@ -63,7 +81,9 @@ FHunterShopSnapshot UHunterShopWidget::GetShopSnapshot() const
         Display.SellPrice = Listing.SellPrice;
         Display.Stock = Listing.Stock;
         Display.bIsSoldOut = Listing.Stock == 0;
-        Display.bCanAffordOne = Listing.BuyPrice <= Snapshot.PlayerBalance;
+        Display.bCanAffordOne = !Display.bIsSoldOut
+            && Listing.BuyPrice >= 0
+            && Listing.BuyPrice <= Snapshot.PlayerBalance;
 
         if (ItemCatalog)
         {
