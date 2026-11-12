@@ -1,5 +1,10 @@
 #include "HunterCampaignSubsystem.h"
 
+#include "ArinValeCharacter.h"
+#include "ArinProgressionComponent.h"
+#include "HunterSaveGame.h"
+#include "Kismet/GameplayStatics.h"
+
 UHunterCampaignSubsystem::UHunterCampaignSubsystem()
 {
 }
@@ -96,6 +101,72 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
         OnChapterChanged.Broadcast(CurrentChapterNumber);
     }
 
+    return true;
+}
+
+bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FString& SlotName, int32 UserIndex)
+{
+    if (!Arin || SlotName.IsEmpty())
+    {
+        return false;
+    }
+
+    UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::CreateSaveGameObject(UHunterSaveGame::StaticClass()));
+    if (!SaveObject)
+    {
+        return false;
+    }
+
+    SaveObject->CurrentChapterNumber = CurrentChapterNumber;
+    SaveObject->CompletedChapterNumbers.Reset();
+
+    for (const FHunterChapter& Chapter : Chapters)
+    {
+        if (Chapter.bCompleted)
+        {
+            SaveObject->CompletedChapterNumbers.Add(Chapter.ChapterNumber);
+        }
+    }
+
+    if (const UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
+    {
+        SaveObject->ArinExperience = Progression->GetExperience();
+        SaveObject->ArinEvolutionStage = static_cast<int32>(Progression->GetEvolutionStage());
+    }
+
+    return UGameplayStatics::SaveGameToSlot(SaveObject, SlotName, UserIndex);
+}
+
+bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FString& SlotName, int32 UserIndex)
+{
+    if (!Arin || SlotName.IsEmpty() || !UGameplayStatics::DoesSaveGameExist(SlotName, UserIndex))
+    {
+        return false;
+    }
+
+    UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
+    if (!SaveObject || SaveObject->SaveVersion != 1)
+    {
+        return false;
+    }
+
+    for (FHunterChapter& Chapter : Chapters)
+    {
+        Chapter.bCompleted = SaveObject->CompletedChapterNumbers.Contains(Chapter.ChapterNumber);
+        Chapter.bUnlocked = Chapter.ChapterNumber == 1 || Chapter.bCompleted ||
+            SaveObject->CompletedChapterNumbers.Contains(Chapter.ChapterNumber - 1);
+    }
+
+    CurrentChapterNumber = FMath::Clamp(SaveObject->CurrentChapterNumber, 1, Chapters.Num());
+
+    if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
+    {
+        Progression->AddExperience(FMath::Max(0, SaveObject->ArinExperience));
+        const int32 SafeStage = FMath::Clamp(SaveObject->ArinEvolutionStage, 0, 4);
+        Progression->SetEvolutionStage(static_cast<EArinEvolutionStage>(SafeStage));
+    }
+
+    OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
 }
 
