@@ -168,6 +168,8 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     SaveObject->CurrentChapterNumber = CurrentChapterNumber;
+    SaveObject->ArinWorldTransform = Arin->GetActorTransform();
+    SaveObject->bHasArinWorldTransform = true;
     SaveObject->CompletedChapterNumbers.Reset();
 
     for (const FHunterChapter& Chapter : Chapters)
@@ -218,7 +220,7 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 5)
+    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 6)
     {
         return false;
     }
@@ -261,6 +263,11 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         Progression->RestoreProgression(
             FMath::Max(0, SaveObject->ArinExperience),
             static_cast<EArinEvolutionStage>(SafeStage));
+    }
+
+    if (SaveObject->SaveVersion >= 6 && SaveObject->bHasArinWorldTransform)
+    {
+        Arin->SetActorTransform(SaveObject->ArinWorldTransform, false, nullptr, ETeleportType::TeleportPhysics);
     }
 
     OnChapterChanged.Broadcast(CurrentChapterNumber);
