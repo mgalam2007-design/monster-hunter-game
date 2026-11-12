@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Components/HunterInventoryComponent.h"
 #include "HunterSaveGame.generated.h"
 
 /** Persistent single-player campaign slot for HUNTER 2.0. */
@@ -12,7 +13,7 @@ class HUNTERGAME_API UHunterSaveGame : public USaveGame
 
 public:
     UPROPERTY(VisibleAnywhere, Category="Save")
-    int32 SaveVersion = 1;
+    int32 SaveVersion = 2;
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     int32 CurrentChapterNumber = 1;
@@ -25,4 +26,7 @@ public:
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     int32 ArinEvolutionStage = 0;
+
+    UPROPERTY(VisibleAnywhere, Category="Save")
+    TArray<FHunterInventoryItem> ArinInventoryItems;
 };
