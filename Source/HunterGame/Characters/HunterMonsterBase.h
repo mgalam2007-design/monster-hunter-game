@@ -43,6 +43,9 @@ public:
     UFUNCTION(BlueprintPure, Category="Monster|Combat")
     float GetHealthPercent() const;
 
+    UFUNCTION(BlueprintPure, Category="Monster|Combat")
+    bool IsMonsterDead() const { return bIsDead; }
+
     UPROPERTY(BlueprintAssignable, Category="Monster|Combat")
     FHunterMonsterDied OnMonsterDied;
 
