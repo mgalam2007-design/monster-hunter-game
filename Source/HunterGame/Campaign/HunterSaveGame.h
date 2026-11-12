@@ -4,6 +4,7 @@
 #include "GameFramework/SaveGame.h"
 #include "Components/HunterInventoryComponent.h"
 #include "Components/HunterEquipmentComponent.h"
+#include "Quests/HunterQuestSubsystem.h"
 #include "HunterSaveGame.generated.h"
 
 /** Persistent single-player campaign slot for HUNTER 2.0. */
@@ -14,7 +15,7 @@ class HUNTERGAME_API UHunterSaveGame : public USaveGame
 
 public:
     UPROPERTY(VisibleAnywhere, Category="Save")
-    int32 SaveVersion = 3;
+    int32 SaveVersion = 4;
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     int32 CurrentChapterNumber = 1;
@@ -36,4 +37,13 @@ public:
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     FHunterEquipmentItem ArinEquippedArmor;
+
+    UPROPERTY(VisibleAnywhere, Category="Save")
+    FName ActiveQuestId = NAME_None;
+
+    UPROPERTY(VisibleAnywhere, Category="Save")
+    TArray<FHunterObjective> ActiveQuestObjectives;
+
+    UPROPERTY(VisibleAnywhere, Category="Save")
+    bool bActiveQuestCompleted = false;
 };
