@@ -10,6 +10,12 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
         return false;
     }
 
+    FHunterEquipmentItem& SlotItem = NewItem.Slot == EHunterEquipmentSlot::Weapon ? EquippedWeapon : EquippedArmor;
+    if (SlotItem.ItemId == NewItem.ItemId)
+    {
+        return true;
+    }
+
     AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
     UHunterInventoryComponent* Inventory = Arin ? Arin->GetInventoryComponent() : nullptr;
     UArinProgressionComponent* Progression = Arin ? Arin->GetProgressionComponent() : nullptr;
@@ -36,12 +42,6 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
     if (!bHasMatchingInventoryItem)
     {
         return false;
-    }
-
-    FHunterEquipmentItem& SlotItem = NewItem.Slot == EHunterEquipmentSlot::Weapon ? EquippedWeapon : EquippedArmor;
-    if (SlotItem.ItemId == NewItem.ItemId)
-    {
-        return true;
     }
 
     if (!Inventory->RemoveItem(NewItem.ItemId, 1))
