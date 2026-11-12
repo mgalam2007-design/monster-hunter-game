@@ -1,5 +1,10 @@
 #include "HunterMonsterBase.h"
 
+#include "ArinValeCharacter.h"
+#include "ArinProgressionComponent.h"
+#include "Quests/HunterQuestSubsystem.h"
+#include "Engine/GameInstance.h"
+
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -140,6 +145,26 @@ void AHunterMonsterBase::Die()
     GetCharacterMovement()->DisableMovement();
     SetActorEnableCollision(false);
     BP_OnMonsterDeath();
+
+    if (AArinValeCharacter* Arin = Cast<AArinValeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+    {
+        if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
+        {
+            Progression->AddExperience(FMath::Max(0, ExperienceReward));
+        }
+    }
+
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        if (UHunterQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UHunterQuestSubsystem>())
+        {
+            if (!DefeatQuestEventTag.IsNone())
+            {
+                QuestSubsystem->RegisterQuestEvent(DefeatQuestEventTag, 1);
+            }
+        }
+    }
+
     OnMonsterDied.Broadcast(this);
     SetLifeSpan(4.0f);
 }
