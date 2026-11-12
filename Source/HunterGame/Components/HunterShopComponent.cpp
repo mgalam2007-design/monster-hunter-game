@@ -86,7 +86,6 @@ bool UHunterShopComponent::SellItem(AArinValeCharacter* Seller, FName ItemId, in
         {
             bContainsQuestItem = true;
         }
-        }
     }
     if (!bSellable || bContainsQuestItem)
     {
