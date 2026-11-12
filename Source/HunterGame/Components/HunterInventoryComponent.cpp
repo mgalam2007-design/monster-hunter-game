@@ -73,7 +73,7 @@ bool UHunterInventoryComponent::RemoveItem(FName ItemId, int32 Amount)
 
 int32 UHunterInventoryComponent::GetItemCount(FName ItemId) const
 {
-    int32 Total = 0;
+    int64 Total = 0;
     for (const FHunterInventoryItem& Item : Items)
     {
         if (Item.ItemId == ItemId)
@@ -81,7 +81,7 @@ int32 UHunterInventoryComponent::GetItemCount(FName ItemId) const
             Total += Item.Quantity;
         }
     }
-    return Total;
+    return static_cast<int32>(FMath::Min<int64>(Total, MAX_int32));
 }
 
 bool UHunterInventoryComponent::HasItem(FName ItemId, int32 Amount) const
