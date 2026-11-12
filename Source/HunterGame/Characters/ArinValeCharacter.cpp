@@ -1,5 +1,6 @@
 #include "ArinValeCharacter.h"
 
+#include "ArinProgressionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -34,6 +35,8 @@ AArinValeCharacter::AArinValeCharacter()
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
+
+    ProgressionComponent = CreateDefaultSubobject<UArinProgressionComponent>(TEXT("ArinProgression"));
 }
 
 void AArinValeCharacter::BeginPlay()
@@ -139,8 +142,7 @@ void AArinValeCharacter::SwordAttack()
         }
     }
 
-    // The montage and weapon trace will be assigned when the rigged character
-    // and sword assets are imported. This cooldown prevents input spam meanwhile.
+    // Weapon traces and montage notifies are added with the final rigged assets.
     GetWorldTimerManager().SetTimer(AttackCooldownHandle, this, &AArinValeCharacter::ResetAttack, SwordAttackCooldown, false);
 }
 
