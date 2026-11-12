@@ -71,6 +71,14 @@ void AArinValeCharacter::BeginPlay()
             {
                 ActiveHUDWidget->AddToViewport();
             }
+            if (QuestTrackerWidgetClass)
+            {
+                ActiveQuestTrackerWidget = CreateWidget<UUserWidget>(PlayerController, QuestTrackerWidgetClass);
+                if (ActiveQuestTrackerWidget)
+                {
+                    ActiveQuestTrackerWidget->AddToViewport();
+                }
+            }
         }
     }
     UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
