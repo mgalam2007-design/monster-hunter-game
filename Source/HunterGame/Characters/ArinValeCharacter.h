@@ -15,6 +15,7 @@ class UHunterInventoryComponent;
 class UHunterEquipmentComponent;
 class UHunterAbilityComponent;
 class UHunterCurrencyComponent;
+class UUserWidget;
 
 UCLASS()
 class HUNTERGAME_API AArinValeCharacter : public ACharacter
@@ -109,6 +110,12 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float DodgeUpwardStrength = 90.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
+    TSubclassOf<UUserWidget> HUDWidgetClass;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UUserWidget> ActiveHUDWidget;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
     TObjectPtr<UAnimMontage> SwordAttackMontage;
