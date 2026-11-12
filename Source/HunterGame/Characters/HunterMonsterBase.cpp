@@ -1,4 +1,5 @@
 #include "HunterMonsterBase.h"
+#include "Items/HunterPickupActor.h"
 
 #include "ArinValeCharacter.h"
 #include "ArinProgressionComponent.h"
@@ -165,6 +166,34 @@ void AHunterMonsterBase::Die()
         }
     }
 
+    SpawnLootDrops();
     OnMonsterDied.Broadcast(this);
     SetLifeSpan(4.0f);
+}
+
+void AHunterMonsterBase::SpawnLootDrops()
+{
+    if (!PickupActorClass || LootDrops.IsEmpty() || !GetWorld())
+    {
+        return;
+    }
+
+    for (const FHunterMonsterLootDrop& Drop : LootDrops)
+    {
+        if (Drop.Item.ItemId.IsNone() || Drop.Item.Quantity <= 0 ||
+            FMath::FRand() > FMath::Clamp(Drop.DropChance, 0.0f, 1.0f))
+        {
+            continue;
+        }
+
+        const FVector Offset(FMath::FRandRange(-75.0f, 75.0f), FMath::FRandRange(-75.0f, 75.0f), 35.0f);
+        const FTransform SpawnTransform(FRotator::ZeroRotator, GetActorLocation() + Offset);
+        AHunterPickupActor* Pickup = GetWorld()->SpawnActorDeferred<AHunterPickupActor>(
+            PickupActorClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+        if (Pickup)
+        {
+            Pickup->SetPickupItem(Drop.Item);
+            UGameplayStatics::FinishSpawningActor(Pickup, SpawnTransform);
+        }
+    }
 }
