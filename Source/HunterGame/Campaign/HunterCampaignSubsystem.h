@@ -32,6 +32,7 @@ struct FHunterChapter
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterChapterChanged, int32, ChapterNumber);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterChapterCompleted, int32, ChapterNumber);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHunterCampaignCompleted);
 
 UCLASS()
 class HUNTERGAME_API UHunterCampaignSubsystem : public UGameInstanceSubsystem
@@ -68,7 +69,7 @@ public:
     bool IsCampaignComplete() const;
 
     UPROPERTY(BlueprintAssignable, Category="Campaign")
-    FSimpleMulticastDelegate OnCampaignCompleted;
+    FHunterCampaignCompleted OnCampaignCompleted;
 
     UPROPERTY(BlueprintAssignable, Category="Campaign")
     FHunterChapterChanged OnChapterChanged;
