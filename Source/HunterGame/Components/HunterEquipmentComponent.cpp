@@ -67,6 +67,36 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
     return true;
 }
 
+bool UHunterEquipmentComponent::EquipInventoryItem(FName ItemId)
+{
+    AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
+    UHunterInventoryComponent* Inventory = Arin ? Arin->GetInventoryComponent() : nullptr;
+    if (!Inventory || ItemId.IsNone()) return false;
+
+    for (const FHunterInventoryItem& Entry : Inventory->GetItems())
+    {
+        if (Entry.ItemId != ItemId || Entry.Quantity <= 0) continue;
+        FHunterEquipmentItem EquipmentItem;
+        EquipmentItem.ItemId = Entry.ItemId;
+        EquipmentItem.DisplayName = Entry.DisplayName;
+        EquipmentItem.DamageBonus = Entry.DamageBonus;
+        EquipmentItem.DamageReduction = Entry.DamageReduction;
+        EquipmentItem.RequiredEvolutionStage = Entry.RequiredEvolutionStage;
+        if (Entry.ItemType == EHunterItemType::Weapon)
+        {
+            EquipmentItem.Slot = EHunterEquipmentSlot::Weapon;
+            return EquipItem(EquipmentItem);
+        }
+        if (Entry.ItemType == EHunterItemType::Armor)
+        {
+            EquipmentItem.Slot = EHunterEquipmentSlot::Armor;
+            return EquipItem(EquipmentItem);
+        }
+        return false;
+    }
+    return false;
+}
+
 bool UHunterEquipmentComponent::ReturnEquippedItem(FHunterEquipmentItem& Item)
 {
     if (Item.ItemId.IsNone())
