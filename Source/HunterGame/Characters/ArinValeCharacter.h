@@ -74,6 +74,7 @@ protected:
     void UseShadowStep();
     void UseShadowEcho();
     void UseConsumable();
+    void ToggleInventoryMenu();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
     TObjectPtr<USpringArmComponent> CameraBoom;
