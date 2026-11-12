@@ -58,6 +58,13 @@ float UHunterHealthComponent::Heal(float Amount)
     return RestoredHealth;
 }
 
+void UHunterHealthComponent::ReviveFullHealth()
+{
+    bIsDead = false;
+    CurrentHealth = MaxHealth;
+    OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);
+}
+
 void UHunterHealthComponent::RestoreFullHealth()
 {
     if (bIsDead)
