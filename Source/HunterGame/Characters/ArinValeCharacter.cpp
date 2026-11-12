@@ -92,6 +92,7 @@ void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     PlayerInputComponent->BindAction("AbilityEnergyStrike", IE_Pressed, this, &AArinValeCharacter::UseEnergyStrike);
     PlayerInputComponent->BindAction("AbilityShadowStep", IE_Pressed, this, &AArinValeCharacter::UseShadowStep);
     PlayerInputComponent->BindAction("AbilityShadowEcho", IE_Pressed, this, &AArinValeCharacter::UseShadowEcho);
+    PlayerInputComponent->BindAction("UseConsumable", IE_Pressed, this, &AArinValeCharacter::UseConsumable);
 }
 
 void AArinValeCharacter::MoveForward(float Value)
@@ -221,5 +222,37 @@ void AArinValeCharacter::ApplyEvolutionStats()
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * FMath::Max(0.1f, Profile.MovementMultiplier);
+    }
+}
+
+void AArinValeCharacter::UseConsumable()
+{
+    if (!InventoryComponent || (HealthComponent && HealthComponent->IsDead()))
+    {
+        return;
+    }
+
+    const TArray<FHunterInventoryItem> Items = InventoryComponent->GetItems();
+    for (const FHunterInventoryItem& Item : Items)
+    {
+        if (Item.ItemType != EHunterItemType::Consumable || Item.Quantity <= 0)
+        {
+            continue;
+        }
+
+        const bool bCanHeal = HealthComponent && Item.HealthRestoreAmount > 0.0f
+            && HealthComponent->GetCurrentHealth() < HealthComponent->GetMaxHealth();
+        const bool bCanRestoreEnergy = AbilityComponent && Item.EnergyRestoreAmount > 0.0f
+            && AbilityComponent->GetCurrentEnergy() < AbilityComponent->GetMaxEnergy();
+
+        if (!bCanHeal && !bCanRestoreEnergy)
+        {
+            continue;
+        }
+
+        if (bCanHeal) HealthComponent->Heal(Item.HealthRestoreAmount);
+        if (bCanRestoreEnergy) AbilityComponent->RestoreEnergy(Item.EnergyRestoreAmount);
+        InventoryComponent->RemoveItem(Item.ItemId, 1);
+        return;
     }
 }
