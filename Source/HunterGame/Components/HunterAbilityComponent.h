@@ -55,6 +55,21 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Abilities|Resource")
     float EnergyRegenerationPerSecond = 8.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Abilities|EnergyStrike", meta=(ClampMin="0.0"))
+    float EnergyStrikeDamage = 65.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Abilities|EnergyStrike", meta=(ClampMin="0.0"))
+    float EnergyStrikeRadius = 420.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Abilities|ShadowStep", meta=(ClampMin="0.0"))
+    float ShadowStepStrength = 1250.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Abilities|ShadowEcho")
+    TSubclassOf<AActor> ShadowEchoActorClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Abilities|ShadowEcho", meta=(ClampMin="0.0"))
+    float ShadowEchoSpawnDistance = 180.0f;
+
     UFUNCTION(BlueprintImplementableEvent, Category="Abilities")
     void BP_OnAbilityActivated(EHunterAbility Ability);
 
@@ -65,6 +80,7 @@ private:
     TMap<EHunterAbility, float> CooldownRemaining;
 
     bool IsAbilityUnlocked(EHunterAbility Ability) const;
+    bool ExecuteAbility(EHunterAbility Ability);
     float GetAbilityCost(EHunterAbility Ability) const;
     float GetAbilityCooldown(EHunterAbility Ability) const;
 };
