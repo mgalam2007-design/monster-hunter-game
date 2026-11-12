@@ -159,6 +159,7 @@ private:
     float UnmodifiedMaxHealth = 100.0f;
     bool bCanDodge = true;
     bool bCanAttack = true;
+    bool bRespawnPending = false;
 
     FTimerHandle DodgeCooldownHandle;
     FTimerHandle AttackCooldownHandle;
