@@ -1,6 +1,8 @@
 #include "ArinValeCharacter.h"
 
 #include "ArinProgressionComponent.h"
+#include "Campaign/HunterCampaignSubsystem.h"
+#include "Engine/GameInstance.h"
 #include "Components/HunterHealthComponent.h"
 #include "Components/HunterWeaponTraceComponent.h"
 #include "Components/HunterInventoryComponent.h"
@@ -60,6 +62,10 @@ void AArinValeCharacter::BeginPlay()
     if (ProgressionComponent)
     {
         ProgressionComponent->OnStageChanged.AddDynamic(this, &AArinValeCharacter::HandleEvolutionStageChanged);
+    }
+    if (HealthComponent)
+    {
+        HealthComponent->OnOwnerDied.AddDynamic(this, &AArinValeCharacter::HandleArinDeath);
     }
     ApplyEvolutionStats();
     if (IsLocallyControlled())
@@ -301,4 +307,49 @@ void AArinValeCharacter::ToggleInventoryMenu()
     {
         PlayerController->bShowMouseCursor = bShouldOpen;
     }
+}
+
+
+void AArinValeCharacter::HandleArinDeath()
+{
+    if (!IsLocallyControlled() || !GetWorld())
+    {
+        return;
+    }
+
+    GetCharacterMovement()->DisableMovement();
+    GetWorldTimerManager().ClearTimer(RespawnTimerHandle);
+    GetWorldTimerManager().SetTimer(
+        RespawnTimerHandle,
+        this,
+        &AArinValeCharacter::RespawnAtLastCheckpoint,
+        FMath::Max(0.0f, RespawnDelay),
+        false);
+}
+
+void AArinValeCharacter::RespawnAtLastCheckpoint()
+{
+    if (!IsLocallyControlled() || !HealthComponent)
+    {
+        return;
+    }
+
+    UGameInstance* GameInstance = GetGameInstance();
+    UHunterCampaignSubsystem* Campaign = GameInstance
+        ? GameInstance->GetSubsystem<UHunterCampaignSubsystem>()
+        : nullptr;
+
+    const bool bLoadedCheckpoint = Campaign
+        && Campaign->LoadCampaign(this, CampaignSaveSlot, CampaignSaveUserIndex);
+
+    if (!bLoadedCheckpoint)
+    {
+        // No checkpoint save exists yet: revive at the current location.
+        GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    }
+
+    HealthComponent->ReviveFullHealth();
+    ApplyEvolutionStats();
+    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    GetCharacterMovement()->StopMovementImmediately();
 }
