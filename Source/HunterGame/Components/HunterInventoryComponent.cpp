@@ -88,3 +88,25 @@ bool UHunterInventoryComponent::HasItem(FName ItemId, int32 Amount) const
 {
     return Amount > 0 && GetItemCount(ItemId) >= Amount;
 }
+
+void UHunterInventoryComponent::RestoreItems(const TArray<FHunterInventoryItem>& SavedItems)
+{
+    Items.Reset();
+    for (FHunterInventoryItem Item : SavedItems)
+    {
+        if (Item.ItemId.IsNone() || Item.Quantity <= 0)
+        {
+            continue;
+        }
+
+        Item.MaxStack = FMath::Max(1, Item.MaxStack);
+        AddItem(Item);
+    }
+    OnInventoryChanged.Broadcast(NAME_None);
+}
+
+void UHunterInventoryComponent::ClearInventory()
+{
+    Items.Reset();
+    OnInventoryChanged.Broadcast(NAME_None);
+}
