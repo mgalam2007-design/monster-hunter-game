@@ -5,6 +5,8 @@
 #include "Components/HunterInventoryComponent.h"
 #include "HunterPickupActor.generated.h"
 
+class USceneComponent;
+class UPrimitiveComponent;
 class USphereComponent;
 class UStaticMeshComponent;
 
