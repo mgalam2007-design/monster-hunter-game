@@ -9,6 +9,7 @@ class UCameraComponent;
 class UAnimMontage;
 class UArinProgressionComponent;
 class UHunterHealthComponent;
+class UHunterWeaponTraceComponent;
 
 UCLASS()
 class HUNTERGAME_API AArinValeCharacter : public ACharacter
@@ -26,6 +27,15 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Arin|Health")
     UHunterHealthComponent* GetHealthComponent() const { return HealthComponent; }
+
+    UFUNCTION(BlueprintPure, Category="Arin|Combat")
+    UHunterWeaponTraceComponent* GetWeaponTraceComponent() const { return WeaponTraceComponent; }
+
+    UFUNCTION(BlueprintCallable, Category="Arin|Combat")
+    void BeginWeaponTrace();
+
+    UFUNCTION(BlueprintCallable, Category="Arin|Combat")
+    void EndWeaponTrace();
 
 protected:
     virtual void BeginPlay() override;
@@ -52,6 +62,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Health")
     TObjectPtr<UHunterHealthComponent> HealthComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat")
+    TObjectPtr<UHunterWeaponTraceComponent> WeaponTraceComponent;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float SprintSpeed = 850.0f;
 
@@ -67,6 +80,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
     float SwordAttackCooldown = 0.55f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
+    float DefaultWeaponTraceWindow = 0.22f;
+
 private:
     float DefaultWalkSpeed = 500.0f;
     bool bCanDodge = true;
@@ -74,6 +90,7 @@ private:
 
     FTimerHandle DodgeCooldownHandle;
     FTimerHandle AttackCooldownHandle;
+    FTimerHandle WeaponTraceHandle;
 
     void ResetDodge();
     void ResetAttack();
