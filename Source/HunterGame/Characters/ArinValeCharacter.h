@@ -8,12 +8,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
 class UArinProgressionComponent;
+class UHunterHealthComponent;
 
-/**
- * Arin Vale - original HUNTER 2.0 protagonist.
- * Identity continuity is preserved across all chapters; equipment and abilities
- * are data-driven progression layers rather than separate character identities.
- */
 UCLASS()
 class HUNTERGAME_API AArinValeCharacter : public ACharacter
 {
@@ -22,8 +18,14 @@ class HUNTERGAME_API AArinValeCharacter : public ACharacter
 public:
     AArinValeCharacter();
 
+    virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+        AController* EventInstigator, AActor* DamageCauser) override;
+
     UFUNCTION(BlueprintPure, Category="Arin|Progression")
     UArinProgressionComponent* GetProgressionComponent() const { return ProgressionComponent; }
+
+    UFUNCTION(BlueprintPure, Category="Arin|Health")
+    UHunterHealthComponent* GetHealthComponent() const { return HealthComponent; }
 
 protected:
     virtual void BeginPlay() override;
@@ -33,7 +35,6 @@ protected:
     void MoveRight(float Value);
     void Turn(float Value);
     void LookUp(float Value);
-
     void StartSprint();
     void StopSprint();
     void Dodge();
@@ -47,6 +48,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Progression")
     TObjectPtr<UArinProgressionComponent> ProgressionComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Health")
+    TObjectPtr<UHunterHealthComponent> HealthComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float SprintSpeed = 850.0f;
