@@ -8,7 +8,6 @@
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/GameInstance.h"
-#include "Quests/HunterQuestSubsystem.h"
 
 UHunterCampaignSubsystem::UHunterCampaignSubsystem()
 {
@@ -89,6 +88,13 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
     {
         if (UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
         {
+            // Preserve partial or completed progress when the player re-enters Chapter 1.
+            if (Quest->GetActiveQuestId() == FName(TEXT("CH01_FirstBreach")))
+            {
+                OnChapterChanged.Broadcast(CurrentChapterNumber);
+                return true;
+            }
+
             TArray<FHunterObjective> Objectives;
 
             FHunterObjective DefeatObjective;
@@ -123,15 +129,13 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
         return false;
     }
 
-    // Do not allow the first mission to be marked complete before its objectives are done.
+    // Chapter 1 cannot be skipped if its quest is missing, inactive or incomplete.
     if (CurrentChapterNumber == 1)
     {
-        if (const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+        const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>();
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH01_FirstBreach")) || !Quest->IsQuestComplete())
         {
-            if (Quest->GetActiveQuestId() == FName(TEXT("CH01_FirstBreach")) && !Quest->IsQuestComplete())
-            {
-                return false;
-            }
+            return false;
         }
     }
 
