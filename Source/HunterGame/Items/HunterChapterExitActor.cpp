@@ -2,6 +2,8 @@
 
 #include "ArinValeCharacter.h"
 #include "Campaign/HunterCampaignSubsystem.h"
+#include "Characters/ArinProgressionComponent.h"
+#include "Components/HunterCurrencyComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/GameInstance.h"
 
@@ -63,6 +65,25 @@ bool AHunterChapterExitActor::TryCompleteChapter(AArinValeCharacter* Arin)
 
     const int32 ChapterToComplete = Campaign->GetCurrentChapterNumber();
     const bool bCompleted = Campaign->CompleteCurrentChapter();
+    if (bCompleted)
+    {
+        if (CompletionExperienceReward > 0)
+        {
+            if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
+            {
+                Progression->AddExperience(CompletionExperienceReward);
+            }
+        }
+
+        if (CompletionCurrencyReward > 0)
+        {
+            if (UHunterCurrencyComponent* Currency = Arin->GetCurrencyComponent())
+            {
+                Currency->AddCurrency(CompletionCurrencyReward);
+            }
+        }
+    }
+
     const bool bSaved = bCompleted && Campaign->SaveCampaign(Arin, SaveSlotName, UserIndex);
 
     if (bCompleted)
