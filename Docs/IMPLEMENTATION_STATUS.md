@@ -11,7 +11,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress, completion delegates and validated progress restoration.
 - Stackable inventory component attached to Arin, with item types, add/remove operations, quantity queries, change events and save/restore support.
-- Reusable world pickup actor with overlap collection, inventory insertion and Blueprint pickup presentation hook.
+- Reusable world pickup actor with overlap collection, inventory insertion, optional tagged quest-event reporting and Blueprint pickup presentation hook.
 - Weapon/armor equipment component with inventory-backed equip/unequip, evolution-stage requirements, weapon damage bonuses and armor damage reduction.
 - Arin's melee damage now scales from his evolution stage and equipped weapon; incoming damage is reduced by equipped armor.
 - Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage, Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
@@ -19,12 +19,12 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Consumable inventory items can restore health and/or energy; item data stores the restore amounts and Arin consumes one item per use.
 - Version 4 save data persists campaign progress, Arin progression, inventory, equipped weapon/armor and active quest objective counters; older version 1–3 saves remain accepted.
 - Monster defeat rewards now award Arin XP and report configurable tagged events to the active quest subsystem.
-- 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions.
+- 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions. Chapter 1 now starts an authored quest: defeat three breach creatures and recover one tagged breach shard; its chapter completion is blocked until both objectives are complete.
 - Versioned save-game data object for campaign, progression, inventory, equipment and active quest progress; version 1–3 saves remain loadable.
 - Blender procedural static blockout generator for Arin Vale and a character rigging/animation production specification.
 
 ## Current gameplay limitations
-- The boss and quest systems are code foundations only; no authored boss Blueprints, encounter maps, quest content or reward tables are included yet. Monster defeats grant configurable XP and a configurable quest event tag.
+- The boss system remains a code foundation without authored boss Blueprints or encounter maps. Chapter 1 has two authored objective definitions (defeat three creatures and collect one breach shard), but still needs a level, enemy Blueprints and a pickup Blueprint configured with the BreachShardCollected event tag. Other chapters still need authored quests.
 - The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation.
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
@@ -51,7 +51,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Verify sword socket traces hit enemies once per swing and respect collision channels.
 - Verify monster pursuit, attacks, damage, death and despawn with navigation enabled.
 - Verify boss phase transitions and attack scaling at configured health thresholds.
-- Verify quest objective event matching, counters, one-time quest completion and save/restore of partial quest progress.
+- Verify quest objective event matching, counters, one-time quest completion, chapter-one completion gating and save/restore of partial quest progress.
 - Complete chapters in order and verify unlocking, saving and loading.
 - Profile performance on the actual minimum target PC.
 
