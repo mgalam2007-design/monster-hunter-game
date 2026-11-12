@@ -114,6 +114,9 @@ bool UHunterEquipmentComponent::ReturnEquippedItem(FHunterEquipmentItem& Item)
     InventoryItem.ItemType = Item.Slot == EHunterEquipmentSlot::Weapon ? EHunterItemType::Weapon : EHunterItemType::Armor;
     InventoryItem.Quantity = 1;
     InventoryItem.MaxStack = 1;
+    InventoryItem.DamageBonus = Item.DamageBonus;
+    InventoryItem.DamageReduction = Item.DamageReduction;
+    InventoryItem.RequiredEvolutionStage = Item.RequiredEvolutionStage;
     if (!Inventory->AddItem(InventoryItem))
     {
         return false;
