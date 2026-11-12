@@ -39,14 +39,14 @@ bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int3
     FHunterInventoryItem Purchase = Entry->Item;
     Purchase.Quantity = Quantity;
     const int64 TotalCost = Entry->BuyPrice * static_cast<int64>(Quantity);
-    if (!Currency->SpendCurrency(TotalCost))
+    if (TotalCost > 0 && !Currency->SpendCurrency(TotalCost))
     {
         return false;
     }
 
     if (!Inventory->AddItem(Purchase))
     {
-        Currency->AddCurrency(TotalCost);
+        if (TotalCost > 0) Currency->AddCurrency(TotalCost);
         return false;
     }
 
@@ -75,15 +75,20 @@ bool UHunterShopComponent::SellItem(AArinValeCharacter* Seller, FName ItemId, in
     }
 
     bool bSellable = false;
+    bool bContainsQuestItem = false;
     for (const FHunterInventoryItem& Item : Inventory->GetItems())
     {
         if (Item.ItemId == ItemId && Item.Quantity > 0 && Item.ItemType != EHunterItemType::Quest)
         {
             bSellable = true;
-            break;
+        }
+        if (Item.ItemId == ItemId && Item.ItemType == EHunterItemType::Quest && Item.Quantity > 0)
+        {
+            bContainsQuestItem = true;
+        }
         }
     }
-    if (!bSellable)
+    if (!bSellable || bContainsQuestItem)
     {
         return false;
     }
