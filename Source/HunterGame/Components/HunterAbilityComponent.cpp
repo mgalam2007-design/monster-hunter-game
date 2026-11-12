@@ -14,6 +14,24 @@ UHunterAbilityComponent::UHunterAbilityComponent()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
+void UHunterAbilityComponent::BeginPlay()
+{
+    Super::BeginPlay();
+    MaxEnergy = FMath::Max(0.0f, MaxEnergy);
+    CurrentEnergy = FMath::Clamp(CurrentEnergy, 0.0f, MaxEnergy);
+    OnEnergyChanged.Broadcast(CurrentEnergy, MaxEnergy);
+}
+
+float UHunterAbilityComponent::RestoreEnergy(float Amount)
+{
+    if (Amount <= 0.0f || MaxEnergy <= 0.0f) return 0.0f;
+    const float PreviousEnergy = CurrentEnergy;
+    CurrentEnergy = FMath::Clamp(CurrentEnergy + Amount, 0.0f, MaxEnergy);
+    const float Restored = CurrentEnergy - PreviousEnergy;
+    if (Restored > 0.0f) OnEnergyChanged.Broadcast(CurrentEnergy, MaxEnergy);
+    return Restored;
+}
+
 void UHunterAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
