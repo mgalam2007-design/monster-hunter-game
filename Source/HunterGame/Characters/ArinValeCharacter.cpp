@@ -50,6 +50,7 @@ void AArinValeCharacter::BeginPlay()
 {
     Super::BeginPlay();
     DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+    UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
 }
 
 float AArinValeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
@@ -144,7 +145,7 @@ void AArinValeCharacter::SwordAttack()
 
     if (WeaponTraceComponent)
     {
-        const float BaseDamage = WeaponTraceComponent->GetBaseDamage();
+        const float BaseDamage = UnmodifiedWeaponDamage;
         const float GearBonus = EquipmentComponent ? EquipmentComponent->GetTotalDamageBonus() : 0.0f;
         const float StageMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().DamageMultiplier : 1.0f;
         WeaponTraceComponent->SetBaseDamage((BaseDamage + GearBonus) * StageMultiplier);
