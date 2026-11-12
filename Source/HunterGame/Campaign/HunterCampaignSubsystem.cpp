@@ -161,9 +161,10 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
 
     if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
     {
-        Progression->AddExperience(FMath::Max(0, SaveObject->ArinExperience));
         const int32 SafeStage = FMath::Clamp(SaveObject->ArinEvolutionStage, 0, 4);
-        Progression->SetEvolutionStage(static_cast<EArinEvolutionStage>(SafeStage));
+        Progression->RestoreProgression(
+            FMath::Max(0, SaveObject->ArinExperience),
+            static_cast<EArinEvolutionStage>(SafeStage));
     }
 
     OnChapterChanged.Broadcast(CurrentChapterNumber);
