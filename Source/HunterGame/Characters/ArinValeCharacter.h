@@ -7,6 +7,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
+class UArinProgressionComponent;
 
 /**
  * Arin Vale - original HUNTER 2.0 protagonist.
@@ -20,6 +21,9 @@ class HUNTERGAME_API AArinValeCharacter : public ACharacter
 
 public:
     AArinValeCharacter();
+
+    UFUNCTION(BlueprintPure, Category="Arin|Progression")
+    UArinProgressionComponent* GetProgressionComponent() const { return ProgressionComponent; }
 
 protected:
     virtual void BeginPlay() override;
@@ -40,6 +44,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
     TObjectPtr<UCameraComponent> FollowCamera;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Progression")
+    TObjectPtr<UArinProgressionComponent> ProgressionComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float SprintSpeed = 850.0f;
