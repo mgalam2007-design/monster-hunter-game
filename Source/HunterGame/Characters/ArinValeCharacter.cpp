@@ -79,7 +79,11 @@ void AArinValeCharacter::BeginPlay()
             if (InventoryWidgetClass)
             {
                 ActiveInventoryWidget = CreateWidget<UUserWidget>(PlayerController, InventoryWidgetClass);
-                if (ActiveInventoryWidget) ActiveInventoryWidget->AddToViewport();
+                if (ActiveInventoryWidget)
+                {
+                    ActiveInventoryWidget->AddToViewport();
+                    ActiveInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
+                }
             }
         }
     }
@@ -118,6 +122,7 @@ void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     PlayerInputComponent->BindAction("AbilityShadowStep", IE_Pressed, this, &AArinValeCharacter::UseShadowStep);
     PlayerInputComponent->BindAction("AbilityShadowEcho", IE_Pressed, this, &AArinValeCharacter::UseShadowEcho);
     PlayerInputComponent->BindAction("UseConsumable", IE_Pressed, this, &AArinValeCharacter::UseConsumable);
+    PlayerInputComponent->BindAction("InventoryMenu", IE_Pressed, this, &AArinValeCharacter::ToggleInventoryMenu);
 }
 
 void AArinValeCharacter::MoveForward(float Value)
@@ -279,5 +284,21 @@ void AArinValeCharacter::UseConsumable()
         if (bCanRestoreEnergy) AbilityComponent->RestoreEnergy(Item.EnergyRestoreAmount);
         InventoryComponent->RemoveItem(Item.ItemId, 1);
         return;
+    }
+}
+
+void AArinValeCharacter::ToggleInventoryMenu()
+{
+    if (!ActiveInventoryWidget)
+    {
+        return;
+    }
+
+    const bool bShouldOpen = ActiveInventoryWidget->GetVisibility() != ESlateVisibility::Visible;
+    ActiveInventoryWidget->SetVisibility(bShouldOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+
+    if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+    {
+        PlayerController->bShowMouseCursor = bShouldOpen;
     }
 }
