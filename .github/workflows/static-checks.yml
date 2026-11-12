@@ -1,0 +1,25 @@
+name: Project static checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Blender Python script syntax
+        run: python -m py_compile Tools/blender/create_arin_blockout.py
+
+      - name: Validate Unreal project descriptor
+        run: python -c "import json; json.load(open('HunterGame.uproject', encoding='utf-8'))"
