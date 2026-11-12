@@ -2,6 +2,11 @@
 
 #include "ArinProgressionComponent.h"
 #include "ArinValeCharacter.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/Controller.h"
+#include "Engine/World.h"
+#include "Engine/EngineTypes.h"
+#include "Kismet/GameplayStatics.h"
 
 UHunterAbilityComponent::UHunterAbilityComponent()
 {
@@ -34,6 +39,11 @@ bool UHunterAbilityComponent::TryActivateAbility(EHunterAbility Ability)
 
     const float Cost = GetAbilityCost(Ability);
     if (CurrentEnergy < Cost)
+    {
+        return false;
+    }
+
+    if (!ExecuteAbility(Ability))
     {
         return false;
     }
@@ -89,5 +99,66 @@ float UHunterAbilityComponent::GetAbilityCooldown(EHunterAbility Ability) const
         case EHunterAbility::ShadowStep: return 7.0f;
         case EHunterAbility::ShadowEcho: return 25.0f;
         default: return 1.0f;
+    }
+}
+
+bool UHunterAbilityComponent::ExecuteAbility(EHunterAbility Ability)
+{
+    AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
+    if (!Arin || !GetWorld())
+    {
+        return false;
+    }
+
+    switch (Ability)
+    {
+        case EHunterAbility::EnergyStrike:
+        {
+            const FVector Origin = Arin->GetActorLocation() + Arin->GetActorForwardVector() * 150.0f;
+            const FCollisionShape Shape = FCollisionShape::MakeSphere(FMath::Max(0.0f, EnergyStrikeRadius));
+            FCollisionQueryParams Params(SCENE_QUERY_STAT(EnergyStrike), false, Arin);
+            TArray<FOverlapResult> Overlaps;
+            GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity,
+                FCollisionObjectQueryParams(ECC_Pawn), Shape, Params);
+
+            TSet<AActor*> DamagedActors;
+            for (const FOverlapResult& Overlap : Overlaps)
+            {
+                AActor* Target = Overlap.GetActor();
+                if (!Target || Target == Arin || DamagedActors.Contains(Target))
+                {
+                    continue;
+                }
+
+                DamagedActors.Add(Target);
+                UGameplayStatics::ApplyDamage(Target, EnergyStrikeDamage, Arin->GetController(), Arin, UDamageType::StaticClass());
+            }
+            return true;
+        }
+
+        case EHunterAbility::ShadowStep:
+        {
+            const FVector Direction = Arin->GetActorForwardVector();
+            Arin->LaunchCharacter(Direction * ShadowStepStrength, true, false);
+            return true;
+        }
+
+        case EHunterAbility::ShadowEcho:
+        {
+            if (!ShadowEchoActorClass)
+            {
+                return false;
+            }
+
+            const FVector SpawnLocation = Arin->GetActorLocation() - Arin->GetActorForwardVector() * ShadowEchoSpawnDistance;
+            const FTransform SpawnTransform(Arin->GetActorRotation(), SpawnLocation);
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Owner = Arin;
+            SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+            return GetWorld()->SpawnActor<AActor>(ShadowEchoActorClass, SpawnTransform, SpawnParams) != nullptr;
+        }
+
+        default:
+            return false;
     }
 }
