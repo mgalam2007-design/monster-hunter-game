@@ -1,0 +1,150 @@
+#include "ArinValeCharacter.h"
+
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/InputComponent.h"
+#include "Animation/AnimInstance.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
+
+AArinValeCharacter::AArinValeCharacter()
+{
+    PrimaryActorTick.bCanEverTick = false;
+
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
+
+    GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 620.0f, 0.0f);
+    GetCharacterMovement()->JumpZVelocity = 620.0f;
+    GetCharacterMovement()->AirControl = 0.35f;
+    GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+    GetCharacterMovement()->BrakingDecelerationWalking = 1800.0f;
+
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(RootComponent);
+    CameraBoom->TargetArmLength = 340.0f;
+    CameraBoom->SocketOffset = FVector(0.0f, 55.0f, 70.0f);
+    CameraBoom->bUsePawnControlRotation = true;
+    CameraBoom->bEnableCameraLag = true;
+    CameraBoom->CameraLagSpeed = 12.0f;
+
+    FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+    FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    FollowCamera->bUsePawnControlRotation = false;
+}
+
+void AArinValeCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+}
+
+void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    check(PlayerInputComponent);
+
+    PlayerInputComponent->BindAxis("MoveForward", this, &AArinValeCharacter::MoveForward);
+    PlayerInputComponent->BindAxis("MoveRight", this, &AArinValeCharacter::MoveRight);
+    PlayerInputComponent->BindAxis("Turn", this, &AArinValeCharacter::Turn);
+    PlayerInputComponent->BindAxis("LookUp", this, &AArinValeCharacter::LookUp);
+
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+    PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AArinValeCharacter::StartSprint);
+    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AArinValeCharacter::StopSprint);
+    PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &AArinValeCharacter::Dodge);
+    PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &AArinValeCharacter::SwordAttack);
+}
+
+void AArinValeCharacter::MoveForward(float Value)
+{
+    if (Controller && !FMath::IsNearlyZero(Value))
+    {
+        const FRotator YawRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+        AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X), Value);
+    }
+}
+
+void AArinValeCharacter::MoveRight(float Value)
+{
+    if (Controller && !FMath::IsNearlyZero(Value))
+    {
+        const FRotator YawRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+        AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y), Value);
+    }
+}
+
+void AArinValeCharacter::Turn(float Value)
+{
+    AddControllerYawInput(Value);
+}
+
+void AArinValeCharacter::LookUp(float Value)
+{
+    AddControllerPitchInput(Value);
+}
+
+void AArinValeCharacter::StartSprint()
+{
+    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void AArinValeCharacter::StopSprint()
+{
+    GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+}
+
+void AArinValeCharacter::Dodge()
+{
+    if (!bCanDodge)
+    {
+        return;
+    }
+
+    FVector DodgeDirection = GetLastMovementInputVector().GetSafeNormal();
+    if (DodgeDirection.IsNearlyZero())
+    {
+        DodgeDirection = GetActorForwardVector();
+    }
+
+    LaunchCharacter(DodgeDirection * DodgeStrength + FVector::UpVector * DodgeUpwardStrength, true, true);
+    bCanDodge = false;
+    GetWorldTimerManager().SetTimer(DodgeCooldownHandle, this, &AArinValeCharacter::ResetDodge, 0.8f, false);
+}
+
+void AArinValeCharacter::ResetDodge()
+{
+    bCanDodge = true;
+}
+
+void AArinValeCharacter::SwordAttack()
+{
+    if (!bCanAttack)
+    {
+        return;
+    }
+
+    bCanAttack = false;
+
+    if (SwordAttackMontage)
+    {
+        if (UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr)
+        {
+            AnimInstance->Montage_Play(SwordAttackMontage);
+        }
+    }
+
+    // The montage and weapon trace will be assigned when the rigged character
+    // and sword assets are imported. This cooldown prevents input spam meanwhile.
+    GetWorldTimerManager().SetTimer(AttackCooldownHandle, this, &AArinValeCharacter::ResetAttack, SwordAttackCooldown, false);
+}
+
+void AArinValeCharacter::ResetAttack()
+{
+    bCanAttack = true;
+}
