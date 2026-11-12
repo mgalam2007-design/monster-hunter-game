@@ -11,17 +11,18 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress, completion delegates and validated progress restoration.
 - Reusable world-space quest trigger actor that reports configured tagged events when Arin enters a level volume, with one-shot, repeatable and destroy-after-trigger options.
-- Stackable inventory component attached to Arin, with item types, add/remove operations, quantity queries, change events and save/restore support.
+- Stackable inventory component attached to Arin, with item types, consumable health/energy restore data, add/remove operations, quantity queries, change events and save/restore support.
 - Reusable world pickup actor with overlap collection, inventory insertion, optional tagged quest-event reporting and Blueprint pickup presentation hook.
 - Weapon/armor equipment component with inventory-backed equip/unequip, evolution-stage requirements, weapon damage bonuses and armor damage reduction.
 - Arin's melee damage now scales from his evolution stage and equipped weapon; incoming damage is reduced by equipped armor.
 - Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage, Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
 - Evolution stage changes apply health-capacity, movement-speed and melee-damage multipliers.
 - Consumable inventory items can restore health and/or energy; item data stores the restore amounts and Arin consumes one item per use.
-- Version 4 save data persists campaign progress, Arin progression, inventory, equipped weapon/armor and active quest objective counters; older version 1–3 saves remain accepted.
+- Version 5 save data persists campaign progress, Arin progression, inventory, equipped weapon/armor, active quest objective counters and Arin's currency balance; older version 1–4 saves remain accepted.
+- Currency wallet component attached to Arin with overflow-safe earning, balance setting, spending checks and Blueprint change events; monster defeats can award configurable currency.
 - Monster defeat rewards now award Arin XP and report configurable tagged events to the active quest subsystem.
 - 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions. Chapter 1 now starts an authored quest: defeat three breach creatures and recover one tagged breach shard; its chapter completion is blocked until both objectives are complete. Re-entering Chapter 1 no longer resets partial/completed quest progress, and chapter completion fails closed if the required quest is missing or incomplete.
-- Versioned save-game data object for campaign, progression, inventory, equipment and active quest progress; version 1–3 saves remain loadable.
+- Versioned save-game data object for campaign, progression, inventory, equipment and active quest progress; version 1–4 saves remain loadable.
 - Blender procedural static blockout generator for Arin Vale and a character rigging/animation production specification.
 
 ## Current gameplay limitations
@@ -29,7 +30,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation. Loot drops require the pickup actor class and per-enemy item/drop chance entries to be configured in those Blueprint children.
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
-- No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, configured pickup Blueprints, shop or UI yet; the pickup actor must be configured with an item ID and mesh. Equipment currently changes combat stats but does not yet swap visible weapon/armor meshes. Ability gameplay effects are implemented as simple C++ foundations; Shadow Echo still requires a configured actor Blueprint, and polished animations, targeting, hit reactions, Niagara VFX and audio remain outstanding. Consumables require item entries configured with restoration values.
+- No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The currency wallet is a gameplay foundation; a vendor catalog, buy/sell transactions and shop UI are still outstanding. The inventory component has no authored item catalog, configured pickup Blueprints, shop or UI yet; the pickup actor must be configured with an item ID and mesh. Equipment currently changes combat stats but does not yet swap visible weapon/armor meshes. Ability gameplay effects are implemented as simple C++ foundations; Shadow Echo still requires a configured actor Blueprint, and polished animations, targeting, hit reactions, Niagara VFX and audio remain outstanding. Consumables require item entries configured with restoration values.
 - Save/load functions persist chapter state, progression, inventory, equipment and active quest objective counters, but checkpoint and menu integration still need to be authored in Unreal.
 - Arin's Blender output is static primitive blockout geometry, not a finished rigged hero asset.
 
