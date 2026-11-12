@@ -20,7 +20,7 @@ struct FHunterChapterSelectSnapshot
     int32 CompletedChapterCount = 0;
 
     UPROPERTY(BlueprintReadOnly, Category="Chapter Select")
-    int32 UnlockedChapterCount = 1;
+    int32 UnlockedChapterCount = 0;
 
     UPROPERTY(BlueprintReadOnly, Category="Chapter Select")
     bool bCampaignComplete = false;
