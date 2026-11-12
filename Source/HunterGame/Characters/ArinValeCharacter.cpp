@@ -83,6 +83,9 @@ void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AArinValeCharacter::StopSprint);
     PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &AArinValeCharacter::Dodge);
     PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &AArinValeCharacter::SwordAttack);
+    PlayerInputComponent->BindAction("AbilityEnergyStrike", IE_Pressed, this, &AArinValeCharacter::UseEnergyStrike);
+    PlayerInputComponent->BindAction("AbilityShadowStep", IE_Pressed, this, &AArinValeCharacter::UseShadowStep);
+    PlayerInputComponent->BindAction("AbilityShadowEcho", IE_Pressed, this, &AArinValeCharacter::UseShadowEcho);
 }
 
 void AArinValeCharacter::MoveForward(float Value)
@@ -159,3 +162,27 @@ void AArinValeCharacter::SwordAttack()
 }
 
 void AArinValeCharacter::ResetAttack() { bCanAttack = true; }
+
+void AArinValeCharacter::UseEnergyStrike()
+{
+    if (AbilityComponent && (!HealthComponent || !HealthComponent->IsDead()))
+    {
+        AbilityComponent->TryActivateAbility(EHunterAbility::EnergyStrike);
+    }
+}
+
+void AArinValeCharacter::UseShadowStep()
+{
+    if (AbilityComponent && (!HealthComponent || !HealthComponent->IsDead()))
+    {
+        AbilityComponent->TryActivateAbility(EHunterAbility::ShadowStep);
+    }
+}
+
+void AArinValeCharacter::UseShadowEcho()
+{
+    if (AbilityComponent && (!HealthComponent || !HealthComponent->IsDead()))
+    {
+        AbilityComponent->TryActivateAbility(EHunterAbility::ShadowEcho);
+    }
+}
