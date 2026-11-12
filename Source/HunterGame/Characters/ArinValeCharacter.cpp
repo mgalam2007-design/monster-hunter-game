@@ -2,6 +2,7 @@
 
 #include "ArinProgressionComponent.h"
 #include "Components/HunterHealthComponent.h"
+#include "Components/HunterWeaponTraceComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -38,6 +39,7 @@ AArinValeCharacter::AArinValeCharacter()
 
     ProgressionComponent = CreateDefaultSubobject<UArinProgressionComponent>(TEXT("ArinProgression"));
     HealthComponent = CreateDefaultSubobject<UHunterHealthComponent>(TEXT("ArinHealth"));
+    WeaponTraceComponent = CreateDefaultSubobject<UHunterWeaponTraceComponent>(TEXT("WeaponTrace"));
 }
 
 void AArinValeCharacter::BeginPlay()
@@ -111,6 +113,16 @@ void AArinValeCharacter::Dodge()
 
 void AArinValeCharacter::ResetDodge() { bCanDodge = true; }
 
+void AArinValeCharacter::BeginWeaponTrace()
+{
+    if (WeaponTraceComponent) WeaponTraceComponent->BeginWeaponTrace();
+}
+
+void AArinValeCharacter::EndWeaponTrace()
+{
+    if (WeaponTraceComponent) WeaponTraceComponent->EndWeaponTrace();
+}
+
 void AArinValeCharacter::SwordAttack()
 {
     if (!bCanAttack || (HealthComponent && HealthComponent->IsDead())) return;
@@ -124,7 +136,8 @@ void AArinValeCharacter::SwordAttack()
         }
     }
 
-    // Weapon traces and montage notifies are added with the final rigged assets.
+    BeginWeaponTrace();
+    GetWorldTimerManager().SetTimer(WeaponTraceHandle, this, &AArinValeCharacter::EndWeaponTrace, 0.22f, false);
     GetWorldTimerManager().SetTimer(AttackCooldownHandle, this, &AArinValeCharacter::ResetAttack, SwordAttackCooldown, false);
 }
 
