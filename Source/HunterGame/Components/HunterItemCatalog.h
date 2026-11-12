@@ -5,6 +5,9 @@
 #include "Components/HunterInventoryComponent.h"
 #include "HunterItemCatalog.generated.h"
 
+class UTexture2D;
+class UStaticMesh;
+
 UENUM(BlueprintType)
 enum class EHunterItemRarity : uint8
 {
