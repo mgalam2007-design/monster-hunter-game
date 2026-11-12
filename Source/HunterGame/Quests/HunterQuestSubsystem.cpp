@@ -45,7 +45,8 @@ bool UHunterQuestSubsystem::RegisterQuestEvent(FName EventTag, int32 Amount)
             continue;
         }
 
-        Objective.CurrentCount = FMath::Min(Objective.RequiredCount, Objective.CurrentCount + Amount);
+        const int64 UpdatedCount = static_cast<int64>(Objective.CurrentCount) + static_cast<int64>(Amount);
+        Objective.CurrentCount = static_cast<int32>(FMath::Min<int64>(Objective.RequiredCount, UpdatedCount));
         Objective.bCompleted = Objective.CurrentCount >= Objective.RequiredCount;
         OnObjectiveUpdated.Broadcast(Objective.ObjectiveId, Objective.CurrentCount);
         bUpdatedAny = true;
