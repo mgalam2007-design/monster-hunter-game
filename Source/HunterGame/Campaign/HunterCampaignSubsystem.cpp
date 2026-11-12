@@ -7,6 +7,7 @@
 #include "Quests/HunterQuestSubsystem.h"
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/GameInstance.h"
 #include "Quests/HunterQuestSubsystem.h"
 
 UHunterCampaignSubsystem::UHunterCampaignSubsystem()
