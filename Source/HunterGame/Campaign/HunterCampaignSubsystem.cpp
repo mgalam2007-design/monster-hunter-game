@@ -4,6 +4,7 @@
 #include "ArinProgressionComponent.h"
 #include "Components/HunterInventoryComponent.h"
 #include "Components/HunterEquipmentComponent.h"
+#include "Components/HunterCurrencyComponent.h"
 #include "Quests/HunterQuestSubsystem.h"
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -188,6 +189,11 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
         SaveObject->ArinEquippedArmor = Equipment->GetArmor();
     }
 
+    if (const UHunterCurrencyComponent* Currency = Arin->GetCurrencyComponent())
+    {
+        SaveObject->ArinCurrency = Currency->GetBalance();
+    }
+
     if (const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
     {
         SaveObject->ActiveQuestId = Quest->GetActiveQuestId();
@@ -212,7 +218,7 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 4)
+    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 5)
     {
         return false;
     }
@@ -234,6 +240,11 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     if (UHunterEquipmentComponent* Equipment = Arin->GetEquipmentComponent())
     {
         Equipment->RestoreEquipment(SaveObject->ArinEquippedWeapon, SaveObject->ArinEquippedArmor);
+    }
+
+    if (UHunterCurrencyComponent* Currency = Arin->GetCurrencyComponent())
+    {
+        Currency->SetBalance(SaveObject->SaveVersion >= 5 ? SaveObject->ArinCurrency : 0);
     }
 
     if (UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
