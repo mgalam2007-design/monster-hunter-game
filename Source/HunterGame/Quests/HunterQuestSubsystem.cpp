@@ -79,3 +79,48 @@ void UHunterQuestSubsystem::ClearActiveQuest()
     Objectives.Reset();
     bQuestCompleted = false;
 }
+
+bool UHunterQuestSubsystem::RestoreQuestState(FName QuestId, const TArray<FHunterObjective>& SavedObjectives, bool bWasCompleted)
+{
+    if (QuestId.IsNone())
+    {
+        ClearActiveQuest();
+        return SavedObjectives.IsEmpty();
+    }
+
+    if (SavedObjectives.IsEmpty())
+    {
+        return false;
+    }
+
+    TSet<FName> SeenIds;
+    TArray<FHunterObjective> RestoredObjectives = SavedObjectives;
+    bool bAllCompleted = true;
+    for (FHunterObjective& Objective : RestoredObjectives)
+    {
+        if (Objective.ObjectiveId.IsNone() || Objective.EventTag.IsNone() ||
+            Objective.RequiredCount < 1 || SeenIds.Contains(Objective.ObjectiveId))
+        {
+            return false;
+        }
+
+        SeenIds.Add(Objective.ObjectiveId);
+        Objective.CurrentCount = FMath::Clamp(Objective.CurrentCount, 0, Objective.RequiredCount);
+        Objective.bCompleted = Objective.CurrentCount >= Objective.RequiredCount;
+        bAllCompleted &= Objective.bCompleted;
+    }
+
+    ActiveQuestId = QuestId;
+    Objectives = MoveTemp(RestoredObjectives);
+    bQuestCompleted = bWasCompleted && bAllCompleted;
+
+    for (const FHunterObjective& Objective : Objectives)
+    {
+        OnObjectiveUpdated.Broadcast(Objective.ObjectiveId, Objective.CurrentCount);
+    }
+    if (bQuestCompleted)
+    {
+        OnQuestCompleted.Broadcast(ActiveQuestId);
+    }
+    return true;
+}
