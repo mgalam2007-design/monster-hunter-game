@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/HunterInventoryComponent.h"
+
+class AArinValeCharacter;
 #include "HunterShopComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -34,10 +36,10 @@ class HUNTERGAME_API UHunterShopComponent : public UActorComponent
 
 public:
     UFUNCTION(BlueprintCallable, Category="Shop")
-    bool BuyItem(FName ItemId, int32 Quantity = 1);
+    bool BuyItem(AArinValeCharacter* Buyer, FName ItemId, int32 Quantity = 1);
 
     UFUNCTION(BlueprintCallable, Category="Shop")
-    bool SellItem(FName ItemId, int32 Quantity = 1);
+    bool SellItem(AArinValeCharacter* Seller, FName ItemId, int32 Quantity = 1);
 
     UFUNCTION(BlueprintPure, Category="Shop")
     TArray<FHunterShopEntry> GetCatalog() const { return Catalog; }
