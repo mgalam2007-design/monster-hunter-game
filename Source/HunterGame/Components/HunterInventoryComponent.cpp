@@ -2,12 +2,26 @@
 
 bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
 {
-    if (Item.ItemId.IsNone() || Item.Quantity <= 0)
+    if (Item.ItemId.IsNone() || Item.Quantity <= 0 ||
+        static_cast<uint8>(Item.ItemType) > static_cast<uint8>(EHunterItemType::Quest) ||
+        !FMath::IsFinite(Item.HealthRestoreAmount) || !FMath::IsFinite(Item.EnergyRestoreAmount) ||
+        !FMath::IsFinite(Item.DamageBonus) || !FMath::IsFinite(Item.DamageReduction))
+    {
+        return false;
+    }
+
+    const int64 ExistingTotal = static_cast<int64>(GetItemCount(Item.ItemId));
+    if (ExistingTotal + static_cast<int64>(Item.Quantity) > MAX_int32)
     {
         return false;
     }
 
     Item.MaxStack = FMath::Max(1, Item.MaxStack);
+    Item.HealthRestoreAmount = FMath::Max(0.0f, Item.HealthRestoreAmount);
+    Item.EnergyRestoreAmount = FMath::Max(0.0f, Item.EnergyRestoreAmount);
+    Item.DamageBonus = FMath::Max(0.0f, Item.DamageBonus);
+    Item.DamageReduction = FMath::Clamp(Item.DamageReduction, 0.0f, 0.8f);
+    Item.RequiredEvolutionStage = FMath::Clamp(Item.RequiredEvolutionStage, 0, 4);
     int32 Remaining = Item.Quantity;
 
     for (FHunterInventoryItem& Existing : Items)
