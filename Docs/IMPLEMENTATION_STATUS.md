@@ -1,6 +1,6 @@
 # HUNTER 2.0 — Implementation Status
 
-This repository is an Unreal Engine 5 C++ project scaffold. This document distinguishes committed code foundations from assets, editor integration, and runtime validation that remain outstanding.
+This repository is an Unreal Engine 5 C++ project scaffold. This document distinguishes committed code foundations from assets, editor integration, and runtime validation that remain outstanding. A lightweight GitHub Actions workflow checks Blender script syntax and the Unreal project descriptor; it does not compile Unreal C++.
 
 ## Committed C++ foundations
 - Arin Vale third-person character with camera, movement, jump, sprint, dodge, sword attack montage hook, progression, health and weapon-trace components.
