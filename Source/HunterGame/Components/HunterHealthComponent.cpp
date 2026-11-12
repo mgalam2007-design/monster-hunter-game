@@ -73,3 +73,18 @@ float UHunterHealthComponent::GetHealthPercent() const
 {
     return MaxHealth > 0.0f ? CurrentHealth / MaxHealth : 0.0f;
 }
+
+void UHunterHealthComponent::SetMaxHealth(float NewMaxHealth, bool bPreserveHealthPercentage)
+{
+    const float PreviousMax = FMath::Max(1.0f, MaxHealth);
+    const float HealthRatio = CurrentHealth / PreviousMax;
+    MaxHealth = FMath::Max(1.0f, NewMaxHealth);
+    CurrentHealth = bPreserveHealthPercentage
+        ? FMath::Clamp(HealthRatio * MaxHealth, 0.0f, MaxHealth)
+        : FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
+    if (CurrentHealth > 0.0f)
+    {
+        bIsDead = false;
+    }
+    OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);
+}
