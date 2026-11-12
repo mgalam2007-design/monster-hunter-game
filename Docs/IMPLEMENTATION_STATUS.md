@@ -19,7 +19,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Reusable chapter-exit actor attempts to complete the active chapter when Arin enters its exit volume, respects campaign completion rules (including Chapter 1's required quest), grants configurable XP and currency rewards, then autosaves the updated campaign; exposes configurable save slot and Blueprint completion/save-result event.
 - Weapon/armor equipment component with inventory-backed equip/unequip, evolution-stage requirements, weapon damage bonuses and armor damage reduction.
 - Arin's melee damage now scales from his evolution stage and equipped weapon; incoming damage is reduced by equipped armor.
-- Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage, Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
+- Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage only to HunterMonsterBase enemies (including bosses), Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
 - Evolution stage changes apply health-capacity, movement-speed and melee-damage multipliers.
 - Consumable inventory items can restore health and/or energy; item data stores the restore amounts and Arin consumes one item per use.
 - Version 6 save data persists campaign progress, Arin progression, inventory, equipped weapon/armor, active quest objective counters, Arin's currency balance and Arin's world transform; older version 1–5 saves remain accepted.
