@@ -26,6 +26,9 @@ public:
     void RestoreFullHealth();
 
     UFUNCTION(BlueprintCallable, Category="Health")
+    void ReviveFullHealth();
+
+    UFUNCTION(BlueprintCallable, Category="Health")
     void SetMaxHealth(float NewMaxHealth, bool bPreserveHealthPercentage = true);
 
     UFUNCTION(BlueprintPure, Category="Health")
