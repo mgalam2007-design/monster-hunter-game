@@ -4,7 +4,6 @@
 #include "GameFramework/SaveGame.h"
 #include "Components/HunterInventoryComponent.h"
 #include "Components/HunterEquipmentComponent.h"
-#include "Components/HunterEquipmentComponent.h"
 #include "HunterSaveGame.generated.h"
 
 /** Persistent single-player campaign slot for HUNTER 2.0. */
@@ -31,12 +30,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     TArray<FHunterInventoryItem> ArinInventoryItems;
-
-    UPROPERTY(VisibleAnywhere, Category="Save")
-    FHunterEquipmentItem ArinEquippedWeapon;
-
-    UPROPERTY(VisibleAnywhere, Category="Save")
-    FHunterEquipmentItem ArinEquippedArmor;
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     FHunterEquipmentItem ArinEquippedWeapon;
