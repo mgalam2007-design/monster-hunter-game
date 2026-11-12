@@ -7,6 +7,7 @@
 
 class AArinValeCharacter;
 class UHunterItemCatalog;
+class UHunterCurrencyComponent;
 class UTexture2D;
 
 USTRUCT(BlueprintType)
@@ -92,8 +93,14 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<AArinValeCharacter> BuyerCharacter = nullptr;
 
+    UPROPERTY(Transient)
+    TObjectPtr<UHunterCurrencyComponent> CurrencyComponent = nullptr;
+
     UFUNCTION()
     void HandleShopChanged();
+
+    UFUNCTION()
+    void HandleCurrencyChanged(int64 NewBalance);
 
     void RefreshShop();
 };
