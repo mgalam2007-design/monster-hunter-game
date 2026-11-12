@@ -133,7 +133,7 @@ void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AArinValeCharacter::MoveForward(float Value)
 {
-    if (Controller && !FMath::IsNearlyZero(Value))
+    if ((!HealthComponent || !HealthComponent->IsDead()) && Controller && !FMath::IsNearlyZero(Value))
     {
         const FRotator YawRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
         AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X), Value);
@@ -149,10 +149,18 @@ void AArinValeCharacter::MoveRight(float Value)
     }
 }
 
-void AArinValeCharacter::Turn(float Value) { AddControllerYawInput(Value); }
-void AArinValeCharacter::LookUp(float Value) { AddControllerPitchInput(Value); }
+void AArinValeCharacter::Turn(float Value)
+{
+    if (!HealthComponent || !HealthComponent->IsDead()) AddControllerYawInput(Value);
+}
+
+void AArinValeCharacter::LookUp(float Value)
+{
+    if (!HealthComponent || !HealthComponent->IsDead()) AddControllerPitchInput(Value);
+}
 void AArinValeCharacter::StartSprint()
 {
+    if (HealthComponent && HealthComponent->IsDead()) return;
     const float MovementMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
     GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * FMath::Max(0.1f, MovementMultiplier);
 }
@@ -324,6 +332,13 @@ void AArinValeCharacter::HandleArinDeath()
     EndWeaponTrace();
     bCanAttack = false;
     bCanDodge = false;
+    if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+    {
+        if (ActiveInventoryWidget) ActiveInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
+        PlayerController->bShowMouseCursor = false;
+        FInputModeGameOnly GameOnlyInput;
+        PlayerController->SetInputMode(GameOnlyInput);
+    }
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->StopMovementImmediately();
@@ -353,7 +368,7 @@ void AArinValeCharacter::RespawnAtLastCheckpoint()
     const bool bLoadedCheckpoint = Campaign
         && Campaign->LoadCampaign(this, CampaignSaveSlot, CampaignSaveUserIndex);
 
-    if (!bLoadedCheckpoint)
+    if (!bLoadedCheckpoint && GetCharacterMovement())
     {
         // No checkpoint save exists yet: revive at the current location.
         GetCharacterMovement()->SetMovementMode(MOVE_Walking);
