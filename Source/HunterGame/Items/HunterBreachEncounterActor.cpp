@@ -75,9 +75,9 @@ void AHunterBreachEncounterActor::StartEncounter(AArinValeCharacter* Arin)
         }
 
         Monster->OnMonsterDied.AddDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
-        UGameplayStatics::FinishSpawningActor(Monster, SpawnTransform);
         SpawnedMonsters.Add(Monster);
         ++RemainingEnemies;
+        UGameplayStatics::FinishSpawningActor(Monster, SpawnTransform);
     }
 
     BP_OnEncounterStarted(RemainingEnemies);
@@ -95,11 +95,13 @@ void AHunterBreachEncounterActor::HandleMonsterDied(AActor* DeadMonster)
         return;
     }
 
-    if (AHunterMonsterBase* Monster = Cast<AHunterMonsterBase>(DeadMonster))
+    AHunterMonsterBase* Monster = Cast<AHunterMonsterBase>(DeadMonster);
+    if (!Monster || SpawnedMonsters.RemoveSingle(Monster) == 0)
     {
-        Monster->OnMonsterDied.RemoveDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
+        return;
     }
 
+    Monster->OnMonsterDied.RemoveDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
     RemainingEnemies = FMath::Max(0, RemainingEnemies - 1);
     if (RemainingEnemies == 0)
     {
