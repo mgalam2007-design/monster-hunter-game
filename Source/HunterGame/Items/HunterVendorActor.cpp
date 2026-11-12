@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerInput.h"
+#include "InputCoreTypes.h"
 
 AHunterVendorActor::AHunterVendorActor()
 {
@@ -71,6 +72,7 @@ void AHunterVendorActor::HandleBeginOverlap(UPrimitiveComponent* OverlappedCompo
     if (InputComponent)
     {
         InputComponent->BindKey(InteractKey, IE_Pressed, this, &AHunterVendorActor::HandleInteractPressed);
+        InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &AHunterVendorActor::HandleClosePressed);
         bInputBound = true;
     }
     BP_OnVendorNearby(true);
@@ -138,10 +140,6 @@ void AHunterVendorActor::OpenVendor(AArinValeCharacter* Buyer)
     InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
     PC->SetInputMode(InputMode);
 
-    if (InputComponent)
-    {
-        InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &AHunterVendorActor::HandleClosePressed);
-    }
 }
 
 void AHunterVendorActor::CloseVendor()
