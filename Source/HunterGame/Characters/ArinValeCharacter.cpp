@@ -3,6 +3,7 @@
 #include "ArinProgressionComponent.h"
 #include "Components/HunterHealthComponent.h"
 #include "Components/HunterWeaponTraceComponent.h"
+#include "Components/HunterInventoryComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -40,6 +41,7 @@ AArinValeCharacter::AArinValeCharacter()
     ProgressionComponent = CreateDefaultSubobject<UArinProgressionComponent>(TEXT("ArinProgression"));
     HealthComponent = CreateDefaultSubobject<UHunterHealthComponent>(TEXT("ArinHealth"));
     WeaponTraceComponent = CreateDefaultSubobject<UHunterWeaponTraceComponent>(TEXT("WeaponTrace"));
+    InventoryComponent = CreateDefaultSubobject<UHunterInventoryComponent>(TEXT("HunterInventory"));
 }
 
 void AArinValeCharacter::BeginPlay()
