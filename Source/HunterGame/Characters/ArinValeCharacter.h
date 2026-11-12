@@ -99,6 +99,7 @@ protected:
 
 private:
     float DefaultWalkSpeed = 500.0f;
+    float UnmodifiedWeaponDamage = 35.0f;
     bool bCanDodge = true;
     bool bCanAttack = true;
 
