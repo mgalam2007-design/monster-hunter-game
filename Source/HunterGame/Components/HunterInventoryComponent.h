@@ -33,6 +33,12 @@ struct FHunterInventoryItem
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory", meta=(ClampMin="1"))
     int32 Quantity = 1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Consumable", meta=(ClampMin="0.0"))
+    float HealthRestoreAmount = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Consumable", meta=(ClampMin="0.0"))
+    float EnergyRestoreAmount = 0.0f;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterInventoryChanged, FName, ItemId);
