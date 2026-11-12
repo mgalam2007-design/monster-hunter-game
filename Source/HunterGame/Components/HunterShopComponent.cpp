@@ -19,7 +19,7 @@ const FHunterShopEntry* UHunterShopComponent::FindEntry(FName ItemId) const
     });
 }
 
-bool UHunterShopComponent::BuyItem(FName ItemId, int32 Quantity)
+bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int32 Quantity)
 {
     if (ItemId.IsNone() || Quantity <= 0)
     {
@@ -27,9 +27,8 @@ bool UHunterShopComponent::BuyItem(FName ItemId, int32 Quantity)
     }
 
     FHunterShopEntry* Entry = FindEntry(ItemId);
-    AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
-    UHunterInventoryComponent* Inventory = Arin ? Arin->GetInventoryComponent() : nullptr;
-    UHunterCurrencyComponent* Currency = Arin ? Arin->GetCurrencyComponent() : nullptr;
+    UHunterInventoryComponent* Inventory = Buyer ? Buyer->GetInventoryComponent() : nullptr;
+    UHunterCurrencyComponent* Currency = Buyer ? Buyer->GetCurrencyComponent() : nullptr;
     if (!Entry || !Inventory || !Currency || Entry->Item.Quantity <= 0 ||
         Entry->Item.MaxStack <= 0 || (Entry->Stock >= 0 && Entry->Stock < Quantity) ||
         Entry->BuyPrice < 0 || Entry->BuyPrice > MAX_int64 / Quantity)
@@ -59,7 +58,7 @@ bool UHunterShopComponent::BuyItem(FName ItemId, int32 Quantity)
     return true;
 }
 
-bool UHunterShopComponent::SellItem(FName ItemId, int32 Quantity)
+bool UHunterShopComponent::SellItem(AArinValeCharacter* Seller, FName ItemId, int32 Quantity)
 {
     if (ItemId.IsNone() || Quantity <= 0)
     {
@@ -67,9 +66,8 @@ bool UHunterShopComponent::SellItem(FName ItemId, int32 Quantity)
     }
 
     FHunterShopEntry* Entry = FindEntry(ItemId);
-    AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
-    UHunterInventoryComponent* Inventory = Arin ? Arin->GetInventoryComponent() : nullptr;
-    UHunterCurrencyComponent* Currency = Arin ? Arin->GetCurrencyComponent() : nullptr;
+    UHunterInventoryComponent* Inventory = Seller ? Seller->GetInventoryComponent() : nullptr;
+    UHunterCurrencyComponent* Currency = Seller ? Seller->GetCurrencyComponent() : nullptr;
     if (!Entry || !Inventory || !Currency || Entry->SellPrice <= 0 ||
         Entry->SellPrice > MAX_int64 / Quantity || !Inventory->HasItem(ItemId, Quantity))
     {
