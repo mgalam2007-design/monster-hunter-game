@@ -1,0 +1,21 @@
+# Unreal Engine generated files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.vscode/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+
+# Blender temporary files
+*.blend1
+*.blend2
+
+# OS
+.DS_Store
+Thumbs.db
