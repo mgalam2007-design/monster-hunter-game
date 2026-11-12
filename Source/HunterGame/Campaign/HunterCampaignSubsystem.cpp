@@ -3,6 +3,7 @@
 #include "ArinValeCharacter.h"
 #include "ArinProgressionComponent.h"
 #include "Components/HunterInventoryComponent.h"
+#include "Components/HunterEquipmentComponent.h"
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -134,6 +135,12 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
         SaveObject->ArinInventoryItems = Inventory->GetItems();
     }
 
+    if (const UHunterEquipmentComponent* Equipment = Arin->GetEquipmentComponent())
+    {
+        SaveObject->ArinEquippedWeapon = Equipment->GetWeapon();
+        SaveObject->ArinEquippedArmor = Equipment->GetArmor();
+    }
+
     if (const UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
     {
         SaveObject->ArinExperience = Progression->GetExperience();
@@ -151,7 +158,7 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 2)
+    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 3)
     {
         return false;
     }
@@ -168,6 +175,11 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     if (UHunterInventoryComponent* Inventory = Arin->GetInventoryComponent())
     {
         Inventory->RestoreItems(SaveObject->ArinInventoryItems);
+    }
+
+    if (UHunterEquipmentComponent* Equipment = Arin->GetEquipmentComponent())
+    {
+        Equipment->RestoreEquipment(SaveObject->ArinEquippedWeapon, SaveObject->ArinEquippedArmor);
     }
 
     if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
