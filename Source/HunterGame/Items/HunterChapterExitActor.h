@@ -41,6 +41,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign|Save")
     int32 UserIndex = 0;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign|Rewards", meta=(ClampMin="0"))
+    int32 CompletionExperienceReward = 100;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign|Rewards", meta=(ClampMin="0"))
+    int64 CompletionCurrencyReward = 50;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign")
     bool bOneTimeActivation = true;
 
