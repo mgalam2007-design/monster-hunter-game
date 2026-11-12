@@ -38,11 +38,6 @@ struct FArinStageProfile
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FArinStageChanged, EArinEvolutionStage, PreviousStage, EArinEvolutionStage, NewStage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArinExperienceChanged, int32, NewExperience);
 
-/**
- * Progression is kept separate from the character's identity and skeletal mesh.
- * Blueprint/UI systems can listen for stage changes to swap modular equipment
- * and unlock abilities without replacing Arin with a different character.
- */
 UCLASS(ClassGroup=(Hunter), meta=(BlueprintSpawnableComponent))
 class HUNTERGAME_API UArinProgressionComponent : public UActorComponent
 {
@@ -56,6 +51,10 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Progression")
     bool SetEvolutionStage(EArinEvolutionStage NewStage);
+
+    /** Restores an exact saved progression state without adding saved XP twice. */
+    UFUNCTION(BlueprintCallable, Category="Progression|Save")
+    void RestoreProgression(int32 SavedExperience, EArinEvolutionStage SavedStage);
 
     UFUNCTION(BlueprintPure, Category="Progression")
     EArinEvolutionStage GetEvolutionStage() const { return CurrentStage; }
