@@ -58,6 +58,12 @@ public:
     UFUNCTION(BlueprintPure, Category="Inventory")
     bool HasItem(FName ItemId, int32 Amount = 1) const;
 
+    UFUNCTION(BlueprintCallable, Category="Inventory")
+    void RestoreItems(const TArray<FHunterInventoryItem>& SavedItems);
+
+    UFUNCTION(BlueprintCallable, Category="Inventory")
+    void ClearInventory();
+
     UPROPERTY(BlueprintAssignable, Category="Inventory")
     FHunterInventoryChanged OnInventoryChanged;
 
