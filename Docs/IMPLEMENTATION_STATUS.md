@@ -12,7 +12,8 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress, completion delegates and validated progress restoration.
 - Reusable world-space quest trigger actor that reports configured tagged events when Arin enters a level volume, with one-shot, repeatable and destroy-after-trigger options.
 - Stackable inventory component attached to Arin, with item types, consumable health/energy restore data, add/remove operations, quantity queries, change events and save/restore support.
-- Reusable world pickup actor with overlap collection, inventory insertion, optional tagged quest-event reporting and Blueprint pickup presentation hook.
+- Reusable world pickup actor with overlap collection, inventory insertion, configurable tagged quest-event reporting and Blueprint pickup presentation hook.
+- Reusable breach encounter director starts a configured enemy wave when Arin enters its trigger, tracks enemy death delegates and spawns a configured quest pickup after the wave is cleared; spawn points, fallback count, reward item and quest event tag are configurable, with Blueprint encounter presentation events.
 - Weapon/armor equipment component with inventory-backed equip/unequip, evolution-stage requirements, weapon damage bonuses and armor damage reduction.
 - Arin's melee damage now scales from his evolution stage and equipped weapon; incoming damage is reduced by equipped armor.
 - Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage, Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
