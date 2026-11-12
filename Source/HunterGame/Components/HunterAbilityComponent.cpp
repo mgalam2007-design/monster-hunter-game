@@ -2,6 +2,7 @@
 
 #include "ArinProgressionComponent.h"
 #include "ArinValeCharacter.h"
+#include "Characters/HunterMonsterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
 #include "Engine/World.h"
@@ -144,7 +145,7 @@ bool UHunterAbilityComponent::ExecuteAbility(EHunterAbility Ability)
             for (const FOverlapResult& Overlap : Overlaps)
             {
                 AActor* Target = Overlap.GetActor();
-                if (!Target || Target == Arin || DamagedActors.Contains(Target))
+                if (!Target || Target == Arin || !Target->IsA<AHunterMonsterBase>() || DamagedActors.Contains(Target))
                 {
                     continue;
                 }
