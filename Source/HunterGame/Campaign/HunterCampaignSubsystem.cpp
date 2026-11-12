@@ -238,11 +238,15 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         }
     }
 
+    bool bPreviousChapterCompleted = true;
     for (FHunterChapter& Chapter : Chapters)
     {
-        Chapter.bCompleted = ValidCompletedChapters.Contains(Chapter.ChapterNumber);
-        Chapter.bUnlocked = Chapter.ChapterNumber == 1 || Chapter.bCompleted ||
-            ValidCompletedChapters.Contains(Chapter.ChapterNumber - 1);
+        // Campaign progress is strictly sequential: a later saved completion
+        // cannot skip an unfinished chapter or unlock content out of order.
+        Chapter.bCompleted = bPreviousChapterCompleted &&
+            ValidCompletedChapters.Contains(Chapter.ChapterNumber);
+        Chapter.bUnlocked = Chapter.ChapterNumber == 1 || bPreviousChapterCompleted;
+        bPreviousChapterCompleted = Chapter.bCompleted;
     }
 
     int32 HighestUnlockedChapter = 1;
