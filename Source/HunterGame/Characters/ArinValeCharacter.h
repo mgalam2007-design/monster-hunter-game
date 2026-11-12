@@ -117,6 +117,12 @@ protected:
     UPROPERTY(Transient)
     TObjectPtr<UUserWidget> ActiveHUDWidget;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
+    TSubclassOf<UUserWidget> QuestTrackerWidgetClass;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UUserWidget> ActiveQuestTrackerWidget;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
     TObjectPtr<UAnimMontage> SwordAttackMontage;
 
