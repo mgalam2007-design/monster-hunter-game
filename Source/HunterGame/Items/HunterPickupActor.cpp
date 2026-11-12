@@ -4,6 +4,8 @@
 #include "Components/HunterInventoryComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Quests/HunterQuestSubsystem.h"
+#include "Engine/GameInstance.h"
 
 AHunterPickupActor::AHunterPickupActor()
 {
@@ -53,6 +55,17 @@ void AHunterPickupActor::HandleOverlap(UPrimitiveComponent* OverlappedComponent,
     if (!Inventory || !Inventory->AddItem(PickupItem))
     {
         return;
+    }
+
+    if (UGameInstance* GameInstance = GetGameInstance())
+    {
+        if (UHunterQuestSubsystem* Quest = GameInstance->GetSubsystem<UHunterQuestSubsystem>())
+        {
+            if (!QuestEventTag.IsNone())
+            {
+                Quest->RegisterQuestEvent(QuestEventTag, PickupItem.Quantity);
+            }
+        }
     }
 
     BP_OnPickedUp(Arin);
