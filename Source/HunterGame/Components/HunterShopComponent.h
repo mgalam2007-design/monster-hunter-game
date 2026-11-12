@@ -4,8 +4,9 @@
 #include "Components/ActorComponent.h"
 #include "Components/HunterInventoryComponent.h"
 
-class AArinValeCharacter;
 #include "HunterShopComponent.generated.h"
+
+class AArinValeCharacter;
 
 USTRUCT(BlueprintType)
 struct FHunterShopEntry
