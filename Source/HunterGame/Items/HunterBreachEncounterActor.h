@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/HunterInventoryComponent.h"
 #include "HunterBreachEncounterActor.generated.h"
 
 class USphereComponent;
