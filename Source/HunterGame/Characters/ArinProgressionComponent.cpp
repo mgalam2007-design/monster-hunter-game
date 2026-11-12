@@ -3,17 +3,11 @@
 UArinProgressionComponent::UArinProgressionComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
-
-    // Experience thresholds are initial balancing values and can be tuned
-    // from a Blueprint subclass or defaults once campaign pacing is tested.
     const FText Names[] = {
-        FText::FromString(TEXT("Awakening")),
-        FText::FromString(TEXT("Evolved")),
-        FText::FromString(TEXT("Elite")),
-        FText::FromString(TEXT("Legendary")),
+        FText::FromString(TEXT("Awakening")), FText::FromString(TEXT("Evolved")),
+        FText::FromString(TEXT("Elite")), FText::FromString(TEXT("Legendary")),
         FText::FromString(TEXT("Ultimate Awakening"))
     };
-
     const int32 Thresholds[] = { 0, 100, 350, 800, 1600 };
     const float Health[] = { 1.0f, 1.12f, 1.28f, 1.48f, 1.75f };
     const float Damage[] = { 1.0f, 1.15f, 1.35f, 1.65f, 2.0f };
@@ -32,12 +26,9 @@ UArinProgressionComponent::UArinProgressionComponent()
 
 void UArinProgressionComponent::AddExperience(int32 Amount)
 {
-    if (Amount <= 0)
-    {
-        return;
-    }
-
-    Experience = FMath::Max(0, Experience + Amount);
+    if (Amount <= 0) return;
+    const int64 NewTotal = static_cast<int64>(Experience) + static_cast<int64>(Amount);
+    Experience = static_cast<int32>(FMath::Clamp<int64>(NewTotal, 0, MAX_int32));
     OnExperienceChanged.Broadcast(Experience);
     RecalculateStage();
 }
@@ -45,22 +36,31 @@ void UArinProgressionComponent::AddExperience(int32 Amount)
 bool UArinProgressionComponent::SetEvolutionStage(EArinEvolutionStage NewStage)
 {
     const int32 NewIndex = GetStageIndex(NewStage);
-    if (!StageProfiles.IsValidIndex(NewIndex))
-    {
-        return false;
-    }
+    const int32 CurrentIndex = GetStageIndex(CurrentStage);
+    if (!StageProfiles.IsValidIndex(NewIndex) || NewIndex < CurrentIndex) return false;
 
-    const EArinEvolutionStage PreviousStage = CurrentStage;
-    if (PreviousStage == NewStage)
-    {
-        return true;
-    }
-
-    CurrentStage = NewStage;
+    const int32 PreviousExperience = Experience;
     Experience = FMath::Max(Experience, StageProfiles[NewIndex].RequiredExperience);
-    OnExperienceChanged.Broadcast(Experience);
-    OnStageChanged.Broadcast(PreviousStage, CurrentStage);
+    const EArinEvolutionStage PreviousStage = CurrentStage;
+    CurrentStage = NewStage;
+
+    if (Experience != PreviousExperience) OnExperienceChanged.Broadcast(Experience);
+    if (PreviousStage != CurrentStage) OnStageChanged.Broadcast(PreviousStage, CurrentStage);
     return true;
+}
+
+void UArinProgressionComponent::RestoreProgression(int32 SavedExperience, EArinEvolutionStage SavedStage)
+{
+    const int32 SafeStageIndex = FMath::Clamp(GetStageIndex(SavedStage), 0, StageProfiles.Num() - 1);
+    const int32 SafeExperience = FMath::Max(0, SavedExperience);
+    const int32 PreviousExperience = Experience;
+    const EArinEvolutionStage PreviousStage = CurrentStage;
+
+    Experience = FMath::Max(SafeExperience, StageProfiles[SafeStageIndex].RequiredExperience);
+    RecalculateStage();
+
+    if (Experience != PreviousExperience) OnExperienceChanged.Broadcast(Experience);
+    if (CurrentStage != PreviousStage) OnStageChanged.Broadcast(PreviousStage, CurrentStage);
 }
 
 int32 UArinProgressionComponent::GetExperienceForNextStage() const
@@ -98,13 +98,10 @@ int32 UArinProgressionComponent::GetStageIndex(EArinEvolutionStage Stage) const
 void UArinProgressionComponent::RecalculateStage()
 {
     EArinEvolutionStage NewStage = EArinEvolutionStage::Awakening;
-
     for (int32 Index = 0; Index < StageProfiles.Num(); ++Index)
     {
         if (Experience >= StageProfiles[Index].RequiredExperience)
-        {
             NewStage = static_cast<EArinEvolutionStage>(Index);
-        }
     }
 
     if (NewStage != CurrentStage)
