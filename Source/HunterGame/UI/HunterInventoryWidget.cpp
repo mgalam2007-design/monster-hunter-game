@@ -95,7 +95,7 @@ void UHunterInventoryWidget::RefreshInventory()
             {
                 const UHunterHealthComponent* Health = ArinCharacter ? ArinCharacter->GetHealthComponent() : nullptr;
                 const UHunterAbilityComponent* Abilities = ArinCharacter ? ArinCharacter->GetAbilityComponent() : nullptr;
-                const bool bCanHeal = Health && Item.HealthRestoreAmount > 0.0f
+                const bool bCanHeal = Health && !Health->IsDead() && Item.HealthRestoreAmount > 0.0f
                     && Health->GetCurrentHealth() < Health->GetMaxHealth();
                 const bool bCanRestoreEnergy = Abilities && Item.EnergyRestoreAmount > 0.0f
                     && Abilities->GetCurrentEnergy() < Abilities->GetMaxEnergy();
