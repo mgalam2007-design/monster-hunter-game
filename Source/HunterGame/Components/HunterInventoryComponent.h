@@ -39,6 +39,15 @@ struct FHunterInventoryItem
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Consumable", meta=(ClampMin="0.0"))
     float EnergyRestoreAmount = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Equipment", meta=(ClampMin="0.0"))
+    float DamageBonus = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Equipment", meta=(ClampMin="0.0", ClampMax="0.8"))
+    float DamageReduction = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Equipment", meta=(ClampMin="0"))
+    int32 RequiredEvolutionStage = 0;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterInventoryChanged, FName, ItemId);
