@@ -91,17 +91,13 @@ bool UHunterShopComponent::SellItem(FName ItemId, int32 Quantity)
     }
 
     const int64 Payout = Entry->SellPrice * static_cast<int64>(Quantity);
-    if (!Inventory->RemoveItem(ItemId, Quantity))
+    if (Currency->GetBalance() > MAX_int64 - Payout || !Inventory->RemoveItem(ItemId, Quantity))
     {
         return false;
     }
 
-    if (!Currency->AddCurrency(Payout))
-    {
-        Entry->Item.Quantity = FMath::Max(1, Entry->Item.Quantity);
-        Inventory->AddItem(Entry->Item);
-        return false;
-    }
+    // The balance overflow check guarantees this credit succeeds.
+    Currency->AddCurrency(Payout);
 
     if (Entry->Stock >= 0)
     {
