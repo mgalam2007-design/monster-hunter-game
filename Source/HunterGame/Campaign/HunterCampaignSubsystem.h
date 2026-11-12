@@ -4,6 +4,8 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "HunterCampaignSubsystem.generated.h"
 
+class AArinValeCharacter;
+
 USTRUCT(BlueprintType)
 struct FHunterChapter
 {
@@ -31,10 +33,6 @@ struct FHunterChapter
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterChapterChanged, int32, ChapterNumber);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterChapterCompleted, int32, ChapterNumber);
 
-/**
- * Owns the original 20-chapter campaign progression. Level designers can
- * replace briefing text and recommended stages in a Blueprint subclass.
- */
 UCLASS()
 class HUNTERGAME_API UHunterCampaignSubsystem : public UGameInstanceSubsystem
 {
@@ -50,6 +48,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Campaign")
     bool CompleteCurrentChapter();
+
+    UFUNCTION(BlueprintCallable, Category="Campaign|Save")
+    bool SaveCampaign(AArinValeCharacter* Arin, const FString& SlotName = TEXT("HunterCampaign"), int32 UserIndex = 0);
+
+    UFUNCTION(BlueprintCallable, Category="Campaign|Save")
+    bool LoadCampaign(AArinValeCharacter* Arin, const FString& SlotName = TEXT("HunterCampaign"), int32 UserIndex = 0);
 
     UFUNCTION(BlueprintPure, Category="Campaign")
     int32 GetCurrentChapterNumber() const { return CurrentChapterNumber; }
