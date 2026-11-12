@@ -52,6 +52,12 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Combat")
     float AttackCooldown = 1.6f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards", meta=(ClampMin="0"))
+    int32 ExperienceReward = 25;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards")
+    FName DefeatQuestEventTag = TEXT("MonsterDefeated");
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Movement")
     float ChaseSpeed = 430.0f;
 
