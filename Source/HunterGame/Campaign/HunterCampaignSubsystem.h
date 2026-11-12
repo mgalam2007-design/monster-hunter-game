@@ -64,6 +64,12 @@ public:
     UFUNCTION(BlueprintPure, Category="Campaign")
     FHunterChapter GetCurrentChapter() const;
 
+    UFUNCTION(BlueprintPure, Category="Campaign")
+    bool IsCampaignComplete() const;
+
+    UPROPERTY(BlueprintAssignable, Category="Campaign")
+    FSimpleMulticastDelegate OnCampaignCompleted;
+
     UPROPERTY(BlueprintAssignable, Category="Campaign")
     FHunterChapterChanged OnChapterChanged;
 
