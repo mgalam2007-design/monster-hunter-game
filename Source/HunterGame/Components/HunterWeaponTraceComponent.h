@@ -22,6 +22,9 @@ public:
     void SetBaseDamage(float NewDamage);
 
     UFUNCTION(BlueprintPure, Category="Combat|Weapon")
+    float GetBaseDamage() const { return BaseDamage; }
+
+    UFUNCTION(BlueprintPure, Category="Combat|Weapon")
     bool IsTracing() const { return bIsTracing; }
 
 protected:
