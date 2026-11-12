@@ -1,6 +1,8 @@
 #include "HunterInventoryWidget.h"
 
 #include "ArinValeCharacter.h"
+#include "Components/HunterHealthComponent.h"
+#include "Components/HunterAbilityComponent.h"
 
 void UHunterInventoryWidget::NativeOnInitialized()
 {
@@ -89,11 +91,15 @@ void UHunterInventoryWidget::RefreshInventory()
                 }
             }
 
-            if (EquipmentComponent)
+            if (Item.ItemType == EHunterItemType::Consumable)
             {
-                const FHunterEquipmentItem Weapon = EquipmentComponent->GetWeapon();
-                const FHunterEquipmentItem Armor = EquipmentComponent->GetArmor();
-                DisplayEntry.bIsEquipped = Weapon.ItemId == Item.ItemId || Armor.ItemId == Item.ItemId;
+                const UHunterHealthComponent* Health = ArinCharacter ? ArinCharacter->GetHealthComponent() : nullptr;
+                const UHunterAbilityComponent* Abilities = ArinCharacter ? ArinCharacter->GetAbilityComponent() : nullptr;
+                const bool bCanHeal = Health && Item.HealthRestoreAmount > 0.0f
+                    && Health->GetCurrentHealth() < Health->GetMaxHealth();
+                const bool bCanRestoreEnergy = Abilities && Item.EnergyRestoreAmount > 0.0f
+                    && Abilities->GetCurrentEnergy() < Abilities->GetMaxEnergy();
+                DisplayEntry.bCanUseConsumable = bCanHeal || bCanRestoreEnergy;
             }
 
             Snapshot.Entries.Add(DisplayEntry);
@@ -139,4 +145,46 @@ void UHunterInventoryWidget::HandleInventoryChanged(FName ItemId)
 void UHunterInventoryWidget::HandleEquipmentChanged()
 {
     RefreshInventory();
+}
+
+bool UHunterInventoryWidget::UseConsumableById(FName ItemId)
+{
+    if (ItemId.IsNone() || !InventoryComponent || !ArinCharacter)
+    {
+        return false;
+    }
+
+    const TArray<FHunterInventoryItem> Items = InventoryComponent->GetItems();
+    const FHunterInventoryItem* FoundItem = Items.FindByPredicate([ItemId](const FHunterInventoryItem& Item)
+    {
+        return Item.ItemId == ItemId && Item.ItemType == EHunterItemType::Consumable && Item.Quantity > 0;
+    });
+    if (!FoundItem)
+    {
+        return false;
+    }
+
+    UHunterHealthComponent* Health = ArinCharacter->GetHealthComponent();
+    UHunterAbilityComponent* Abilities = ArinCharacter->GetAbilityComponent();
+    const bool bCanHeal = Health && FoundItem->HealthRestoreAmount > 0.0f
+        && Health->GetCurrentHealth() < Health->GetMaxHealth();
+    const bool bCanRestoreEnergy = Abilities && FoundItem->EnergyRestoreAmount > 0.0f
+        && Abilities->GetCurrentEnergy() < Abilities->GetMaxEnergy();
+
+    if ((!bCanHeal && !bCanRestoreEnergy) || (Health && Health->IsDead()))
+    {
+        return false;
+    }
+
+    const float HealthRestore = FoundItem->HealthRestoreAmount;
+    const float EnergyRestore = FoundItem->EnergyRestoreAmount;
+    if (!InventoryComponent->RemoveItem(ItemId, 1))
+    {
+        return false;
+    }
+
+    if (bCanHeal) Health->Heal(HealthRestore);
+    if (bCanRestoreEnergy) Abilities->RestoreEnergy(EnergyRestore);
+    RefreshInventory();
+    return true;
 }
