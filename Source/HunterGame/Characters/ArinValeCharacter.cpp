@@ -5,6 +5,7 @@
 #include "Components/HunterWeaponTraceComponent.h"
 #include "Components/HunterInventoryComponent.h"
 #include "Components/HunterEquipmentComponent.h"
+#include "Components/HunterAbilityComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -44,6 +45,7 @@ AArinValeCharacter::AArinValeCharacter()
     WeaponTraceComponent = CreateDefaultSubobject<UHunterWeaponTraceComponent>(TEXT("WeaponTrace"));
     InventoryComponent = CreateDefaultSubobject<UHunterInventoryComponent>(TEXT("HunterInventory"));
     EquipmentComponent = CreateDefaultSubobject<UHunterEquipmentComponent>(TEXT("HunterEquipment"));
+    AbilityComponent = CreateDefaultSubobject<UHunterAbilityComponent>(TEXT("HunterAbilities"));
 }
 
 void AArinValeCharacter::BeginPlay()
