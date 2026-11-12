@@ -4,6 +4,7 @@
 #include "ArinProgressionComponent.h"
 #include "Components/HunterInventoryComponent.h"
 #include "Components/HunterEquipmentComponent.h"
+#include "Quests/HunterQuestSubsystem.h"
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -141,6 +142,13 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
         SaveObject->ArinEquippedArmor = Equipment->GetArmor();
     }
 
+    if (const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+    {
+        SaveObject->ActiveQuestId = Quest->GetActiveQuestId();
+        SaveObject->ActiveQuestObjectives = Quest->GetObjectives();
+        SaveObject->bActiveQuestCompleted = Quest->IsQuestComplete();
+    }
+
     if (const UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
     {
         SaveObject->ArinExperience = Progression->GetExperience();
@@ -158,7 +166,7 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 3)
+    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 4)
     {
         return false;
     }
@@ -180,6 +188,14 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     if (UHunterEquipmentComponent* Equipment = Arin->GetEquipmentComponent())
     {
         Equipment->RestoreEquipment(SaveObject->ArinEquippedWeapon, SaveObject->ArinEquippedArmor);
+    }
+
+    if (UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+    {
+        if (!Quest->RestoreQuestState(SaveObject->ActiveQuestId, SaveObject->ActiveQuestObjectives, SaveObject->bActiveQuestCompleted))
+        {
+            Quest->ClearActiveQuest();
+        }
     }
 
     if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
