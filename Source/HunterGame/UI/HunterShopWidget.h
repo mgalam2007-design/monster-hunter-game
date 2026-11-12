@@ -52,6 +52,9 @@ struct FHunterShopSnapshot
     TArray<FHunterShopDisplayEntry> Entries;
 
     UPROPERTY(BlueprintReadOnly, Category="Shop")
+    TArray<FHunterShopDisplayEntry> PlayerInventory;
+
+    UPROPERTY(BlueprintReadOnly, Category="Shop")
     int64 PlayerBalance = 0;
 
     UPROPERTY(BlueprintReadOnly, Category="Shop")
