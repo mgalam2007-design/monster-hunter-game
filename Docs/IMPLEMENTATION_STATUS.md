@@ -7,7 +7,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Arin progression component with five evolution stages, XP thresholds, stage profiles, exact save restoration and ability-unlock queries.
 - Player health component with damage, healing, health percentage and death events; Arin routes Unreal damage intake into it.
 - Socket-based melee trace component with per-swing hit de-duplication and point-damage application.
-- Reusable monster base with health, player detection, AI-controller pursuit, attack cooldown, damage, death event and Blueprint hooks.
+- Reusable monster base with health, player detection, AI-controller pursuit, attack cooldown, damage, death event and Blueprint hooks; configurable per-monster loot tables can spawn inventory pickups on death with individual drop chances.
 - Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress, completion delegates and validated progress restoration.
 - Reusable world-space quest trigger actor that reports configured tagged events when Arin enters a level volume, with one-shot, repeatable and destroy-after-trigger options.
@@ -26,7 +26,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 
 ## Current gameplay limitations
 - The boss system remains a code foundation without authored boss Blueprints or encounter maps. Chapter 1 has two authored objective definitions (defeat three creatures and collect one breach shard), but still needs a level, enemy Blueprints and a pickup Blueprint configured with the BreachShardCollected event tag. The new quest trigger actor is a reusable code class; level designers must place/configure instances in Unreal and set matching event tags. Other chapters still need authored quests.
-- The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation.
+- The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation. Loot drops require the pickup actor class and per-enemy item/drop chance entries to be configured in those Blueprint children.
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
 - No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, configured pickup Blueprints, shop or UI yet; the pickup actor must be configured with an item ID and mesh. Equipment currently changes combat stats but does not yet swap visible weapon/armor meshes. Ability gameplay effects are implemented as simple C++ foundations; Shadow Echo still requires a configured actor Blueprint, and polished animations, targeting, hit reactions, Niagara VFX and audio remain outstanding. Consumables require item entries configured with restoration values.
