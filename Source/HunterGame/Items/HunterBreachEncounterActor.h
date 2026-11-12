@@ -5,6 +5,7 @@
 #include "HunterBreachEncounterActor.generated.h"
 
 class USphereComponent;
+class UPrimitiveComponent;
 class AHunterMonsterBase;
 class AHunterPickupActor;
 class AArinValeCharacter;
