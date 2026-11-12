@@ -150,6 +150,10 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
         CurrentChapterNumber = NextIndex + 1;
         OnChapterChanged.Broadcast(CurrentChapterNumber);
     }
+    else if (IsCampaignComplete())
+    {
+        OnCampaignCompleted.Broadcast();
+    }
 
     return true;
 }
@@ -225,14 +229,31 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         return false;
     }
 
-    for (FHunterChapter& Chapter : Chapters)
+    TSet<int32> ValidCompletedChapters;
+    for (const int32 ChapterNumber : SaveObject->CompletedChapterNumbers)
     {
-        Chapter.bCompleted = SaveObject->CompletedChapterNumbers.Contains(Chapter.ChapterNumber);
-        Chapter.bUnlocked = Chapter.ChapterNumber == 1 || Chapter.bCompleted ||
-            SaveObject->CompletedChapterNumbers.Contains(Chapter.ChapterNumber - 1);
+        if (ChapterNumber >= 1 && ChapterNumber <= Chapters.Num())
+        {
+            ValidCompletedChapters.Add(ChapterNumber);
+        }
     }
 
-    CurrentChapterNumber = FMath::Clamp(SaveObject->CurrentChapterNumber, 1, Chapters.Num());
+    for (FHunterChapter& Chapter : Chapters)
+    {
+        Chapter.bCompleted = ValidCompletedChapters.Contains(Chapter.ChapterNumber);
+        Chapter.bUnlocked = Chapter.ChapterNumber == 1 || Chapter.bCompleted ||
+            ValidCompletedChapters.Contains(Chapter.ChapterNumber - 1);
+    }
+
+    int32 HighestUnlockedChapter = 1;
+    for (const FHunterChapter& Chapter : Chapters)
+    {
+        if (Chapter.bUnlocked)
+        {
+            HighestUnlockedChapter = FMath::Max(HighestUnlockedChapter, Chapter.ChapterNumber);
+        }
+    }
+    CurrentChapterNumber = FMath::Clamp(SaveObject->CurrentChapterNumber, 1, HighestUnlockedChapter);
 
     if (UHunterInventoryComponent* Inventory = Arin->GetInventoryComponent())
     {
@@ -271,6 +292,23 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     OnChapterChanged.Broadcast(CurrentChapterNumber);
+    return true;
+}
+
+bool UHunterCampaignSubsystem::IsCampaignComplete() const
+{
+    if (Chapters.IsEmpty())
+    {
+        return false;
+    }
+
+    for (const FHunterChapter& Chapter : Chapters)
+    {
+        if (!Chapter.bCompleted)
+        {
+            return false;
+        }
+    }
     return true;
 }
 
