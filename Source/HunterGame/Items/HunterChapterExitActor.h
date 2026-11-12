@@ -60,4 +60,6 @@ protected:
 
 private:
     bool bHasActivated = false;
+    bool bCompletionCommitted = false;
+    int32 CommittedChapterNumber = 0;
 };
