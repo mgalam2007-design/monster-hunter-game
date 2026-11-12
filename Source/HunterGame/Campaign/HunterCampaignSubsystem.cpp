@@ -2,6 +2,7 @@
 
 #include "ArinValeCharacter.h"
 #include "ArinProgressionComponent.h"
+#include "Components/HunterInventoryComponent.h"
 #include "HunterSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -128,6 +129,11 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
         }
     }
 
+    if (const UHunterInventoryComponent* Inventory = Arin->GetInventoryComponent())
+    {
+        SaveObject->ArinInventoryItems = Inventory->GetItems();
+    }
+
     if (const UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
     {
         SaveObject->ArinExperience = Progression->GetExperience();
@@ -145,7 +151,7 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-    if (!SaveObject || SaveObject->SaveVersion != 1)
+    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 2)
     {
         return false;
     }
@@ -158,6 +164,11 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     CurrentChapterNumber = FMath::Clamp(SaveObject->CurrentChapterNumber, 1, Chapters.Num());
+
+    if (UHunterInventoryComponent* Inventory = Arin->GetInventoryComponent())
+    {
+        Inventory->RestoreItems(SaveObject->ArinInventoryItems);
+    }
 
     if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
     {
