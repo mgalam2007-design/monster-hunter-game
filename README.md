@@ -14,6 +14,9 @@ This repository currently contains the C++ project scaffold:
 - Third-person character class with camera boom and follow camera
 - Basic movement, look, jump, sprint, and directional dodge
 - Starter sword attack hook, ready to connect to a montage and hit detection
+- Progression-gated ability resource and cooldown framework
+- Stackable inventory, world pickups, weapon/armor stat equipment and campaign persistence
+- Monster XP rewards and tagged quest objective progress
 - Game mode and Unreal module setup
 
 ## Open in Unreal Engine
