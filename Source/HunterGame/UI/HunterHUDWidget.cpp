@@ -113,9 +113,11 @@ void UHunterHUDWidget::RefreshHUD()
         Snapshot.ExperienceForNextStage = Progression->GetExperienceForNextStage();
         Snapshot.EvolutionStage = Progression->GetEvolutionStage();
         Snapshot.EvolutionStageName = Progression->GetCurrentStageProfile().DisplayName;
-        const int32 CurrentThreshold = Snapshot.ExperienceForNextStage;
-        Snapshot.ExperiencePercent = CurrentThreshold > 0
-            ? FMath::Clamp(static_cast<float>(Snapshot.Experience) / CurrentThreshold, 0.0f, 1.0f)
+        const int32 CurrentThreshold = Progression->GetCurrentStageProfile().RequiredExperience;
+        const int32 NextThreshold = Snapshot.ExperienceForNextStage;
+        const int32 StageRange = NextThreshold - CurrentThreshold;
+        Snapshot.ExperiencePercent = StageRange > 0
+            ? FMath::Clamp(static_cast<float>(Snapshot.Experience - CurrentThreshold) / StageRange, 0.0f, 1.0f)
             : 1.0f;
     }
     if (UHunterCurrencyComponent* Currency = ArinCharacter->GetCurrencyComponent())
