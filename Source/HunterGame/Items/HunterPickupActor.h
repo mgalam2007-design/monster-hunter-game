@@ -23,6 +23,8 @@ public:
     FHunterInventoryItem GetPickupItem() const { return PickupItem; }
 
 protected:
+    virtual void BeginPlay() override;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Pickup")
     TObjectPtr<USceneComponent> SceneRoot;
 
