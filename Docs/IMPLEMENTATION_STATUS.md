@@ -14,7 +14,9 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Reusable world pickup actor with overlap collection, inventory insertion and Blueprint pickup presentation hook.
 - Weapon/armor equipment component with inventory-backed equip/unequip, evolution-stage requirements, weapon damage bonuses and armor damage reduction.
 - Arin's melee damage now scales from his evolution stage and equipped weapon; incoming damage is reduced by equipped armor.
-- Progression-gated ability component with regenerating energy, costs, cooldowns and Blueprint activation hooks for Energy Strike, Shadow Step and Shadow Echo.
+- Progression-gated ability component with regenerating energy, costs and cooldowns; Energy Strike applies area damage, Shadow Step launches Arin forward, and Shadow Echo spawns a configurable Blueprint actor.
+- Evolution stage changes apply health-capacity, movement-speed and melee-damage multipliers.
+- Consumable inventory items can restore health and/or energy; item data stores the restore amounts and Arin consumes one item per use.
 - Version 3 save data persists inventory and equipped weapon/armor while loading version 1 and 2 saves.
 - Monster defeat rewards now award Arin XP and report configurable tagged events to the active quest subsystem.
 - 20-chapter original campaign subsystem with chapter briefings, recommended evolution stages, unlock/completion state and save/load functions.
@@ -26,18 +28,18 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - The monster base needs Blueprint enemy children with meshes, animation blueprints, configured AI controllers, navigation mesh and attack/death presentation.
 - Sword traces require a skeletal mesh with correctly configured weapon_r and weapon_tip sockets; the attack trace window is currently a code-timed fallback, not a polished animation-notify combat pipeline.
 - Campaign chapters currently contain titles/briefings and unlock state, not finished level maps, objectives, dialogue, cutscenes or mission scripting.
-- No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, configured pickup Blueprints, shop or UI yet; the pickup actor must be configured with an item ID and mesh. Equipment currently changes combat stats but does not yet swap visible weapon/armor meshes. Ability activation has resource/cooldown handling and Blueprint hooks, but the actual ability attacks, movement effects, summoned echo, animations and VFX still need implementation.
+- No production character/monster skeletal meshes, materials, animations, VFX, audio, UMG screens, equipment/loot content or finished environments are committed. The inventory component has no authored item catalog, configured pickup Blueprints, shop or UI yet; the pickup actor must be configured with an item ID and mesh. Equipment currently changes combat stats but does not yet swap visible weapon/armor meshes. Ability gameplay effects are implemented as simple C++ foundations; Shadow Echo still requires a configured actor Blueprint, and polished animations, targeting, hit reactions, Niagara VFX and audio remain outstanding. Consumables require item entries configured with restoration values.
 - Save/load functions persist chapter state, progression and inventory data, but checkpoint and menu integration still need to be authored in Unreal.
 - Arin's Blender output is static primitive blockout geometry, not a finished rigged hero asset.
 
 ## Required Unreal Editor integration
 1. Generate project files and compile the HunterGame module in the target Unreal Engine version.
 2. Create a playable test map and assign Arin's character class as the player pawn.
-3. Configure the input mappings used by the current character code: MoveForward, MoveRight, Turn, LookUp, Jump, Sprint, Dodge and SwordAttack.
+3. Configure the input mappings used by the current character code: MoveForward, MoveRight, Turn, LookUp, Jump, Sprint, Dodge, SwordAttack, AbilityEnergyStrike, AbilityShadowStep, AbilityShadowEcho and UseConsumable.
 4. Import/assign a skeletal mesh and configure weapon_r and weapon_tip sockets.
 5. Create Blueprint children for regular monsters and bosses; assign meshes, animation blueprints, AI controllers and attack/death presentation.
 6. Add a NavMeshBoundsVolume and verify enemy navigation.
-7. Configure pickup Blueprints with item IDs and meshes; create item definitions and equipment data; add visual equipment attachments; implement ability effects and input bindings; build UMG HUD, quest tracker, chapter menu, inventory/equipment and save/load UI; create loot and shop content.
+7. Configure pickup Blueprints with item IDs and meshes; create item definitions and equipment data; add visual equipment attachments; configure a Shadow Echo actor Blueprint and implement ability animation/VFX; add ability and consumable input bindings; build UMG HUD, quest tracker, chapter menu, inventory/equipment and save/load UI; create loot and shop content.
 8. Create and populate the 20 campaign maps, objectives, encounters, dialogue, rewards and boss fights.
 9. Import final Arin model, materials, animations, weapon and modular armor assets; configure animation notifies and VFX.
 
