@@ -23,6 +23,21 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
         return false;
     }
 
+    const EHunterItemType RequiredType = NewItem.Slot == EHunterEquipmentSlot::Weapon ? EHunterItemType::Weapon : EHunterItemType::Armor;
+    bool bHasMatchingInventoryItem = false;
+    for (const FHunterInventoryItem& InventoryItem : Inventory->GetItems())
+    {
+        if (InventoryItem.ItemId == NewItem.ItemId && InventoryItem.ItemType == RequiredType && InventoryItem.Quantity > 0)
+        {
+            bHasMatchingInventoryItem = true;
+            break;
+        }
+    }
+    if (!bHasMatchingInventoryItem)
+    {
+        return false;
+    }
+
     FHunterEquipmentItem& SlotItem = NewItem.Slot == EHunterEquipmentSlot::Weapon ? EquippedWeapon : EquippedArmor;
     if (SlotItem.ItemId == NewItem.ItemId)
     {
