@@ -21,6 +21,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Pickup")
     void SetPickupItem(const FHunterInventoryItem& NewItem);
 
+    UFUNCTION(BlueprintCallable, Category="Pickup|Quest")
+    void SetQuestEventTag(FName NewQuestEventTag) { QuestEventTag = NewQuestEventTag; }
+
     UFUNCTION(BlueprintPure, Category="Pickup")
     FHunterInventoryItem GetPickupItem() const { return PickupItem; }
 
