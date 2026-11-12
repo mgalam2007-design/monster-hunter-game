@@ -4,6 +4,7 @@
 #include "Components/HunterHealthComponent.h"
 #include "Components/HunterWeaponTraceComponent.h"
 #include "Components/HunterInventoryComponent.h"
+#include "Components/HunterEquipmentComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -42,6 +43,7 @@ AArinValeCharacter::AArinValeCharacter()
     HealthComponent = CreateDefaultSubobject<UHunterHealthComponent>(TEXT("ArinHealth"));
     WeaponTraceComponent = CreateDefaultSubobject<UHunterWeaponTraceComponent>(TEXT("WeaponTrace"));
     InventoryComponent = CreateDefaultSubobject<UHunterInventoryComponent>(TEXT("HunterInventory"));
+    EquipmentComponent = CreateDefaultSubobject<UHunterEquipmentComponent>(TEXT("HunterEquipment"));
 }
 
 void AArinValeCharacter::BeginPlay()
@@ -53,7 +55,9 @@ void AArinValeCharacter::BeginPlay()
 float AArinValeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
     AController* EventInstigator, AActor* DamageCauser)
 {
-    const float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    const float DamageReduction = EquipmentComponent ? EquipmentComponent->GetDamageReduction() : 0.0f;
+    const float MitigatedDamage = DamageAmount * (1.0f - DamageReduction);
+    const float AppliedDamage = Super::TakeDamage(MitigatedDamage, DamageEvent, EventInstigator, DamageCauser);
     if (HealthComponent)
     {
         HealthComponent->ApplyDamage(AppliedDamage);
@@ -136,6 +140,14 @@ void AArinValeCharacter::SwordAttack()
         {
             AnimInstance->Montage_Play(SwordAttackMontage);
         }
+    }
+
+    if (WeaponTraceComponent)
+    {
+        const float BaseDamage = WeaponTraceComponent->GetBaseDamage();
+        const float GearBonus = EquipmentComponent ? EquipmentComponent->GetTotalDamageBonus() : 0.0f;
+        const float StageMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().DamageMultiplier : 1.0f;
+        WeaponTraceComponent->SetBaseDamage((BaseDamage + GearBonus) * StageMultiplier);
     }
 
     BeginWeaponTrace();
