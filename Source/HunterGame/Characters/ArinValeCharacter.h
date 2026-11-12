@@ -68,6 +68,7 @@ protected:
     void UseEnergyStrike();
     void UseShadowStep();
     void UseShadowEcho();
+    void UseConsumable();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
     TObjectPtr<USpringArmComponent> CameraBoom;
