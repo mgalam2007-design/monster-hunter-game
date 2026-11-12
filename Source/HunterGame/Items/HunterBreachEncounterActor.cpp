@@ -5,6 +5,7 @@
 #include "Items/HunterPickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 AHunterBreachEncounterActor::AHunterBreachEncounterActor()
 {
