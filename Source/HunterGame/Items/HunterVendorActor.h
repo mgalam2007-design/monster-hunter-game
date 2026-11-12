@@ -50,6 +50,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Vendor|Interaction", meta=(ClampMin="50.0"))
     float InteractionRadius = 250.0f;
 
+    UFUNCTION(BlueprintImplementableEvent, Category="Vendor")
+    void BP_OnVendorNearby(bool bIsNearby);
+
     UFUNCTION()
     void HandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
