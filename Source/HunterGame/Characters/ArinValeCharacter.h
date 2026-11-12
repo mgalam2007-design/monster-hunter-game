@@ -61,6 +61,9 @@ protected:
     void StopSprint();
     void Dodge();
     void SwordAttack();
+    void UseEnergyStrike();
+    void UseShadowStep();
+    void UseShadowEcho();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
     TObjectPtr<USpringArmComponent> CameraBoom;
