@@ -3,7 +3,7 @@
 This repository is an Unreal Engine 5 C++ project scaffold. This document distinguishes committed code foundations from assets, editor integration, and runtime validation that remain outstanding. A lightweight GitHub Actions workflow checks Blender script syntax and the Unreal project descriptor; it does not compile Unreal C++.
 
 ## Committed C++ foundations
-- Arin Vale third-person character with camera, movement, jump, sprint, dodge, sword attack montage hook, progression, health and weapon-trace components.
+- Arin Vale third-person character with camera, movement, jump, sprint, dodge, sword attack montage hook, progression, health and weapon-trace components. Defeat handling now closes the inventory UI, restores game-only input/cursor state, blocks movement and camera input while dead, and safely handles a missing movement component during no-checkpoint respawn.
 - Arin progression component with five evolution stages, XP thresholds, stage profiles, exact save restoration and ability-unlock queries.
 - Player health component with damage, healing, health percentage and death events; Arin routes Unreal damage intake into it.
 - Socket-based melee trace component with per-swing hit de-duplication and point-damage application.
