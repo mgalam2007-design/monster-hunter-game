@@ -27,7 +27,7 @@ struct FHunterInventoryDisplayEntry
     TObjectPtr<UTexture2D> Icon = nullptr;
 
     UPROPERTY(BlueprintReadOnly, Category="Inventory")
-    bool bIsEquipped = false;
+    bool bCanUseConsumable = false;
 };
 
 USTRUCT(BlueprintType)
@@ -68,6 +68,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Equipment")
     bool UnequipSlot(EHunterEquipmentSlot Slot);
+
+    UFUNCTION(BlueprintCallable, Category="Inventory")
+    bool UseConsumableById(FName ItemId);
 
 protected:
     virtual void NativeOnInitialized() override;
