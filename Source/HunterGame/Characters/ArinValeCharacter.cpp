@@ -1,6 +1,7 @@
 #include "ArinValeCharacter.h"
 
 #include "ArinProgressionComponent.h"
+#include "Components/HunterHealthComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,7 +13,6 @@
 AArinValeCharacter::AArinValeCharacter()
 {
     PrimaryActorTick.bCanEverTick = false;
-
     bUseControllerRotationPitch = false;
     bUseControllerRotationYaw = false;
     bUseControllerRotationRoll = false;
@@ -37,6 +37,7 @@ AArinValeCharacter::AArinValeCharacter()
     FollowCamera->bUsePawnControlRotation = false;
 
     ProgressionComponent = CreateDefaultSubobject<UArinProgressionComponent>(TEXT("ArinProgression"));
+    HealthComponent = CreateDefaultSubobject<UHunterHealthComponent>(TEXT("ArinHealth"));
 }
 
 void AArinValeCharacter::BeginPlay()
@@ -45,17 +46,26 @@ void AArinValeCharacter::BeginPlay()
     DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
+float AArinValeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+    AController* EventInstigator, AActor* DamageCauser)
+{
+    const float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    if (HealthComponent)
+    {
+        HealthComponent->ApplyDamage(AppliedDamage);
+    }
+    return AppliedDamage;
+}
+
 void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-
     check(PlayerInputComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &AArinValeCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &AArinValeCharacter::MoveRight);
     PlayerInputComponent->BindAxis("Turn", this, &AArinValeCharacter::Turn);
     PlayerInputComponent->BindAxis("LookUp", this, &AArinValeCharacter::LookUp);
-
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
     PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AArinValeCharacter::StartSprint);
@@ -82,58 +92,30 @@ void AArinValeCharacter::MoveRight(float Value)
     }
 }
 
-void AArinValeCharacter::Turn(float Value)
-{
-    AddControllerYawInput(Value);
-}
-
-void AArinValeCharacter::LookUp(float Value)
-{
-    AddControllerPitchInput(Value);
-}
-
-void AArinValeCharacter::StartSprint()
-{
-    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-}
-
-void AArinValeCharacter::StopSprint()
-{
-    GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
-}
+void AArinValeCharacter::Turn(float Value) { AddControllerYawInput(Value); }
+void AArinValeCharacter::LookUp(float Value) { AddControllerPitchInput(Value); }
+void AArinValeCharacter::StartSprint() { GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; }
+void AArinValeCharacter::StopSprint() { GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed; }
 
 void AArinValeCharacter::Dodge()
 {
-    if (!bCanDodge)
-    {
-        return;
-    }
+    if (!bCanDodge || (HealthComponent && HealthComponent->IsDead())) return;
 
     FVector DodgeDirection = GetLastMovementInputVector().GetSafeNormal();
-    if (DodgeDirection.IsNearlyZero())
-    {
-        DodgeDirection = GetActorForwardVector();
-    }
+    if (DodgeDirection.IsNearlyZero()) DodgeDirection = GetActorForwardVector();
 
     LaunchCharacter(DodgeDirection * DodgeStrength + FVector::UpVector * DodgeUpwardStrength, true, true);
     bCanDodge = false;
     GetWorldTimerManager().SetTimer(DodgeCooldownHandle, this, &AArinValeCharacter::ResetDodge, 0.8f, false);
 }
 
-void AArinValeCharacter::ResetDodge()
-{
-    bCanDodge = true;
-}
+void AArinValeCharacter::ResetDodge() { bCanDodge = true; }
 
 void AArinValeCharacter::SwordAttack()
 {
-    if (!bCanAttack)
-    {
-        return;
-    }
+    if (!bCanAttack || (HealthComponent && HealthComponent->IsDead())) return;
 
     bCanAttack = false;
-
     if (SwordAttackMontage)
     {
         if (UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr)
@@ -146,7 +128,4 @@ void AArinValeCharacter::SwordAttack()
     GetWorldTimerManager().SetTimer(AttackCooldownHandle, this, &AArinValeCharacter::ResetAttack, SwordAttackCooldown, false);
 }
 
-void AArinValeCharacter::ResetAttack()
-{
-    bCanAttack = true;
-}
+void AArinValeCharacter::ResetAttack() { bCanAttack = true; }
