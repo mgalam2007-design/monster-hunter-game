@@ -2,7 +2,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/HunterInventoryComponent.h"
 #include "HunterMonsterBase.generated.h"
+
+class AHunterPickupActor;
+
+USTRUCT(BlueprintType)
+struct FHunterMonsterLootDrop
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Loot")
+    FHunterInventoryItem Item;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Loot", meta=(ClampMin="0.0", ClampMax="1.0"))
+    float DropChance = 1.0f;
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterMonsterDied, AActor*, DeadMonster);
 
@@ -58,6 +73,12 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards")
     FName DefeatQuestEventTag = TEXT("MonsterDefeated");
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards")
+    TSubclassOf<AHunterPickupActor> PickupActorClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards")
+    TArray<FHunterMonsterLootDrop> LootDrops;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Movement")
     float ChaseSpeed = 430.0f;
 
@@ -78,4 +99,5 @@ private:
     void FindTarget();
     void UpdateCombat(float DeltaSeconds);
     void Die();
+    void SpawnLootDrops();
 };
