@@ -61,6 +61,9 @@ protected:
     void StopSprint();
     void Dodge();
     void SwordAttack();
+    UFUNCTION()
+    void HandleEvolutionStageChanged(EArinEvolutionStage PreviousStage, EArinEvolutionStage NewStage);
+    void ApplyEvolutionStats();
     void UseEnergyStrike();
     void UseShadowStep();
     void UseShadowEcho();
@@ -110,6 +113,7 @@ protected:
 private:
     float DefaultWalkSpeed = 500.0f;
     float UnmodifiedWeaponDamage = 35.0f;
+    float UnmodifiedMaxHealth = 100.0f;
     bool bCanDodge = true;
     bool bCanAttack = true;
 
