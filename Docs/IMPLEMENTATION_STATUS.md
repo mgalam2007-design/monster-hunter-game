@@ -8,7 +8,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 - Player health component with damage, healing, health percentage and death events; Arin routes Unreal damage intake into it.
 - Socket-based melee trace component with per-swing hit de-duplication and point-damage application.
 - Reusable monster base with health, player detection, AI-controller pursuit, attack cooldown, damage, death event and Blueprint hooks; configurable per-monster loot tables can spawn inventory pickups on death with individual drop chances.
-- Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage.
+- Boss base extending the monster foundation with configurable health thresholds, phase-change events and escalating attack damage; phase transitions stop once the boss has been defeated.
 - Reusable boss encounter actor spawns a configured boss at a relative transform when Arin enters its trigger, prevents duplicate starts, registers a configurable BossDefeated quest event, and exposes Blueprint events for start, spawn failure and boss defeat.
 - Quest subsystem with data-driven objectives (defeat, interact, reach, collect, survive), tagged event progress, completion delegates and validated progress restoration.
 - Reusable world-space quest trigger actor that reports configured tagged events when Arin enters a level volume, with one-shot, repeatable and destroy-after-trigger options.
