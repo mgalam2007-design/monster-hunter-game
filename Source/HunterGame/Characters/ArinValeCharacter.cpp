@@ -52,6 +52,12 @@ void AArinValeCharacter::BeginPlay()
 {
     Super::BeginPlay();
     DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+    UnmodifiedMaxHealth = HealthComponent ? HealthComponent->GetMaxHealth() : 100.0f;
+    if (ProgressionComponent)
+    {
+        ProgressionComponent->OnStageChanged.AddDynamic(this, &AArinValeCharacter::HandleEvolutionStageChanged);
+    }
+    ApplyEvolutionStats();
     UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
 }
 
@@ -184,5 +190,27 @@ void AArinValeCharacter::UseShadowEcho()
     if (AbilityComponent && (!HealthComponent || !HealthComponent->IsDead()))
     {
         AbilityComponent->TryActivateAbility(EHunterAbility::ShadowEcho);
+    }
+}
+
+void AArinValeCharacter::HandleEvolutionStageChanged(EArinEvolutionStage PreviousStage, EArinEvolutionStage NewStage)
+{
+    ApplyEvolutionStats();
+}
+
+void AArinValeCharacter::ApplyEvolutionStats()
+{
+    const FArinStageProfile Profile = ProgressionComponent
+        ? ProgressionComponent->GetCurrentStageProfile()
+        : FArinStageProfile();
+
+    if (HealthComponent)
+    {
+        HealthComponent->SetMaxHealth(UnmodifiedMaxHealth * FMath::Max(0.1f, Profile.HealthMultiplier), true);
+    }
+
+    if (GetCharacterMovement())
+    {
+        GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * FMath::Max(0.1f, Profile.MovementMultiplier);
     }
 }
