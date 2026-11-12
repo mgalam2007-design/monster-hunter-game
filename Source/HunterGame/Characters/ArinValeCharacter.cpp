@@ -142,7 +142,7 @@ void AArinValeCharacter::MoveForward(float Value)
 
 void AArinValeCharacter::MoveRight(float Value)
 {
-    if (Controller && !FMath::IsNearlyZero(Value))
+    if ((!HealthComponent || !HealthComponent->IsDead()) && Controller && !FMath::IsNearlyZero(Value))
     {
         const FRotator YawRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
         AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y), Value);
