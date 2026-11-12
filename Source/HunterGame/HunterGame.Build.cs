@@ -10,7 +10,8 @@ public class HunterGame : ModuleRules
             "Core",
             "CoreUObject",
             "Engine",
-            "InputCore"
+            "InputCore",
+            "AIModule"
         });
     }
 }
