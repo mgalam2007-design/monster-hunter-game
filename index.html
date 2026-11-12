@@ -17,6 +17,18 @@
 #skinScreen .skinActions{max-width:1100px;margin:18px auto 0;display:flex;justify-content:space-between;gap:12px}
 #skinScreen button{padding:12px 24px;font-size:16px}
 @media(max-width:650px){#skinScreen{padding:14px}#skinScreen .skinGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.skinCard{min-height:145px}.skinCard .avatar{font-size:46px}#skinOpen{top:120px;right:10px}}
+
+.skinCard{min-height:210px;align-items:center;text-align:center}
+.skinCard .skinPreview{position:relative;width:100%;height:122px;display:flex;align-items:center;justify-content:center;isolation:isolate}
+.skinDoll{position:relative;width:66px;height:112px;filter:drop-shadow(0 7px 5px #000b)}
+.skinDoll .dCape{position:absolute;z-index:-1;left:8px;top:34px;width:52px;height:75px;background:var(--cape);clip-path:polygon(18% 0,82% 0,100% 100%,0 88%)}
+.skinDoll .dHead{position:absolute;left:22px;top:18px;width:23px;height:26px;border-radius:45% 45% 42% 42%;background:#d8a783;border:2px solid #211b29}
+.skinDoll .dHair{position:absolute;left:17px;top:8px;width:34px;height:27px;background:var(--hair);clip-path:polygon(0 35%,15% 0,37% 20%,55% 0,75% 18%,100% 0,88% 75%,70% 100%,20% 90%);z-index:2}
+.skinDoll .dBody{position:absolute;left:15px;top:43px;width:38px;height:45px;border:3px solid #151827;border-radius:9px 9px 5px 5px;background:var(--armor)}
+.skinDoll .dScarf{position:absolute;z-index:3;left:14px;top:38px;width:41px;height:12px;border-radius:5px;background:var(--accent);transform:rotate(-8deg)}
+.skinDoll .dTail{position:absolute;z-index:2;left:43px;top:44px;width:11px;height:42px;background:var(--accent);clip-path:polygon(0 0,100% 0,75% 100%,0 78%)}
+.skinDoll .dLeg{position:absolute;top:83px;width:12px;height:27px;background:var(--armor);border:2px solid #151827;border-radius:2px}
+.skinDoll .dLeg.left{left:19px}.skinDoll .dLeg.right{right:17px}
 </style></head><body>
 <button id="skinOpen">✦ SKINS</button><div id="skinScreen"><div class="skinHead"><h1>⚔ Hunter Skins</h1><button id="skinClose">✕ Close</button></div><p style="max-width:1100px;margin:0 auto 16px;color:#dce5ff">Choose your hunter appearance. Your selected skin changes the character in the game.</p><div class="skinGrid" id="skinGrid"></div><div class="skinActions"><button id="skinBack">BACK</button><button id="skinEquip">EQUIP SELECTED</button></div></div><div id="hud"><div class="panel">HUNTER HP <div class="bar"><i id="hpbar"></i></div><small id="hptext">100 / 100</small></div><div class="panel">LEVEL <b id="level">1</b> / 200<br>MONSTERS <b id="left">0</b></div><div class="panel">MANA COINS <b id="coins">0</b><br>KILLS <b id="kills">0</b></div></div>
 <div id="help"><b>HUNTER CONTROLS</b><br>WASD / arrows: move · Mouse: aim<br>Left click: fire · Space: dash<br>Q: mana burst · P: pause<br>Clear the wave to advance.</div><div id="enemyHud">TROLL<div class="bar"><i id="enemybar" style="width:100%"></i></div></div><div id="minimap"></div><div id="xp">XP&nbsp; Experience +80</div><div id="cross"></div><div id="center"><div id="message"><h1>SHADOW GATE</h1><p>Enter the dungeon. Hunt the monsters. Become stronger.</p><button id="start">ENTER DUNGEON</button></div></div><div id="mobile"><button id="fire">FIRE</button><button id="dash">DASH</button></div>
@@ -57,10 +69,10 @@ const skinSets=[
 ];
 let selectedSkin=0,equippedSkin=0;
 function applySkin(index){const s=skinSets[index];armor.color.setHex(s.armor);leather.color.setHex(s.leather);accentMat.color.setHex(s.accent);hairMat.color.setHex(s.hair);head.material.color.setHex(0xb98c70);hood.material.color.setHex(s.hair);cape.material.color.setHex(s.leather);body.material.color.setHex(s.armor);player.traverse(o=>{if(o.isMesh&&o.material===armor)o.material.color.setHex(s.armor);if(o.isMesh&&o.material===leather)o.material.color.setHex(s.leather)});equippedSkin=index;renderSkinCards()}
-function renderSkinCards(){const grid=$('skinGrid');grid.innerHTML='';skinSets.forEach((s,i)=>{const b=document.createElement('button');b.className='skinCard'+(i===selectedSkin?' selected':'');b.style.setProperty('--glow',s.glow);b.innerHTML='<span class="avatar">⚔️</span><strong>'+s.name+'</strong><small>'+s.rarity+'</small>';b.onclick=()=>{selectedSkin=i;renderSkinCards()};grid.appendChild(b)})}
+function renderSkinCards(){const grid=$('skinGrid');grid.innerHTML='';skinSets.forEach((s,i)=>{const b=document.createElement('button');b.className='skinCard'+(i===selectedSkin?' selected':'');b.style.setProperty('--glow',s.glow);b.innerHTML='<div class="skinPreview"><div class="skinDoll" style="--armor:#'+s.armor.toString(16).padStart(6,'0')+';--cape:#'+s.leather.toString(16).padStart(6,'0')+';--accent:#'+s.accent.toString(16).padStart(6,'0')+';--hair:#'+s.hair.toString(16).padStart(6,'0')+'"><span class="dCape"></span><span class="dHair"></span><span class="dHead"></span><span class="dBody"></span><span class="dScarf"></span><span class="dTail"></span><span class="dLeg left"></span><span class="dLeg right"></span></div></div><strong>'+s.name+'</strong><small>'+s.rarity+'</small>';b.onclick=()=>{selectedSkin=i;renderSkinCards()};grid.appendChild(b)})}
 $('skinOpen').onclick=()=>{$('skinScreen').style.display='block';renderSkinCards()};
 $('skinClose').onclick=$('skinBack').onclick=()=>{$('skinScreen').style.display='none'};
-$('skinEquip').onclick=()=>{applySkin(selectedSkin);$('skinScreen').style.display='none'};
+$('skinEquip').onclick=()=>{applySkin(selectedSkin);$('skinScreen').style.display='none'};applySkin(0);
 
 const bullets=[],enemies=[],particles=[];let hp=100,coins=0,kills=0,level=1,running=false,paused=false,last=0,spawned=0,total=5,fireCooldown=0;
 const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();dash()}if(e.key.toLowerCase()==='q')burst();if(e.key.toLowerCase()==='p')togglePause()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
