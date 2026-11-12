@@ -15,7 +15,7 @@ class HUNTERGAME_API UHunterSaveGame : public USaveGame
 
 public:
     UPROPERTY(VisibleAnywhere, Category="Save")
-    int32 SaveVersion = 2;
+    int32 SaveVersion = 3;
 
     UPROPERTY(VisibleAnywhere, Category="Save")
     int32 CurrentChapterNumber = 1;
