@@ -114,8 +114,17 @@ void AArinValeCharacter::MoveRight(float Value)
 
 void AArinValeCharacter::Turn(float Value) { AddControllerYawInput(Value); }
 void AArinValeCharacter::LookUp(float Value) { AddControllerPitchInput(Value); }
-void AArinValeCharacter::StartSprint() { GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; }
-void AArinValeCharacter::StopSprint() { GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed; }
+void AArinValeCharacter::StartSprint()
+{
+    const float MovementMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
+    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * FMath::Max(0.1f, MovementMultiplier);
+}
+
+void AArinValeCharacter::StopSprint()
+{
+    const float MovementMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
+    GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * FMath::Max(0.1f, MovementMultiplier);
+}
 
 void AArinValeCharacter::Dodge()
 {
