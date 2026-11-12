@@ -42,6 +42,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Pickup")
     bool bDestroyAfterPickup = true;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Pickup|Quest")
+    FName QuestEventTag = NAME_None;
+
     UFUNCTION(BlueprintImplementableEvent, Category="Pickup")
     void BP_OnPickedUp(AActor* Picker);
 
