@@ -70,6 +70,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards", meta=(ClampMin="0"))
     int32 ExperienceReward = 25;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards", meta=(ClampMin="0"))
+    int64 CurrencyReward = 5;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards")
     FName DefeatQuestEventTag = TEXT("MonsterDefeated");
 
