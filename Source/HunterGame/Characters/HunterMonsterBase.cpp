@@ -58,7 +58,15 @@ AHunterMonsterBase::AHunterMonsterBase()
 void AHunterMonsterBase::BeginPlay()
 {
     Super::BeginPlay();
-    CurrentHealth = FMath::Max(1.0f, MaxHealth);
+    // Normalize editable Blueprint defaults before they are used by combat or movement.
+    MaxHealth = FMath::Max(1.0f, MaxHealth);
+    CurrentHealth = MaxHealth;
+    DetectionRadius = FMath::Max(0.0f, DetectionRadius);
+    AttackRange = FMath::Max(0.0f, AttackRange);
+    AttackDamage = FMath::Max(0.0f, AttackDamage);
+    AttackCooldown = FMath::Max(0.1f, AttackCooldown);
+    ChaseSpeed = FMath::Max(0.0f, ChaseSpeed);
+    ChaseRepathInterval = FMath::Max(0.05f, ChaseRepathInterval);
     GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
     FindTarget();
 }
@@ -148,7 +156,7 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
         return;
     }
 
-    CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+    CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, FMath::Max(1.0f, MaxHealth));
 
     if (!TargetCharacter.IsValid())
     {
@@ -170,7 +178,7 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
 
 float AHunterMonsterBase::GetHealthPercent() const
 {
-    return MaxHealth > 0.0f ? CurrentHealth / MaxHealth : 0.0f;
+    return CurrentHealth / FMath::Max(1.0f, MaxHealth);
 }
 
 void AHunterMonsterBase::Die()
