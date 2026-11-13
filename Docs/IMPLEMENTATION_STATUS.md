@@ -125,3 +125,13 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - `Tools/validate_monster_blockout.py` checks the required source components and is included in GitHub Actions.
 - This is a shared placeholder silhouette for early encounter assembly, not a final monster roster. Distinct enemy species, materials, skeletal meshes, rigs, animations, attack telegraphs and boss-specific geometry remain to be authored.
 - The C++ still requires an Unreal Editor compile and visual test. Engine primitive asset loading, scale/alignment and navigation-based pursuit must be verified in the target project version.
+
+
+## Boss prototype visual foundation
+
+- The shared boss base now creates a larger crowned silhouette from Unreal engine primitive meshes, distinct from the standard monster blockout.
+- Default prototype boss tuning is 1,200 health, 35 base attack damage, 350 chase speed, 300 XP and 100 currency; Blueprint children can override these defaults.
+- Boss phase thresholds are clamped, sorted and applied after initialization; invalid or negative phase damage multipliers are normalized before scaling.
+- Boss visual pieces have collision and navigation influence disabled; the inherited character capsule remains responsible for collision.
+- `Tools/validate_boss_foundation.py` checks the boss silhouette, default tuning and phase-scaling safeguards in GitHub Actions.
+- This is still a primitive blockout, not a designed boss model, rig, animation set or complete phase-specific attack system. Unreal compilation, visual alignment and combat testing remain required.
