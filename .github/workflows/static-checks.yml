@@ -39,6 +39,9 @@ jobs:
       - name: Validate Unreal breach arena greybox
         run: python Tools/validate_arena_greybox.py
 
+      - name: Validate Unreal monster blockout
+        run: python Tools/validate_monster_blockout.py
+
       - name: Validate Arin blockout and Unreal input bindings
         run: python Tools/validate_playable_foundation.py
 
