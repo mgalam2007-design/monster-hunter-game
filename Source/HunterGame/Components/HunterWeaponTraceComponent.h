@@ -40,6 +40,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon", meta=(ClampMin="1.0"))
     float BaseDamage = 35.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon", meta=(ClampMin="0.0", ClampMax="40.0"))
+    float TraceRadius = 12.0f;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon")
     TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Pawn;
 
