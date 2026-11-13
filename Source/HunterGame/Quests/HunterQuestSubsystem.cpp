@@ -2,7 +2,7 @@
 
 bool UHunterQuestSubsystem::StartQuest(FName NewQuestId, const TArray<FHunterObjective>& NewObjectives)
 {
-    if (NewQuestId.IsNone() || NewObjectives.IsEmpty())
+    if (NewQuestId.IsNone() || NewObjectives.IsEmpty() || IsQuestActive())
     {
         return false;
     }
