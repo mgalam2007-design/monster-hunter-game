@@ -249,15 +249,26 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         bPreviousChapterCompleted = Chapter.bCompleted;
     }
 
-    int32 HighestUnlockedChapter = 1;
+    int32 FirstIncompleteChapter = Chapters.Num();
+    bool bFoundIncompleteChapter = false;
     for (const FHunterChapter& Chapter : Chapters)
     {
-        if (Chapter.bUnlocked)
+        if (!Chapter.bCompleted && Chapter.bUnlocked)
         {
-            HighestUnlockedChapter = FMath::Max(HighestUnlockedChapter, Chapter.ChapterNumber);
+            FirstIncompleteChapter = Chapter.ChapterNumber;
+            bFoundIncompleteChapter = true;
+            break;
         }
     }
-    CurrentChapterNumber = FMath::Clamp(SaveObject->CurrentChapterNumber, 1, HighestUnlockedChapter);
+
+    // Resume at a playable chapter, never on a chapter already marked complete.
+    // A fully completed campaign remains parked on its final chapter for the UI.
+    const int32 ResumeLimit = bFoundIncompleteChapter ? FirstIncompleteChapter : Chapters.Num();
+    CurrentChapterNumber = FMath::Clamp(SaveObject->CurrentChapterNumber, 1, FMath::Max(1, ResumeLimit));
+    if (bFoundIncompleteChapter && Chapters.IsValidIndex(CurrentChapterNumber - 1) && Chapters[CurrentChapterNumber - 1].bCompleted)
+    {
+        CurrentChapterNumber = FirstIncompleteChapter;
+    }
 
     if (UHunterInventoryComponent* Inventory = Arin->GetInventoryComponent())
     {
