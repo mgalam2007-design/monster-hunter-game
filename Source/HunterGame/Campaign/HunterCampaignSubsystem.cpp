@@ -364,6 +364,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 7)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 7: investigate the blue mark by locating and stabilizing its resonance.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH07_BlueMark")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective LocateObjective;
+            LocateObjective.ObjectiveId = TEXT("LocateBlueMarkSource");
+            LocateObjective.Description = FText::FromString(TEXT("Locate the source of Arin's blue mark"));
+            LocateObjective.Type = EHunterObjectiveType::Reach;
+            LocateObjective.EventTag = TEXT("BlueMarkSourceLocated");
+            LocateObjective.RequiredCount = 1;
+            Objectives.Add(LocateObjective);
+
+            FHunterObjective StabilizeObjective;
+            StabilizeObjective.ObjectiveId = TEXT("StabilizeResonanceFragments");
+            StabilizeObjective.Description = FText::FromString(TEXT("Collect 3 resonance fragments to stabilize the mark"));
+            StabilizeObjective.Type = EHunterObjectiveType::Collect;
+            StabilizeObjective.EventTag = TEXT("ResonanceFragmentCollected");
+            StabilizeObjective.RequiredCount = 3;
+            Objectives.Add(StabilizeObjective);
+
+            if (!Quest->StartQuest(TEXT("CH07_BlueMark"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -443,9 +491,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 7)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH07_BlueMark")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 7-20 still need authored objective sets.
+        // Chapters 8-20 still need authored objective sets.
         return false;
     }
 
