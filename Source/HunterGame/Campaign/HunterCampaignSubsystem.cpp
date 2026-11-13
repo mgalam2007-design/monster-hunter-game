@@ -94,13 +94,10 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         {
             return false;
         }
-            // Preserve partial or completed progress when the player re-enters Chapter 1.
-            if (Quest->GetActiveQuestId() == FName(TEXT("CH01_FirstBreach")))
-            {
-                OnChapterChanged.Broadcast(CurrentChapterNumber);
-                return true;
-            }
 
+        // Preserve partial or completed progress when the player re-enters Chapter 1.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH01_FirstBreach")))
+        {
             TArray<FHunterObjective> Objectives;
 
             FHunterObjective DefeatObjective;
@@ -130,7 +127,6 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
 }
-
 bool UHunterCampaignSubsystem::CompleteCurrentChapter()
 {
     const int32 Index = CurrentChapterNumber - 1;
