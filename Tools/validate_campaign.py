@@ -10,6 +10,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 CAMPAIGN_CPP = ROOT / "Source/HunterGame/Campaign/HunterCampaignSubsystem.cpp"
 GUIDE = ROOT / "Docs/CAMPAIGN_LEVEL_INTEGRATION.md"
+RECIPES = ROOT / "Docs/CHAPTERS_02_20_LEVEL_RECIPES.md"
 
 # Each chapter lists its quest ID and (event tag, required count) pairs.
 MISSIONS = {
@@ -71,6 +72,7 @@ def objective_counts_for_quest(source: str, quest_id: str) -> dict[str, int]:
 def main() -> None:
     source = CAMPAIGN_CPP.read_text(encoding="utf-8")
     guide = GUIDE.read_text(encoding="utf-8")
+    recipes = RECIPES.read_text(encoding="utf-8")
     total_events = 0
 
     for chapter, (quest_id, objectives) in MISSIONS.items():
@@ -90,7 +92,12 @@ def main() -> None:
         for tag, required_count in objectives:
             if f"`{tag}`" not in guide:
                 fail(f"Chapter {chapter}: event tag {tag} is missing from the integration guide")
+            if chapter > 1 and f"`{tag}`" not in recipes:
+                fail(f"Chapter {chapter}: event tag {tag} is missing from the level assembly recipes")
             total_events += 1
+
+        if chapter > 1 and f"`{quest_id}`" not in recipes:
+            fail(f"Chapter {chapter}: quest ID {quest_id} is missing from the level assembly recipes")
 
     if "CurrentChapterNumber == 20" not in source:
         fail("Final chapter completion gate is missing")
@@ -99,7 +106,7 @@ def main() -> None:
 
     print(
         f"Validated {len(MISSIONS)} chapter quest IDs, {total_events} objective event/count pairs, "
-        "final campaign completion, and integration-guide coverage."
+        "final campaign completion, integration-guide coverage, and Chapters 02–20 recipe coverage."
     )
 
 
