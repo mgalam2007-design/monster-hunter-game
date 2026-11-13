@@ -30,6 +30,7 @@ void UHunterQuestTrackerWidget::BindSubsystems()
     {
         QuestSubsystem->OnObjectiveUpdated.AddDynamic(this, &UHunterQuestTrackerWidget::HandleObjectiveUpdated);
         QuestSubsystem->OnQuestCompleted.AddDynamic(this, &UHunterQuestTrackerWidget::HandleQuestCompleted);
+        QuestSubsystem->OnQuestChanged.AddDynamic(this, &UHunterQuestTrackerWidget::HandleQuestChanged);
     }
     if (CampaignSubsystem)
     {
@@ -44,6 +45,7 @@ void UHunterQuestTrackerWidget::UnbindSubsystems()
     {
         QuestSubsystem->OnObjectiveUpdated.RemoveDynamic(this, &UHunterQuestTrackerWidget::HandleObjectiveUpdated);
         QuestSubsystem->OnQuestCompleted.RemoveDynamic(this, &UHunterQuestTrackerWidget::HandleQuestCompleted);
+        QuestSubsystem->OnQuestChanged.RemoveDynamic(this, &UHunterQuestTrackerWidget::HandleQuestChanged);
     }
     if (CampaignSubsystem)
     {
@@ -106,6 +108,11 @@ void UHunterQuestTrackerWidget::HandleObjectiveUpdated(FName ObjectiveId, int32 
 }
 
 void UHunterQuestTrackerWidget::HandleQuestCompleted(FName QuestId)
+{
+    RefreshTracker();
+}
+
+void UHunterQuestTrackerWidget::HandleQuestChanged()
 {
     RefreshTracker();
 }
