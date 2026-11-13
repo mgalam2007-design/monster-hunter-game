@@ -63,6 +63,9 @@ jobs:
       - name: Validate ability energy and tuning safeguards
         run: python Tools/validate_ability_component.py
 
+      - name: Validate player damage intake safeguards
+        run: python Tools/validate_player_damage.py
+
       - name: Validate browser demo features and JavaScript syntax
         run: python Tools/validate_browser_demo.py
 
