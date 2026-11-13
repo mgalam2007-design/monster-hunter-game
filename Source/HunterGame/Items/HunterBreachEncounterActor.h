@@ -48,6 +48,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Encounter|Wave", meta=(ClampMin="1"))
     int32 FallbackMonsterCount = 3;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Encounter|Wave", meta=(ClampMin="0.1"))
+    float SpawnIntervalSeconds = 1.25f;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Encounter|Reward")
     TSubclassOf<AHunterPickupActor> RewardPickupClass;
 
@@ -76,6 +79,12 @@ private:
     bool bEncounterStarted = false;
     bool bEncounterComplete = false;
     int32 RemainingEnemies = 0;
+    int32 NextSpawnIndex = 0;
+    TArray<FTransform> PendingSpawnTransforms;
+    FTimerHandle SpawnTimerHandle;
+
+    void SpawnNextMonster();
+    void FinishSpawningWave();
 
     UFUNCTION()
     void HandleTriggerOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
