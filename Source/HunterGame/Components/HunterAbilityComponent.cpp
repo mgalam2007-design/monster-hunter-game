@@ -18,14 +18,24 @@ UHunterAbilityComponent::UHunterAbilityComponent()
 void UHunterAbilityComponent::BeginPlay()
 {
     Super::BeginPlay();
-    MaxEnergy = FMath::Max(0.0f, MaxEnergy);
-    CurrentEnergy = FMath::Clamp(CurrentEnergy, 0.0f, MaxEnergy);
+    MaxEnergy = FMath::IsFinite(MaxEnergy) ? FMath::Max(0.0f, MaxEnergy) : 100.0f;
+    EnergyRegenerationPerSecond = FMath::IsFinite(EnergyRegenerationPerSecond)
+        ? FMath::Max(0.0f, EnergyRegenerationPerSecond) : 8.0f;
+    EnergyStrikeDamage = FMath::IsFinite(EnergyStrikeDamage)
+        ? FMath::Max(0.0f, EnergyStrikeDamage) : 65.0f;
+    EnergyStrikeRadius = FMath::IsFinite(EnergyStrikeRadius)
+        ? FMath::Max(0.0f, EnergyStrikeRadius) : 420.0f;
+    ShadowStepStrength = FMath::IsFinite(ShadowStepStrength)
+        ? FMath::Max(0.0f, ShadowStepStrength) : 1250.0f;
+    ShadowEchoSpawnDistance = FMath::IsFinite(ShadowEchoSpawnDistance)
+        ? FMath::Max(0.0f, ShadowEchoSpawnDistance) : 180.0f;
+    CurrentEnergy = FMath::Clamp(FMath::IsFinite(CurrentEnergy) ? CurrentEnergy : MaxEnergy, 0.0f, MaxEnergy);
     OnEnergyChanged.Broadcast(CurrentEnergy, MaxEnergy);
 }
 
 float UHunterAbilityComponent::RestoreEnergy(float Amount)
 {
-    if (Amount <= 0.0f || MaxEnergy <= 0.0f) return 0.0f;
+    if (!FMath::IsFinite(Amount) || Amount <= 0.0f || MaxEnergy <= 0.0f) return 0.0f;
     const float PreviousEnergy = CurrentEnergy;
     CurrentEnergy = FMath::Clamp(CurrentEnergy + Amount, 0.0f, MaxEnergy);
     const float Restored = CurrentEnergy - PreviousEnergy;
@@ -36,6 +46,10 @@ float UHunterAbilityComponent::RestoreEnergy(float Amount)
 void UHunterAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    if (!FMath::IsFinite(DeltaTime) || DeltaTime <= 0.0f)
+    {
+        return;
+    }
 
     for (auto It = CooldownRemaining.CreateIterator(); It; ++It)
     {
@@ -43,7 +57,10 @@ void UHunterAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType
     }
 
     const float PreviousEnergy = CurrentEnergy;
-    CurrentEnergy = FMath::Clamp(CurrentEnergy + EnergyRegenerationPerSecond * DeltaTime, 0.0f, MaxEnergy);
+    const float SafeCurrentEnergy = FMath::IsFinite(CurrentEnergy) ? CurrentEnergy : MaxEnergy;
+    const float Regeneration = FMath::IsFinite(EnergyRegenerationPerSecond)
+        ? FMath::Max(0.0f, EnergyRegenerationPerSecond) * DeltaTime : 0.0f;
+    CurrentEnergy = FMath::Clamp(SafeCurrentEnergy + Regeneration, 0.0f, MaxEnergy);
     if (!FMath::IsNearlyEqual(PreviousEnergy, CurrentEnergy))
     {
         OnEnergyChanged.Broadcast(CurrentEnergy, MaxEnergy);
@@ -58,7 +75,13 @@ bool UHunterAbilityComponent::TryActivateAbility(EHunterAbility Ability)
     }
 
     const float Cost = GetAbilityCost(Ability);
-    if (CurrentEnergy < Cost)
+    if (!FMath::IsFinite(Cost) || Cost < 0.0f ||
+        !FMath::IsFinite(GetAbilityCooldown(Ability)) || GetAbilityCooldown(Ability) < 0.0f)
+    {
+        return false;
+    }
+
+    if (!FMath::IsFinite(CurrentEnergy) || CurrentEnergy < Cost)
     {
         return false;
     }
