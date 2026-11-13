@@ -66,6 +66,9 @@ jobs:
       - name: Validate player damage intake safeguards
         run: python Tools/validate_player_damage.py
 
+      - name: Validate equipment metadata and combat-stat safeguards
+        run: python Tools/validate_equipment_safety.py
+
       - name: Validate Arin movement and combat tuning
         run: python Tools/validate_arin_tuning.py
 
