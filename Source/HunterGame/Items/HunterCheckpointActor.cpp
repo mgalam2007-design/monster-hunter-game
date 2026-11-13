@@ -25,6 +25,7 @@ void AHunterCheckpointActor::BeginPlay()
 
     if (ActivationSphere)
     {
+        ActivationRadius = FMath::IsFinite(ActivationRadius) ? FMath::Max(50.0f, ActivationRadius) : 180.0f;
         ActivationSphere->SetSphereRadius(ActivationRadius);
         ActivationSphere->OnComponentBeginOverlap.AddDynamic(this, &AHunterCheckpointActor::HandleActivationOverlap);
     }
