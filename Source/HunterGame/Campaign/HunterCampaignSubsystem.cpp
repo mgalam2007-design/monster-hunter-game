@@ -572,6 +572,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 11)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 11: recover the memories of the lost expedition and confront its fallen captain.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH11_EchoesOfTheFallen")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective MemoryObjective;
+            MemoryObjective.ObjectiveId = TEXT("RecoverExpeditionMemories");
+            MemoryObjective.Description = FText::FromString(TEXT("Recover 3 memory echoes from the lost expedition"));
+            MemoryObjective.Type = EHunterObjectiveType::Collect;
+            MemoryObjective.EventTag = TEXT("ExpeditionMemoryRecovered");
+            MemoryObjective.RequiredCount = 3;
+            Objectives.Add(MemoryObjective);
+
+            FHunterObjective CaptainObjective;
+            CaptainObjective.ObjectiveId = TEXT("DefeatFallenCaptain");
+            CaptainObjective.Description = FText::FromString(TEXT("Defeat the fallen expedition captain"));
+            CaptainObjective.Type = EHunterObjectiveType::Defeat;
+            CaptainObjective.EventTag = TEXT("FallenCaptainDefeated");
+            CaptainObjective.RequiredCount = 1;
+            Objectives.Add(CaptainObjective);
+
+            if (!Quest->StartQuest(TEXT("CH11_EchoesOfTheFallen"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -695,9 +743,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 11)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH11_EchoesOfTheFallen")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 11-20 still need authored objective sets.
+        // Chapters 12-20 still need authored objective sets.
         return false;
     }
 
