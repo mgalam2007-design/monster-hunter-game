@@ -22,31 +22,33 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
     AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
     UHunterInventoryComponent* Inventory = Arin ? Arin->GetInventoryComponent() : nullptr;
     UArinProgressionComponent* Progression = Arin ? Arin->GetProgressionComponent() : nullptr;
-    if (!Inventory || !Inventory->HasItem(NewItem.ItemId))
-    {
-        return false;
-    }
-
-    // Stage-gated gear must fail closed if the progression component is unavailable.
-    if (NewItem.RequiredEvolutionStage > 0 &&
-        (!Progression || static_cast<int32>(Progression->GetEvolutionStage()) < NewItem.RequiredEvolutionStage))
+    if (!Inventory)
     {
         return false;
     }
 
     const EHunterItemType RequiredType = NewItem.Slot == EHunterEquipmentSlot::Weapon ? EHunterItemType::Weapon : EHunterItemType::Armor;
-    bool bHasMatchingInventoryItem = false;
     FHunterInventoryItem SourceInventoryItem;
+    bool bHasMatchingInventoryItem = false;
     for (const FHunterInventoryItem& InventoryItem : Inventory->GetItems())
     {
         if (InventoryItem.ItemId == NewItem.ItemId && InventoryItem.ItemType == RequiredType && InventoryItem.Quantity > 0)
         {
-            bHasMatchingInventoryItem = true;
             SourceInventoryItem = InventoryItem;
+            bHasMatchingInventoryItem = true;
             break;
         }
     }
     if (!bHasMatchingInventoryItem)
+    {
+        return false;
+    }
+
+    // Inventory metadata is authoritative. Never trust caller-supplied
+    // combat stats or evolution requirements for an item ID.
+    const int32 RequiredStage = FMath::Clamp(SourceInventoryItem.RequiredEvolutionStage, 0, 4);
+    if (RequiredStage > 0 &&
+        (!Progression || static_cast<int32>(Progression->GetEvolutionStage()) < RequiredStage))
     {
         return false;
     }
@@ -63,8 +65,16 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
         return false;
     }
 
-    SlotItem = NewItem;
-    SlotItem.bIsEquipped = true;
+    FHunterEquipmentItem Equipped;
+    Equipped.ItemId = SourceInventoryItem.ItemId;
+    Equipped.DisplayName = SourceInventoryItem.DisplayName;
+    Equipped.Slot = NewItem.Slot;
+    Equipped.DamageBonus = FMath::Max(0.0f, SourceInventoryItem.DamageBonus);
+    Equipped.DamageReduction = FMath::Clamp(SourceInventoryItem.DamageReduction, 0.0f, 0.8f);
+    Equipped.RequiredEvolutionStage = RequiredStage;
+    Equipped.bIsEquipped = true;
+    SlotItem = Equipped;
+
     OnEquipmentChanged.Broadcast();
     return true;
 }
