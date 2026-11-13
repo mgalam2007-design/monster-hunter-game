@@ -60,7 +60,12 @@ bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int3
 
     if (!Inventory->AddItem(Purchase))
     {
-        if (TotalCost > 0) Currency->AddCurrency(TotalCost);
+        if (TotalCost > 0 && !Currency->AddCurrency(TotalCost))
+        {
+            UE_LOG(LogTemp, Error,
+                TEXT("Shop purchase refund failed for item %s (quantity %d, refund %lld)."),
+                *ItemId.ToString(), Quantity, TotalCost);
+        }
         return false;
     }
 
