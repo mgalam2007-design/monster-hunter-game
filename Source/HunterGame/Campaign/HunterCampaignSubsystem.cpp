@@ -772,6 +772,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 15)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 15: close simultaneous breaches by stabilizing their anchors.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH15_WorldsUnsealed")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective AnchorObjective;
+            AnchorObjective.ObjectiveId = TEXT("StabilizeBreachAnchors");
+            AnchorObjective.Description = FText::FromString(TEXT("Stabilize 4 unstable gate anchors"));
+            AnchorObjective.Type = EHunterObjectiveType::Interact;
+            AnchorObjective.EventTag = TEXT("BreachAnchorStabilized");
+            AnchorObjective.RequiredCount = 4;
+            Objectives.Add(AnchorObjective);
+
+            FHunterObjective GuardianObjective;
+            GuardianObjective.ObjectiveId = TEXT("DefeatBreachGuardians");
+            GuardianObjective.Description = FText::FromString(TEXT("Defeat 2 guardians protecting the unstable gates"));
+            GuardianObjective.Type = EHunterObjectiveType::Defeat;
+            GuardianObjective.EventTag = TEXT("BreachGuardianDefeated");
+            GuardianObjective.RequiredCount = 2;
+            Objectives.Add(GuardianObjective);
+
+            if (!Quest->StartQuest(TEXT("CH15_WorldsUnsealed"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -939,9 +987,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 15)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH15_WorldsUnsealed")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 15-20 still need authored objective sets.
+        // Chapters 16-20 still need authored objective sets.
         return false;
     }
 
