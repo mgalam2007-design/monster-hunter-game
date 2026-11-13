@@ -620,6 +620,62 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 12)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 12: investigate the unknown faction and make a deliberate choice about its pact.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH12_ShadowAccord")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective ContactObjective;
+            ContactObjective.ObjectiveId = TEXT("ReachShadowContact");
+            ContactObjective.Description = FText::FromString(TEXT("Meet the unknown faction's representative"));
+            ContactObjective.Type = EHunterObjectiveType::Reach;
+            ContactObjective.EventTag = TEXT("ShadowContactReached");
+            ContactObjective.RequiredCount = 1;
+            Objectives.Add(ContactObjective);
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("DefeatShadowSentinels");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 3 shadow sentinels guarding the meeting"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("ShadowSentinelDefeated");
+            DefeatObjective.RequiredCount = 3;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective PactObjective;
+            PactObjective.ObjectiveId = TEXT("ResolveShadowPact");
+            PactObjective.Description = FText::FromString(TEXT("Make a decision at the shadow pact altar"));
+            PactObjective.Type = EHunterObjectiveType::Interact;
+            PactObjective.EventTag = TEXT("ShadowPactResolved");
+            PactObjective.RequiredCount = 1;
+            Objectives.Add(PactObjective);
+
+            if (!Quest->StartQuest(TEXT("CH12_ShadowAccord"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -754,9 +810,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 12)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH12_ShadowAccord")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 12-20 still need authored objective sets.
+        // Chapters 13-20 still need authored objective sets.
         return false;
     }
 
