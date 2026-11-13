@@ -82,13 +82,18 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         return false;
     }
 
-    CurrentChapterNumber = ChapterNumber;
-
     // Chapter 1 is the first fully authored quest loop in the campaign.
+    // Do not report a successful chapter start if its required quest cannot start.
     if (ChapterNumber == 1)
     {
-        if (UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
         {
+            return false;
+        }
             // Preserve partial or completed progress when the player re-enters Chapter 1.
             if (Quest->GetActiveQuestId() == FName(TEXT("CH01_FirstBreach")))
             {
@@ -114,10 +119,14 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
             RecoverObjective.RequiredCount = 1;
             Objectives.Add(RecoverObjective);
 
-            Quest->StartQuest(TEXT("CH01_FirstBreach"), Objectives);
+            if (!Quest->StartQuest(TEXT("CH01_FirstBreach"), Objectives))
+            {
+                return false;
+            }
         }
     }
 
+    CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
 }
