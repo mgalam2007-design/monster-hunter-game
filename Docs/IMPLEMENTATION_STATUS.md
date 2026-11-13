@@ -153,3 +153,12 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Trace radius and base damage are normalized against non-finite or out-of-range values. The trace remains configurable through the Blueprint component defaults.
 - `Tools/validate_weapon_trace.py` checks the swept-volume implementation, socket guards, hit de-duplication and finite damage settings in GitHub Actions.
 - This is static source validation only. The trace radius, collision channel, socket placement, and damage feel must still be tuned and tested against real skeletal weapon sockets in Unreal Editor.
+
+
+## Health component finite-value hardening
+
+- Damage and healing reject NaN and infinite input amounts before changing health.
+- Initial maximum health is normalized to a finite positive value; attempts to set maximum health to a non-finite value are ignored.
+- Health percentage and preserved-health calculations are clamped to safe finite ranges.
+- `Tools/validate_health_component.py` checks the health mutation safeguards in GitHub Actions.
+- These are static source checks. Runtime behavior still needs Unreal compilation and gameplay testing.
