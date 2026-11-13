@@ -109,13 +109,42 @@ bool UHunterShopComponent::SellItem(AArinValeCharacter* Seller, FName ItemId, in
     }
 
     const int64 Payout = Entry->SellPrice * static_cast<int64>(Quantity);
-    if (Currency->GetBalance() > MAX_int64 - Payout || !Inventory->RemoveItem(ItemId, Quantity))
+    if (Currency->GetBalance() > MAX_int64 - Payout)
     {
         return false;
     }
 
-    // The balance overflow check guarantees this credit succeeds.
-    Currency->AddCurrency(Payout);
+    // Keep an authoritative copy so a currency-credit failure cannot silently
+    // destroy the item after inventory listeners have run.
+    FHunterInventoryItem SoldItem;
+    bool bFoundSoldItem = false;
+    for (const FHunterInventoryItem& Item : Inventory->GetItems())
+    {
+        if (Item.ItemId == ItemId && Item.Quantity > 0)
+        {
+            SoldItem = Item;
+            SoldItem.Quantity = Quantity;
+            bFoundSoldItem = true;
+            break;
+        }
+    }
+    if (!bFoundSoldItem || !Inventory->RemoveItem(ItemId, Quantity))
+    {
+        return false;
+    }
+
+    if (!Currency->AddCurrency(Payout))
+    {
+        // A listener may have changed the wallet during the inventory-change
+        // broadcast. Restore the sold quantity and leave shop stock untouched.
+        if (!Inventory->AddItem(SoldItem))
+        {
+            UE_LOG(LogTemp, Error,
+                TEXT("Shop transaction rollback failed for item %s (quantity %d)."),
+                *ItemId.ToString(), Quantity);
+        }
+        return false;
+    }
 
     if (Entry->Stock >= 0)
     {
