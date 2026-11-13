@@ -85,6 +85,9 @@ private:
     void HandleQuestCompleted(FName QuestId);
 
     UFUNCTION()
+    void HandleQuestChanged();
+
+    UFUNCTION()
     void HandleChapterChanged(int32 ChapterNumber);
 
     UFUNCTION()
