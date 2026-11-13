@@ -93,4 +93,7 @@ private:
 
     UPROPERTY(VisibleAnywhere, Category="Quest")
     bool bQuestCompleted = false;
+
+    // Revision token prevents stale delegate notifications after re-entrant changes.
+    uint64 QuestStateRevision = 0;
 };
