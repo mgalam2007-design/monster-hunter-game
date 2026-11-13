@@ -4,6 +4,7 @@
 #include "ArinValeCharacter.h"
 #include "ArinProgressionComponent.h"
 #include "Components/HunterCurrencyComponent.h"
+#include "Components/HunterHealthComponent.h"
 #include "Quests/HunterQuestSubsystem.h"
 #include "Engine/GameInstance.h"
 
@@ -75,7 +76,7 @@ void AHunterMonsterBase::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    if (bIsDead)
+    if (bIsDead || !FMath::IsFinite(DeltaSeconds) || DeltaSeconds <= 0.0f)
     {
         return;
     }
@@ -93,8 +94,10 @@ void AHunterMonsterBase::Tick(float DeltaSeconds)
 
 void AHunterMonsterBase::FindTarget()
 {
-    ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-    if (PlayerCharacter && FVector::DistSquared(GetActorLocation(), PlayerCharacter->GetActorLocation()) <= FMath::Square(DetectionRadius))
+    AArinValeCharacter* PlayerCharacter = Cast<AArinValeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+    const UHunterHealthComponent* PlayerHealth = PlayerCharacter ? PlayerCharacter->GetHealthComponent() : nullptr;
+    if (PlayerCharacter && (!PlayerHealth || !PlayerHealth->IsDead()) &&
+        FVector::DistSquared(GetActorLocation(), PlayerCharacter->GetActorLocation()) <= FMath::Square(DetectionRadius))
     {
         TargetCharacter = PlayerCharacter;
     }
@@ -103,7 +106,9 @@ void AHunterMonsterBase::FindTarget()
 void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
 {
     ACharacter* Target = TargetCharacter.Get();
-    if (!Target || Target->IsActorBeingDestroyed())
+    const AArinValeCharacter* ArinTarget = Cast<AArinValeCharacter>(Target);
+    const UHunterHealthComponent* TargetHealth = ArinTarget ? ArinTarget->GetHealthComponent() : nullptr;
+    if (!Target || Target->IsActorBeingDestroyed() || (TargetHealth && TargetHealth->IsDead()))
     {
         TargetCharacter.Reset();
         return;
@@ -137,7 +142,10 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
     {
         AttackTimer = FMath::Max(0.1f, AttackCooldown);
         BP_OnMonsterAttack(Target);
-        UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, nullptr);
+        if (FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
+        {
+            UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, nullptr);
+        }
     }
 }
 
