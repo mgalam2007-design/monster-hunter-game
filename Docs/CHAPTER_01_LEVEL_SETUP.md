@@ -107,3 +107,18 @@ Keep the first level compact, use a small number of dynamic lights, limit expens
 ## Current boundary
 
 This is an implementation recipe, not a completed level. The repository currently contains the C++ actor/component foundations, but the Unreal Editor work above, final art assets and actual playtest are still outstanding.
+
+## 1A. Use the code-generated greybox arena
+
+The repository now includes `AHunterPrototypeArenaActor`, which creates a temporary enclosed arena from Unreal's built-in cube mesh.
+
+1. In the Content Browser, enable **C++ Classes** in the Sources panel and locate `HunterPrototypeArenaActor` under the HunterGame module's World folder.
+2. Drag `HunterPrototypeArenaActor` into `L_CH01_FirstBreach`.
+3. In Details, start with **Arena Half Width = 1800**, **Arena Half Depth = 1800**, and **Wall Height = 600**.
+4. Move the actor so its floor sits at the level's intended ground height. Its floor is slightly below the actor origin.
+5. Keep the player start inside the arena, away from the walls and gate frame. Put the encounter trigger near the center and spawn points around the open floor.
+6. Add or resize a `NavMeshBoundsVolume` so it covers the entire floor. Press **P** and verify green navigation coverage; if pillars or walls obstruct routes, adjust their placement or the NavMesh bounds.
+7. Press Play and verify the arena blocks Arin and enemies correctly. The blue gate light is only a temporary visual marker.
+
+This actor supplies collision geometry and a simple layout only. It does not create a level asset, player start, NavMesh volume, enemies, quest triggers, materials or final environment art automatically.
+
