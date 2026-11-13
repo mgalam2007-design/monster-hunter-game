@@ -27,6 +27,6 @@ for function, field in (
     assert start >= 0 and end > start, f"Could not locate {function}"
     body = SOURCE[start:end]
     assert f"FMath::IsFinite({field})" in body, f"Missing finite guard for {field}"
-    assert "return 0.0f;" in body, f"Missing safe fallback for {field}"
+    assert ": 0.0f;" in body, f"Missing safe fallback for {field}"
 
 print("Validated equipment inventory metadata and finite combat-stat fallbacks.")
