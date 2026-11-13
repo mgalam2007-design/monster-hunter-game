@@ -72,6 +72,9 @@ jobs:
       - name: Validate Arin movement and combat tuning
         run: python Tools/validate_arin_tuning.py
 
+      - name: Validate checkpoint and chapter-exit trigger safety
+        run: python Tools/validate_world_trigger_safety.py
+
       - name: Validate browser demo features and JavaScript syntax
         run: python Tools/validate_browser_demo.py
 
