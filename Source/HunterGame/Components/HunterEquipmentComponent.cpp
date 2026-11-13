@@ -49,7 +49,15 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
 
     // Inventory metadata is authoritative. Never trust caller-supplied
     // combat stats or evolution requirements for an item ID.
-    const int32 RequiredStage = FMath::Clamp(SourceInventoryItem.RequiredEvolutionStage, 0, 4);
+    if (!FMath::IsFinite(SourceInventoryItem.DamageBonus) ||
+        !FMath::IsFinite(SourceInventoryItem.DamageReduction) ||
+        SourceInventoryItem.RequiredEvolutionStage < 0 ||
+        SourceInventoryItem.RequiredEvolutionStage > 4)
+    {
+        return false;
+    }
+
+    const int32 RequiredStage = SourceInventoryItem.RequiredEvolutionStage;
     if (RequiredStage > 0 &&
         (!Progression || static_cast<int32>(Progression->GetEvolutionStage()) < RequiredStage))
     {
@@ -163,12 +171,16 @@ bool UHunterEquipmentComponent::UnequipSlot(EHunterEquipmentSlot Slot)
 
 float UHunterEquipmentComponent::GetTotalDamageBonus() const
 {
-    return FMath::Max(0.0f, EquippedWeapon.DamageBonus);
+    return FMath::IsFinite(EquippedWeapon.DamageBonus)
+        ? FMath::Max(0.0f, EquippedWeapon.DamageBonus)
+        : 0.0f;
 }
 
 float UHunterEquipmentComponent::GetDamageReduction() const
 {
-    return FMath::Clamp(EquippedArmor.DamageReduction, 0.0f, 0.8f);
+    return FMath::IsFinite(EquippedArmor.DamageReduction)
+        ? FMath::Clamp(EquippedArmor.DamageReduction, 0.0f, 0.8f)
+        : 0.0f;
 }
 
 void UHunterEquipmentComponent::RestoreEquipment(const FHunterEquipmentItem& Weapon, const FHunterEquipmentItem& Armor)
