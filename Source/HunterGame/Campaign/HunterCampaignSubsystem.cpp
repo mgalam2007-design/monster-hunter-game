@@ -147,6 +147,13 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else
+    {
+        // Chapters 2-20 currently have narrative briefings but no authored
+        // objective sets. Fail closed rather than allowing an exit volume
+        // to complete an unimplemented chapter for free.
+        return false;
+    }
 
     Chapters[Index].bCompleted = true;
     OnChapterCompleted.Broadcast(CurrentChapterNumber);
