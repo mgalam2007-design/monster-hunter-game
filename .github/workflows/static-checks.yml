@@ -33,6 +33,9 @@ jobs:
       - name: Validate save-slot snapshot safeguards
         run: python Tools/validate_save_snapshot.py
 
+      - name: Validate campaign save-load safeguards
+        run: python Tools/validate_campaign_load.py
+
       - name: Validate character input and consumable safeguards
         run: python Tools/validate_character_safety.py
 
