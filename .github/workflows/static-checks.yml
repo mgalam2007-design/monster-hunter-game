@@ -36,6 +36,9 @@ jobs:
       - name: Validate character input and consumable safeguards
         run: python Tools/validate_character_safety.py
 
+      - name: Validate Unreal breach arena greybox
+        run: python Tools/validate_arena_greybox.py
+
       - name: Validate Arin blockout and Unreal input bindings
         run: python Tools/validate_playable_foundation.py
 
