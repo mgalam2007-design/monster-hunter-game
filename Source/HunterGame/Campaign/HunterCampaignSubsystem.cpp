@@ -136,6 +136,17 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         // Chapter 2: locate the survivor district, then rescue the missing civilians.
         if (Quest->GetActiveQuestId() != FName(TEXT("CH02_MissingSurvivors")))
         {
+            // A completed prior chapter quest must be cleared before the
+            // next chapter can initialize its own objective set.
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
             TArray<FHunterObjective> Objectives;
 
             FHunterObjective LocateObjective;
