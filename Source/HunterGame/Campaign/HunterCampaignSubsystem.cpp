@@ -1385,6 +1385,31 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         return false;
     }
 
+    // Reject malformed snapshots before changing campaign or player state.
+    // The menu performs similar checks, but loads can also be requested directly.
+    if (SaveObject->CurrentChapterNumber < 1 ||
+        SaveObject->CurrentChapterNumber > Chapters.Num() ||
+        SaveObject->ArinExperience < 0 ||
+        SaveObject->ArinCurrency < 0 ||
+        SaveObject->ArinEvolutionStage < 0 ||
+        SaveObject->ArinEvolutionStage > 4 ||
+        SaveObject->CompletedChapterNumbers.Num() > Chapters.Num())
+    {
+        return false;
+    }
+
+    TSet<int32> UniqueCompletedChapters;
+    for (const int32 ChapterNumber : SaveObject->CompletedChapterNumbers)
+    {
+        if (ChapterNumber < 1 ||
+            ChapterNumber > Chapters.Num() ||
+            UniqueCompletedChapters.Contains(ChapterNumber))
+        {
+            return false;
+        }
+        UniqueCompletedChapters.Add(ChapterNumber);
+    }
+
     TSet<int32> ValidCompletedChapters;
     for (const int32 ChapterNumber : SaveObject->CompletedChapterNumbers)
     {
