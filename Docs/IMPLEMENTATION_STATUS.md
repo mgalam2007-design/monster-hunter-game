@@ -117,3 +117,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - `Tools/validate_arena_greybox.py` checks the required geometry, collision, navigation and gate lighting; it runs in GitHub Actions.
 - This provides a first environment blockout for encounter assembly, not a finished art level. It still needs to be placed in an Unreal map, checked for collision/navmesh and lit/materialed in-editor.
 
+## Visible monster prototype foundation
+
+- The reusable monster base now assembles a temporary humanoid/creature silhouette from Unreal's built-in cube and sphere meshes: torso, shoulders, arms, legs, head and horns.
+- The visual pieces have collision and navigation influence disabled. The inherited Character capsule remains responsible for movement and collision, so the blockout does not add extra hitboxes.
+- `Tools/validate_monster_blockout.py` checks the required source components and is included in GitHub Actions.
+- This is a shared placeholder silhouette for early encounter assembly, not a final monster roster. Distinct enemy species, materials, skeletal meshes, rigs, animations, attack telegraphs and boss-specific geometry remain to be authored.
+- The C++ still requires an Unreal Editor compile and visual test. Engine primitive asset loading, scale/alignment and navigation-based pursuit must be verified in the target project version.
