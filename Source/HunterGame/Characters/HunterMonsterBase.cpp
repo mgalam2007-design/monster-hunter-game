@@ -59,14 +59,14 @@ void AHunterMonsterBase::BeginPlay()
 {
     Super::BeginPlay();
     // Normalize editable Blueprint defaults before they are used by combat or movement.
-    MaxHealth = FMath::Max(1.0f, MaxHealth);
+    MaxHealth = FMath::IsFinite(MaxHealth) ? FMath::Max(1.0f, MaxHealth) : 120.0f;
     CurrentHealth = MaxHealth;
-    DetectionRadius = FMath::Max(0.0f, DetectionRadius);
-    AttackRange = FMath::Max(0.0f, AttackRange);
-    AttackDamage = FMath::Max(0.0f, AttackDamage);
-    AttackCooldown = FMath::Max(0.1f, AttackCooldown);
-    ChaseSpeed = FMath::Max(0.0f, ChaseSpeed);
-    ChaseRepathInterval = FMath::Max(0.05f, ChaseRepathInterval);
+    DetectionRadius = FMath::IsFinite(DetectionRadius) ? FMath::Max(0.0f, DetectionRadius) : 1400.0f;
+    AttackRange = FMath::IsFinite(AttackRange) ? FMath::Max(0.0f, AttackRange) : 180.0f;
+    AttackDamage = FMath::IsFinite(AttackDamage) ? FMath::Max(0.0f, AttackDamage) : 12.0f;
+    AttackCooldown = FMath::IsFinite(AttackCooldown) ? FMath::Max(0.1f, AttackCooldown) : 1.6f;
+    ChaseSpeed = FMath::IsFinite(ChaseSpeed) ? FMath::Max(0.0f, ChaseSpeed) : 430.0f;
+    ChaseRepathInterval = FMath::IsFinite(ChaseRepathInterval) ? FMath::Max(0.05f, ChaseRepathInterval) : 0.35f;
     GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
     FindTarget();
 }
