@@ -214,7 +214,7 @@ void AArinValeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AArinValeCharacter::MoveForward(float Value)
 {
-    if ((!HealthComponent || !HealthComponent->IsDead()) && Controller && !FMath::IsNearlyZero(Value))
+    if (FMath::IsFinite(Value) && (!HealthComponent || !HealthComponent->IsDead()) && Controller && !FMath::IsNearlyZero(Value))
     {
         const FRotator YawRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
         AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X), Value);
@@ -232,24 +232,27 @@ void AArinValeCharacter::MoveRight(float Value)
 
 void AArinValeCharacter::Turn(float Value)
 {
-    if (!HealthComponent || !HealthComponent->IsDead()) AddControllerYawInput(Value);
+    if (FMath::IsFinite(Value) && (!HealthComponent || !HealthComponent->IsDead())) AddControllerYawInput(Value);
 }
 
 void AArinValeCharacter::LookUp(float Value)
 {
-    if (!HealthComponent || !HealthComponent->IsDead()) AddControllerPitchInput(Value);
+    if (FMath::IsFinite(Value) && (!HealthComponent || !HealthComponent->IsDead())) AddControllerPitchInput(Value);
 }
 void AArinValeCharacter::StartSprint()
 {
-    if (HealthComponent && HealthComponent->IsDead()) return;
-    const float MovementMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
-    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * FMath::Max(0.1f, MovementMultiplier);
+    if ((HealthComponent && HealthComponent->IsDead()) || !GetCharacterMovement()) return;
+    const float RawMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
+    const float MovementMultiplier = FMath::IsFinite(RawMultiplier) ? FMath::Max(0.1f, RawMultiplier) : 1.0f;
+    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * MovementMultiplier;
 }
 
 void AArinValeCharacter::StopSprint()
 {
-    const float MovementMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
-    GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * FMath::Max(0.1f, MovementMultiplier);
+    if (!GetCharacterMovement()) return;
+    const float RawMultiplier = ProgressionComponent ? ProgressionComponent->GetCurrentStageProfile().MovementMultiplier : 1.0f;
+    const float MovementMultiplier = FMath::IsFinite(RawMultiplier) ? FMath::Max(0.1f, RawMultiplier) : 1.0f;
+    GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * MovementMultiplier;
 }
 
 void AArinValeCharacter::Dodge()
