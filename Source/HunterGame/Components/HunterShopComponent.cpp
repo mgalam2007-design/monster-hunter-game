@@ -5,18 +5,26 @@
 
 FHunterShopEntry* UHunterShopComponent::FindEntry(FName ItemId)
 {
-    return Catalog.FindByPredicate([ItemId](const FHunterShopEntry& Entry)
+    FHunterShopEntry* Match = nullptr;
+    for (FHunterShopEntry& Entry : Catalog)
     {
-        return Entry.Item.ItemId == ItemId;
-    });
+        if (Entry.Item.ItemId != ItemId) continue;
+        if (Match) return nullptr;
+        Match = &Entry;
+    }
+    return Match;
 }
 
 const FHunterShopEntry* UHunterShopComponent::FindEntry(FName ItemId) const
 {
-    return Catalog.FindByPredicate([ItemId](const FHunterShopEntry& Entry)
+    const FHunterShopEntry* Match = nullptr;
+    for (const FHunterShopEntry& Entry : Catalog)
     {
-        return Entry.Item.ItemId == ItemId;
-    });
+        if (Entry.Item.ItemId != ItemId) continue;
+        if (Match) return nullptr;
+        Match = &Entry;
+    }
+    return Match;
 }
 
 bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int32 Quantity)
@@ -29,8 +37,8 @@ bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int3
     FHunterShopEntry* Entry = FindEntry(ItemId);
     UHunterInventoryComponent* Inventory = Buyer ? Buyer->GetInventoryComponent() : nullptr;
     UHunterCurrencyComponent* Currency = Buyer ? Buyer->GetCurrencyComponent() : nullptr;
-    if (!Entry || !Inventory || !Currency || Entry->Item.Quantity <= 0 ||
-        Entry->Item.MaxStack <= 0 || (Entry->Stock >= 0 && Entry->Stock < Quantity) ||
+    if (!Entry || !Inventory || !Currency || Entry->Item.ItemType == EHunterItemType::Quest ||
+        Entry->Item.Quantity <= 0 || Entry->Item.MaxStack <= 0 || (Entry->Stock >= 0 && Entry->Stock < Quantity) ||
         Entry->BuyPrice < 0 || Entry->BuyPrice > MAX_int64 / Quantity)
     {
         return false;
