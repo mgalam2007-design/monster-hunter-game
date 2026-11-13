@@ -24,5 +24,8 @@ jobs:
       - name: Validate campaign quest and integration-guide consistency
         run: python Tools/validate_campaign.py
 
+      - name: Validate shop transaction rollback safeguards
+        run: python Tools/validate_shop.py
+
       - name: Validate Unreal project descriptor
         run: python -c "import json; json.load(open('HunterGame.uproject', encoding='utf-8'))"
