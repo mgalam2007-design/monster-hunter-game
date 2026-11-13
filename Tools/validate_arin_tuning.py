@@ -28,7 +28,9 @@ assert "FMath::IsFinite(Value)" in SOURCE[move_right_start:move_right_end], "Mov
 
 respawn_start = SOURCE.find("void AArinValeCharacter::RespawnAtLastCheckpoint")
 respawn_end = SOURCE.find("void AArinValeCharacter::", respawn_start + 10)
-assert respawn_start >= 0 and respawn_end > respawn_start, "Could not locate respawn implementation"
+assert respawn_start >= 0, "Could not locate respawn implementation"
+if respawn_end < 0:
+    respawn_end = len(SOURCE)
 respawn = SOURCE[respawn_start:respawn_end]
 for token in (
     "HealthComponent->ReviveFullHealth()",
