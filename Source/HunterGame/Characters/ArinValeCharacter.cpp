@@ -103,7 +103,24 @@ AArinValeCharacter::AArinValeCharacter()
 void AArinValeCharacter::BeginPlay()
 {
     Super::BeginPlay();
-    DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
+    // Normalize editable Blueprint tuning before it reaches movement or timers.
+    SprintSpeed = FMath::IsFinite(SprintSpeed) ? FMath::Max(0.0f, SprintSpeed) : 850.0f;
+    DodgeStrength = FMath::IsFinite(DodgeStrength) ? FMath::Max(0.0f, DodgeStrength) : 900.0f;
+    DodgeUpwardStrength = FMath::IsFinite(DodgeUpwardStrength)
+        ? FMath::Max(0.0f, DodgeUpwardStrength) : 90.0f;
+    RespawnDelay = FMath::IsFinite(RespawnDelay) ? FMath::Max(0.0f, RespawnDelay) : 3.0f;
+    SwordAttackCooldown = FMath::IsFinite(SwordAttackCooldown)
+        ? FMath::Max(0.05f, SwordAttackCooldown) : 0.55f;
+    DefaultWeaponTraceWindow = FMath::IsFinite(DefaultWeaponTraceWindow)
+        ? FMath::Max(0.05f, DefaultWeaponTraceWindow) : 0.22f;
+
+    if (GetCharacterMovement())
+    {
+        GetCharacterMovement()->MaxWalkSpeed = FMath::IsFinite(GetCharacterMovement()->MaxWalkSpeed)
+            ? FMath::Max(0.0f, GetCharacterMovement()->MaxWalkSpeed) : 500.0f;
+    }
+    DefaultWalkSpeed = GetCharacterMovement() ? GetCharacterMovement()->MaxWalkSpeed : 500.0f;
     UnmodifiedMaxHealth = HealthComponent ? HealthComponent->GetMaxHealth() : 100.0f;
     if (ProgressionComponent)
     {
