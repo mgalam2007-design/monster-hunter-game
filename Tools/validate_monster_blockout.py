@@ -22,4 +22,13 @@ assert "GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed" in SOURCE
 assert "ChaseRepathInterval" in HEADER
 assert "ChaseRepathTimer <= 0.0f" in SOURCE
 assert "ChaseRepathTimer = FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
+# Editable Blueprint defaults are normalized before entering combat.
+assert "MaxHealth = FMath::Max(1.0f, MaxHealth)" in SOURCE
+assert "DetectionRadius = FMath::Max(0.0f, DetectionRadius)" in SOURCE
+assert "AttackRange = FMath::Max(0.0f, AttackRange)" in SOURCE
+assert "AttackDamage = FMath::Max(0.0f, AttackDamage)" in SOURCE
+assert "AttackCooldown = FMath::Max(0.1f, AttackCooldown)" in SOURCE
+assert "ChaseSpeed = FMath::Max(0.0f, ChaseSpeed)" in SOURCE
+assert "ChaseRepathInterval = FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
+assert "return CurrentHealth / FMath::Max(1.0f, MaxHealth)" in SOURCE
 print("Monster blockout source checks passed.")
