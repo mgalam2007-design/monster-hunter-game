@@ -27,6 +27,7 @@ void AHunterChapterExitActor::BeginPlay()
 
     if (ExitTrigger)
     {
+        TriggerRadius = FMath::IsFinite(TriggerRadius) ? FMath::Max(50.0f, TriggerRadius) : 220.0f;
         ExitTrigger->SetSphereRadius(TriggerRadius);
         ExitTrigger->OnComponentBeginOverlap.AddDynamic(this, &AHunterChapterExitActor::HandleExitOverlap);
     }
@@ -47,7 +48,7 @@ void AHunterChapterExitActor::HandleExitOverlap(UPrimitiveComponent* OverlappedC
 
 bool AHunterChapterExitActor::TryCompleteChapter(AArinValeCharacter* Arin)
 {
-    if (!Arin || (bOneTimeActivation && bHasActivated))
+    if (!Arin || SaveSlotName.IsEmpty() || (bOneTimeActivation && bHasActivated))
     {
         return false;
     }
