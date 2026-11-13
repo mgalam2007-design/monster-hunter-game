@@ -31,4 +31,6 @@ public:
 private:
     UPROPERTY(VisibleAnywhere, Category="Economy", meta=(ClampMin="0"))
     int64 Balance = 0;
+    // Prevent currency delegates from recursively mutating the wallet mid-notification.
+    bool bMutationInProgress = false;
 };
