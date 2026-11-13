@@ -57,6 +57,9 @@ jobs:
       - name: Validate health component finite-value safeguards
         run: python Tools/validate_health_component.py
 
+      - name: Validate monster damage finite-value safeguards
+        run: python Tools/validate_monster_damage.py
+
       - name: Validate browser demo features and JavaScript syntax
         run: python Tools/validate_browser_demo.py
 
