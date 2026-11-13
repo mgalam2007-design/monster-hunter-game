@@ -1,5 +1,19 @@
 #include "HunterInventoryComponent.h"
 
+namespace
+{
+    bool HasMatchingStackMetadata(const FHunterInventoryItem& A, const FHunterInventoryItem& B)
+    {
+        return A.ItemType == B.ItemType && A.MaxStack == B.MaxStack &&
+            A.DisplayName.EqualTo(B.DisplayName) &&
+            FMath::IsNearlyEqual(A.HealthRestoreAmount, B.HealthRestoreAmount) &&
+            FMath::IsNearlyEqual(A.EnergyRestoreAmount, B.EnergyRestoreAmount) &&
+            FMath::IsNearlyEqual(A.DamageBonus, B.DamageBonus) &&
+            FMath::IsNearlyEqual(A.DamageReduction, B.DamageReduction) &&
+            A.RequiredEvolutionStage == B.RequiredEvolutionStage;
+    }
+}
+
 bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
 {
     if (Item.ItemId.IsNone() || Item.Quantity <= 0 ||
@@ -29,6 +43,10 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
         if (Existing.ItemId != Item.ItemId)
         {
             continue;
+        }
+        if (!HasMatchingStackMetadata(Existing, Item))
+        {
+            return false;
         }
 
         const int32 Space = FMath::Max(0, Existing.MaxStack - Existing.Quantity);
