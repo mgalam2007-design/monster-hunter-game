@@ -138,7 +138,10 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
     // Chapter 1 cannot be skipped if its quest is missing, inactive or incomplete.
     if (CurrentChapterNumber == 1)
     {
-        const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>();
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
         if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH01_FirstBreach")) || !Quest->IsQuestComplete())
         {
             return false;
@@ -205,7 +208,10 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
         SaveObject->ArinCurrency = Currency->GetBalance();
     }
 
-    if (const UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+    UGameInstance* GameInstance = GetGameInstance();
+    if (const UHunterQuestSubsystem* Quest = GameInstance
+        ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+        : nullptr)
     {
         SaveObject->ActiveQuestId = Quest->GetActiveQuestId();
         SaveObject->ActiveQuestObjectives = Quest->GetObjectives();
@@ -290,7 +296,10 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         Currency->SetBalance(SaveObject->SaveVersion >= 5 ? SaveObject->ArinCurrency : 0);
     }
 
-    if (UHunterQuestSubsystem* Quest = GetGameInstance()->GetSubsystem<UHunterQuestSubsystem>())
+    UGameInstance* GameInstance = GetGameInstance();
+    if (UHunterQuestSubsystem* Quest = GameInstance
+        ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+        : nullptr)
     {
         if (!Quest->RestoreQuestState(SaveObject->ActiveQuestId, SaveObject->ActiveQuestObjectives, SaveObject->bActiveQuestCompleted))
         {
@@ -306,7 +315,10 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
             static_cast<EArinEvolutionStage>(SafeStage));
     }
 
-    if (SaveObject->SaveVersion >= 6 && SaveObject->bHasArinWorldTransform)
+    // A corrupted save must never move Arin to a NaN/invalid world transform.
+    if (SaveObject->SaveVersion >= 6 &&
+        SaveObject->bHasArinWorldTransform &&
+        SaveObject->ArinWorldTransform.IsValid())
     {
         Arin->SetActorTransform(SaveObject->ArinWorldTransform, false, nullptr, ETeleportType::TeleportPhysics);
     }
