@@ -1,5 +1,13 @@
 #include "HunterQuestSubsystem.h"
 
+namespace
+{
+    bool IsValidObjectiveType(EHunterObjectiveType Type)
+    {
+        return static_cast<uint8>(Type) <= static_cast<uint8>(EHunterObjectiveType::Survive);
+    }
+}
+
 bool UHunterQuestSubsystem::StartQuest(FName NewQuestId, const TArray<FHunterObjective>& NewObjectives)
 {
     if (NewQuestId.IsNone() || NewObjectives.IsEmpty() || IsQuestActive())
@@ -11,7 +19,8 @@ bool UHunterQuestSubsystem::StartQuest(FName NewQuestId, const TArray<FHunterObj
     for (const FHunterObjective& Objective : NewObjectives)
     {
         if (Objective.ObjectiveId.IsNone() || Objective.EventTag.IsNone() ||
-            Objective.RequiredCount < 1 || SeenIds.Contains(Objective.ObjectiveId))
+            !IsValidObjectiveType(Objective.Type) || Objective.RequiredCount < 1 ||
+            SeenIds.Contains(Objective.ObjectiveId))
         {
             return false;
         }
@@ -99,7 +108,8 @@ bool UHunterQuestSubsystem::RestoreQuestState(FName QuestId, const TArray<FHunte
     for (FHunterObjective& Objective : RestoredObjectives)
     {
         if (Objective.ObjectiveId.IsNone() || Objective.EventTag.IsNone() ||
-            Objective.RequiredCount < 1 || SeenIds.Contains(Objective.ObjectiveId))
+            !IsValidObjectiveType(Objective.Type) || Objective.RequiredCount < 1 ||
+            SeenIds.Contains(Objective.ObjectiveId))
         {
             return false;
         }
