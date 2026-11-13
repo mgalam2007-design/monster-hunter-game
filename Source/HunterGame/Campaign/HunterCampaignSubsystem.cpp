@@ -916,6 +916,149 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+
+    else if (ChapterNumber == 18)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 18: break the ruined throne-city's command network.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH18_CrownOfRuin")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective WardenObjective;
+            WardenObjective.ObjectiveId = TEXT("DefeatThroneWardens");
+            WardenObjective.Description = FText::FromString(TEXT("Defeat 4 wardens guarding the ruined throne"));
+            WardenObjective.Type = EHunterObjectiveType::Defeat;
+            WardenObjective.EventTag = TEXT("ThroneWardenDefeated");
+            WardenObjective.RequiredCount = 4;
+            Objectives.Add(WardenObjective);
+
+            FHunterObjective CoreObjective;
+            CoreObjective.ObjectiveId = TEXT("DestroyRuinCores");
+            CoreObjective.Description = FText::FromString(TEXT("Destroy 3 command cores beneath the throne-city"));
+            CoreObjective.Type = EHunterObjectiveType::Interact;
+            CoreObjective.EventTag = TEXT("RuinCommandCoreDestroyed");
+            CoreObjective.RequiredCount = 3;
+            Objectives.Add(CoreObjective);
+
+            if (!Quest->StartQuest(TEXT("CH18_CrownOfRuin"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+    else if (ChapterNumber == 19)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 19: cross the origin gate and disable its guardian network.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH19_BeyondTheGate")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective SealObjective;
+            SealObjective.ObjectiveId = TEXT("StabilizeOriginSeals");
+            SealObjective.Description = FText::FromString(TEXT("Stabilize 3 seals along the origin gate"));
+            SealObjective.Type = EHunterObjectiveType::Interact;
+            SealObjective.EventTag = TEXT("OriginGateSealStabilized");
+            SealObjective.RequiredCount = 3;
+            Objectives.Add(SealObjective);
+
+            FHunterObjective SentinelObjective;
+            SentinelObjective.ObjectiveId = TEXT("DefeatOriginSentinels");
+            SentinelObjective.Description = FText::FromString(TEXT("Defeat 2 sentinels guarding the origin gate"));
+            SentinelObjective.Type = EHunterObjectiveType::Defeat;
+            SentinelObjective.EventTag = TEXT("OriginSentinelDefeated");
+            SentinelObjective.RequiredCount = 2;
+            Objectives.Add(SentinelObjective);
+
+            if (!Quest->StartQuest(TEXT("CH19_BeyondTheGate"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+    else if (ChapterNumber == 20)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 20: expose and defeat the source of the breach network.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH20_TheFinalHunter")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective HeartObjective;
+            HeartObjective.ObjectiveId = TEXT("ExposeOriginHeart");
+            HeartObjective.Description = FText::FromString(TEXT("Disable the final seal protecting the origin heart"));
+            HeartObjective.Type = EHunterObjectiveType::Interact;
+            HeartObjective.EventTag = TEXT("OriginHeartExposed");
+            HeartObjective.RequiredCount = 1;
+            Objectives.Add(HeartObjective);
+
+            FHunterObjective FinalBossObjective;
+            FinalBossObjective.ObjectiveId = TEXT("DefeatFinalHunter");
+            FinalBossObjective.Description = FText::FromString(TEXT("Defeat the source of the invasion"));
+            FinalBossObjective.Type = EHunterObjectiveType::Defeat;
+            FinalBossObjective.EventTag = TEXT("FinalHunterDefeated");
+            FinalBossObjective.RequiredCount = 1;
+            Objectives.Add(FinalBossObjective);
+
+            if (!Quest->StartQuest(TEXT("CH20_TheFinalHunter"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -1116,10 +1259,38 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
-    else
+    else if (CurrentChapterNumber == 18)
     {
-        // Chapters 18-20 still need authored objective sets.
-        return false;
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH18_CrownOfRuin")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
+    else if (CurrentChapterNumber == 19)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH19_BeyondTheGate")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
+    else if (CurrentChapterNumber == 20)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH20_TheFinalHunter")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
     }
 
     Chapters[Index].bCompleted = true;
