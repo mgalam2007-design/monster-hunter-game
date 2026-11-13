@@ -11,27 +11,28 @@ ROOT = Path(__file__).resolve().parents[1]
 CAMPAIGN_CPP = ROOT / "Source/HunterGame/Campaign/HunterCampaignSubsystem.cpp"
 GUIDE = ROOT / "Docs/CAMPAIGN_LEVEL_INTEGRATION.md"
 
+# Each chapter lists its quest ID and (event tag, required count) pairs.
 MISSIONS = {
-    1: ("CH01_FirstBreach", ("MonsterDefeated", "BreachShardCollected")),
-    2: ("CH02_MissingSurvivors", ("SurvivorDistrictLocated", "SurvivorRescued")),
-    3: ("CH03_GuildEvaluation", ("TrialOpponentDefeated", "TrialSealActivated")),
-    4: ("CH04_TransitGate", ("TransitGateReached", "TransitGuardianDefeated")),
-    5: ("CH05_MiningContract", ("MiningCreatureDefeated", "CorruptedOreCollected")),
-    6: ("CH06_TrialOfSteel", ("SteelTrialOpponentDefeated", "SteelTrialApproved")),
-    7: ("CH07_BlueMark", ("BlueMarkSourceLocated", "ResonanceFragmentCollected")),
-    8: ("CH08_HunterReborn", ("AwakeningCreatureDefeated", "AwakeningAltarActivated")),
-    9: ("CH09_VanishedHunters", ("MissingHunterSignalLocated", "GateStalkerDefeated", "ExpeditionRecorderRecovered")),
-    10: ("CH10_HollowDistrict", ("HollowDistrictCoreReached", "ShadowAnchorDestroyed", "HollowWardenDefeated")),
-    11: ("CH11_EchoesOfTheFallen", ("ExpeditionMemoryRecovered", "FallenCaptainDefeated")),
-    12: ("CH12_ShadowAccord", ("ShadowContactReached", "ShadowSentinelDefeated", "ShadowPactResolved")),
-    13: ("CH13_SiegeOfTheNorth", ("NorthernSiegeCreatureDefeated", "FortressBeaconActivated")),
-    14: ("CH14_BrokenCitadel", ("CitadelPylonDestroyed", "CitadelCommanderDefeated")),
-    15: ("CH15_WorldsUnsealed", ("BreachAnchorStabilized", "BreachGuardianDefeated")),
-    16: ("CH16_SevenBeacons", ("BoundaryBeaconActivated", "BeaconAttackerDefeated")),
-    17: ("CH17_LastSanctuary", ("SanctuaryGroupEvacuated", "SanctuaryInvaderDefeated")),
-    18: ("CH18_CrownOfRuin", ("ThroneWardenDefeated", "RuinCommandCoreDestroyed")),
-    19: ("CH19_BeyondTheGate", ("OriginGateSealStabilized", "OriginSentinelDefeated")),
-    20: ("CH20_TheFinalHunter", ("OriginHeartExposed", "FinalHunterDefeated")),
+    1: ("CH01_FirstBreach", (("MonsterDefeated", 3), ("BreachShardCollected", 1))),
+    2: ("CH02_MissingSurvivors", (("SurvivorDistrictLocated", 1), ("SurvivorRescued", 3))),
+    3: ("CH03_GuildEvaluation", (("TrialOpponentDefeated", 5), ("TrialSealActivated", 1))),
+    4: ("CH04_TransitGate", (("TransitGateReached", 1), ("TransitGuardianDefeated", 1))),
+    5: ("CH05_MiningContract", (("MiningCreatureDefeated", 4), ("CorruptedOreCollected", 3))),
+    6: ("CH06_TrialOfSteel", (("SteelTrialOpponentDefeated", 1), ("SteelTrialApproved", 1))),
+    7: ("CH07_BlueMark", (("BlueMarkSourceLocated", 1), ("ResonanceFragmentCollected", 3))),
+    8: ("CH08_HunterReborn", (("AwakeningCreatureDefeated", 6), ("AwakeningAltarActivated", 1))),
+    9: ("CH09_VanishedHunters", (("MissingHunterSignalLocated", 1), ("GateStalkerDefeated", 4), ("ExpeditionRecorderRecovered", 1))),
+    10: ("CH10_HollowDistrict", (("HollowDistrictCoreReached", 1), ("ShadowAnchorDestroyed", 3), ("HollowWardenDefeated", 1))),
+    11: ("CH11_EchoesOfTheFallen", (("ExpeditionMemoryRecovered", 3), ("FallenCaptainDefeated", 1))),
+    12: ("CH12_ShadowAccord", (("ShadowContactReached", 1), ("ShadowSentinelDefeated", 3), ("ShadowPactResolved", 1))),
+    13: ("CH13_SiegeOfTheNorth", (("NorthernSiegeCreatureDefeated", 5), ("FortressBeaconActivated", 2))),
+    14: ("CH14_BrokenCitadel", (("CitadelPylonDestroyed", 3), ("CitadelCommanderDefeated", 1))),
+    15: ("CH15_WorldsUnsealed", (("BreachAnchorStabilized", 4), ("BreachGuardianDefeated", 2))),
+    16: ("CH16_SevenBeacons", (("BoundaryBeaconActivated", 7), ("BeaconAttackerDefeated", 3))),
+    17: ("CH17_LastSanctuary", (("SanctuaryGroupEvacuated", 5), ("SanctuaryInvaderDefeated", 6))),
+    18: ("CH18_CrownOfRuin", (("ThroneWardenDefeated", 4), ("RuinCommandCoreDestroyed", 3))),
+    19: ("CH19_BeyondTheGate", (("OriginGateSealStabilized", 3), ("OriginSentinelDefeated", 2))),
+    20: ("CH20_TheFinalHunter", (("OriginHeartExposed", 1), ("FinalHunterDefeated", 1))),
 }
 
 
@@ -40,27 +41,66 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+def objective_counts_for_quest(source: str, quest_id: str) -> dict[str, int]:
+    """Read objective event/count pairs from the quest's own StartQuest block."""
+    start_marker = f'if (Quest->GetActiveQuestId() != FName(TEXT("{quest_id}")))'
+    start = source.find(start_marker)
+    if start < 0:
+        fail(f"{quest_id}: cannot find its quest initialization branch")
+
+    call_marker = f'Quest->StartQuest(TEXT("{quest_id}"), Objectives)'
+    end = source.find(call_marker, start)
+    if end < 0:
+        fail(f"{quest_id}: cannot find its StartQuest call")
+
+    branch = source[start:end]
+    objective_pattern = re.compile(
+        r"FHunterObjective\s+\w+;(?:(?!FHunterObjective).)*?"
+        r'EventTag\s*=\s*TEXT\("([^"]+)"\);(?:(?!FHunterObjective).)*?'
+        r"RequiredCount\s*=\s*(\d+)\s*;",
+        re.DOTALL,
+    )
+    counts: dict[str, int] = {}
+    for tag, count in objective_pattern.findall(branch):
+        if tag in counts:
+            fail(f"{quest_id}: duplicate objective event tag {tag}")
+        counts[tag] = int(count)
+    return counts
+
+
 def main() -> None:
     source = CAMPAIGN_CPP.read_text(encoding="utf-8")
     guide = GUIDE.read_text(encoding="utf-8")
+    total_events = 0
 
-    for chapter, (quest_id, event_tags) in MISSIONS.items():
+    for chapter, (quest_id, objectives) in MISSIONS.items():
         if source.count(quest_id) < 2:
             fail(f"Chapter {chapter}: quest ID {quest_id} must appear in both start and completion logic")
-        for tag in event_tags:
-            if f'TEXT("{tag}")' not in source:
-                fail(f"Chapter {chapter}: event tag {tag} is not authored in campaign C++")
-            if f"`{tag}`" not in guide:
-                fail(f"Chapter {chapter}: event tag {tag} is missing from the integration guide")
         if f"`{quest_id}`" not in guide:
             fail(f"Chapter {chapter}: quest ID {quest_id} is missing from the integration guide")
+
+        actual = objective_counts_for_quest(source, quest_id)
+        expected = dict(objectives)
+        if actual != expected:
+            fail(
+                f"Chapter {chapter} ({quest_id}): objective event/count mismatch; "
+                f"expected {expected}, found {actual}"
+            )
+
+        for tag, required_count in objectives:
+            if f"`{tag}`" not in guide:
+                fail(f"Chapter {chapter}: event tag {tag} is missing from the integration guide")
+            total_events += 1
 
     if "CurrentChapterNumber == 20" not in source:
         fail("Final chapter completion gate is missing")
     if not re.search(r"CampaignCompleted|OnCampaignCompleted", source):
         fail("Campaign completion event path is not referenced in campaign subsystem")
 
-    print(f"Validated {len(MISSIONS)} chapter quest IDs, {sum(len(v[1]) for v in MISSIONS.values())} event tags, and guide coverage.")
+    print(
+        f"Validated {len(MISSIONS)} chapter quest IDs, {total_events} objective event/count pairs, "
+        "final campaign completion, and integration-guide coverage."
+    )
 
 
 if __name__ == "__main__":
