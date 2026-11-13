@@ -516,6 +516,62 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 10)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 10: push into the hollow district, sever its anchors and defeat its guardian.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH10_HollowDistrict")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective ReachObjective;
+            ReachObjective.ObjectiveId = TEXT("ReachHollowDistrictCore");
+            ReachObjective.Description = FText::FromString(TEXT("Reach the center of the hollow district"));
+            ReachObjective.Type = EHunterObjectiveType::Reach;
+            ReachObjective.EventTag = TEXT("HollowDistrictCoreReached");
+            ReachObjective.RequiredCount = 1;
+            Objectives.Add(ReachObjective);
+
+            FHunterObjective AnchorObjective;
+            AnchorObjective.ObjectiveId = TEXT("DestroyShadowAnchors");
+            AnchorObjective.Description = FText::FromString(TEXT("Destroy 3 shadow anchors"));
+            AnchorObjective.Type = EHunterObjectiveType::Interact;
+            AnchorObjective.EventTag = TEXT("ShadowAnchorDestroyed");
+            AnchorObjective.RequiredCount = 3;
+            Objectives.Add(AnchorObjective);
+
+            FHunterObjective GuardianObjective;
+            GuardianObjective.ObjectiveId = TEXT("DefeatHollowWarden");
+            GuardianObjective.Description = FText::FromString(TEXT("Defeat the Hollow Warden"));
+            GuardianObjective.Type = EHunterObjectiveType::Defeat;
+            GuardianObjective.EventTag = TEXT("HollowWardenDefeated");
+            GuardianObjective.RequiredCount = 1;
+            Objectives.Add(GuardianObjective);
+
+            if (!Quest->StartQuest(TEXT("CH10_HollowDistrict"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -628,9 +684,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 10)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH10_HollowDistrict")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 10-20 still need authored objective sets.
+        // Chapters 11-20 still need authored objective sets.
         return false;
     }
 
