@@ -51,6 +51,9 @@ jobs:
       - name: Validate Arin blockout and Unreal input bindings
         run: python Tools/validate_playable_foundation.py
 
+      - name: Validate swept melee weapon tracing
+        run: python Tools/validate_weapon_trace.py
+
       - name: Validate browser demo features and JavaScript syntax
         run: python Tools/validate_browser_demo.py
 
