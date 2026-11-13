@@ -36,6 +36,7 @@ bool UHunterQuestSubsystem::StartQuest(FName NewQuestId, const TArray<FHunterObj
         Objective.bCompleted = false;
     }
     bQuestCompleted = false;
+    OnQuestChanged.Broadcast();
     return true;
 }
 
@@ -87,6 +88,7 @@ void UHunterQuestSubsystem::ClearActiveQuest()
     ActiveQuestId = NAME_None;
     Objectives.Reset();
     bQuestCompleted = false;
+    OnQuestChanged.Broadcast();
 }
 
 bool UHunterQuestSubsystem::RestoreQuestState(FName QuestId, const TArray<FHunterObjective>& SavedObjectives, bool bWasCompleted)
@@ -132,5 +134,6 @@ bool UHunterQuestSubsystem::RestoreQuestState(FName QuestId, const TArray<FHunte
     {
         OnQuestCompleted.Broadcast(ActiveQuestId);
     }
+    OnQuestChanged.Broadcast();
     return true;
 }
