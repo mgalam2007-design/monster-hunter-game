@@ -24,6 +24,9 @@ jobs:
       - name: Validate campaign quest and integration-guide consistency
         run: python Tools/validate_campaign.py
 
+      - name: Validate quest delegate re-entry safeguards
+        run: python Tools/validate_quest_notifications.py
+
       - name: Validate shop transaction rollback safeguards
         run: python Tools/validate_shop.py
 
