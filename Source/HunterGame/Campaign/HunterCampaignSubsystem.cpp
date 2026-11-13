@@ -724,6 +724,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 14)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 14: break the citadel siege by destroying its command pylons and defeating its commander.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH14_BrokenCitadel")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective PylonObjective;
+            PylonObjective.ObjectiveId = TEXT("DestroyCitadelPylons");
+            PylonObjective.Description = FText::FromString(TEXT("Destroy 3 citadel command pylons"));
+            PylonObjective.Type = EHunterObjectiveType::Interact;
+            PylonObjective.EventTag = TEXT("CitadelPylonDestroyed");
+            PylonObjective.RequiredCount = 3;
+            Objectives.Add(PylonObjective);
+
+            FHunterObjective CommanderObjective;
+            CommanderObjective.ObjectiveId = TEXT("DefeatCitadelCommander");
+            CommanderObjective.Description = FText::FromString(TEXT("Defeat the citadel siege commander"));
+            CommanderObjective.Type = EHunterObjectiveType::Defeat;
+            CommanderObjective.EventTag = TEXT("CitadelCommanderDefeated");
+            CommanderObjective.RequiredCount = 1;
+            Objectives.Add(CommanderObjective);
+
+            if (!Quest->StartQuest(TEXT("CH14_BrokenCitadel"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -880,9 +928,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 14)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH14_BrokenCitadel")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 14-20 still need authored objective sets.
+        // Chapters 15-20 still need authored objective sets.
         return false;
     }
 
