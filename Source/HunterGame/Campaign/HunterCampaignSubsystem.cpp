@@ -460,6 +460,62 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 9)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 9: trace the vanished hunters and recover the expedition's final signal record.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH09_VanishedHunters")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective LocateObjective;
+            LocateObjective.ObjectiveId = TEXT("LocateMissingHunterSignal");
+            LocateObjective.Description = FText::FromString(TEXT("Locate the last signal from the missing hunters"));
+            LocateObjective.Type = EHunterObjectiveType::Reach;
+            LocateObjective.EventTag = TEXT("MissingHunterSignalLocated");
+            LocateObjective.RequiredCount = 1;
+            Objectives.Add(LocateObjective);
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("DefeatGateStalkers");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 4 gate stalkers guarding the signal site"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("GateStalkerDefeated");
+            DefeatObjective.RequiredCount = 4;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective RecoverObjective;
+            RecoverObjective.ObjectiveId = TEXT("RecoverExpeditionRecorder");
+            RecoverObjective.Description = FText::FromString(TEXT("Recover the missing expedition's recorder"));
+            RecoverObjective.Type = EHunterObjectiveType::Collect;
+            RecoverObjective.EventTag = TEXT("ExpeditionRecorderRecovered");
+            RecoverObjective.RequiredCount = 1;
+            Objectives.Add(RecoverObjective);
+
+            if (!Quest->StartQuest(TEXT("CH09_VanishedHunters"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -561,9 +617,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 9)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH09_VanishedHunters")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 9-20 still need authored objective sets.
+        // Chapters 10-20 still need authored objective sets.
         return false;
     }
 
