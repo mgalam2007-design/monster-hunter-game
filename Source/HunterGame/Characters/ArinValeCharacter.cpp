@@ -294,15 +294,26 @@ void AArinValeCharacter::UseConsumable()
             continue;
         }
 
+        // Consume the stack first. Inventory listeners may trigger other
+        // gameplay mutations, so never grant the effect if removal fails.
+        if (!InventoryComponent->RemoveItem(Item.ItemId, 1))
+        {
+            return;
+        }
+
         if (bCanHeal) HealthComponent->Heal(Item.HealthRestoreAmount);
         if (bCanRestoreEnergy) AbilityComponent->RestoreEnergy(Item.EnergyRestoreAmount);
-        InventoryComponent->RemoveItem(Item.ItemId, 1);
         return;
     }
 }
 
 void AArinValeCharacter::ToggleInventoryMenu()
 {
+    if ((HealthComponent && HealthComponent->IsDead()) || bRespawnPending)
+    {
+        return;
+    }
+
     if (!ActiveInventoryWidget)
     {
         return;
