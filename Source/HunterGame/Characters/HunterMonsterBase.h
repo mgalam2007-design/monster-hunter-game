@@ -93,6 +93,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Movement")
     float ChaseSpeed = 430.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|AI", meta=(ClampMin="0.05"))
+    float ChaseRepathInterval = 0.35f;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|AI")
     bool bCanChasePlayer = true;
 
@@ -105,6 +108,7 @@ protected:
 private:
     TWeakObjectPtr<ACharacter> TargetCharacter;
     float AttackTimer = 0.0f;
+    float ChaseRepathTimer = 0.0f;
     bool bIsDead = false;
 
     void FindTarget();
