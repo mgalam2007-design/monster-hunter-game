@@ -47,7 +47,8 @@ bool UHunterQuestSubsystem::RegisterQuestEvent(FName EventTag, int32 Amount)
         return false;
     }
 
-    bool bUpdatedAny = false;
+    const FName QuestBeingUpdated = ActiveQuestId;
+    TArray<TPair<FName, int32>> UpdatedObjectives;
     for (FHunterObjective& Objective : Objectives)
     {
         if (Objective.bCompleted || Objective.EventTag != EventTag)
@@ -58,29 +59,41 @@ bool UHunterQuestSubsystem::RegisterQuestEvent(FName EventTag, int32 Amount)
         const int64 UpdatedCount = static_cast<int64>(Objective.CurrentCount) + static_cast<int64>(Amount);
         Objective.CurrentCount = static_cast<int32>(FMath::Min<int64>(Objective.RequiredCount, UpdatedCount));
         Objective.bCompleted = Objective.CurrentCount >= Objective.RequiredCount;
-        OnObjectiveUpdated.Broadcast(Objective.ObjectiveId, Objective.CurrentCount);
-        bUpdatedAny = true;
+        UpdatedObjectives.Emplace(Objective.ObjectiveId, Objective.CurrentCount);
     }
 
-    if (bUpdatedAny)
+    if (UpdatedObjectives.IsEmpty())
     {
-        bQuestCompleted = true;
-        for (const FHunterObjective& Objective : Objectives)
-        {
-            if (!Objective.bCompleted)
-            {
-                bQuestCompleted = false;
-                break;
-            }
-        }
+        return false;
+    }
 
-        if (bQuestCompleted)
+    bQuestCompleted = true;
+    for (const FHunterObjective& Objective : Objectives)
+    {
+        if (!Objective.bCompleted)
         {
-            OnQuestCompleted.Broadcast(ActiveQuestId);
+            bQuestCompleted = false;
+            break;
         }
     }
 
-    return bUpdatedAny;
+    // Notify only after all objective mutations are complete. Blueprint listeners
+    // may clear or replace the quest while handling a notification.
+    for (const TPair<FName, int32>& Update : UpdatedObjectives)
+    {
+        OnObjectiveUpdated.Broadcast(Update.Key, Update.Value);
+        if (ActiveQuestId != QuestBeingUpdated)
+        {
+            return true;
+        }
+    }
+
+    if (bQuestCompleted && ActiveQuestId == QuestBeingUpdated)
+    {
+        OnQuestCompleted.Broadcast(QuestBeingUpdated);
+    }
+
+    return true;
 }
 
 void UHunterQuestSubsystem::ClearActiveQuest()
