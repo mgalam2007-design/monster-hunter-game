@@ -84,3 +84,12 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Chapter 20 quest ID: `CH20_TheFinalHunter`; required tags: `OriginHeartExposed` ×1 and `FinalHunterDefeated` ×1.
 - Every chapter exit validates its exact active quest ID and complete state. Chapter 20 completion uses the existing final campaign completion event path.
 - Unreal Editor work remains: create maps, objective triggers, enemies/boss, visuals, audio and level travel; compile and test the C++ in the target Unreal version. No Unreal build or gameplay test is claimed.
+
+## HUNTER 2.0 browser vertical-slice demo
+
+- `Demo/index.html` is a standalone browser-playable 2D prototype, separate from the Unreal Engine game. It contains three combat sectors: an opening scout encounter, a stronger hunter/brute wave, and a Breach Guardian boss.
+- Implemented demo controls: WASD/arrow movement, SPACE sword slash, Q energy projectile, SHIFT dash, E healing potion and ESC pause; touch-screen action buttons are included.
+- The demo includes enemy contact damage, boss projectile patterns, health/energy, XP level-ups, rank labels, potion pickups between sectors and local best-score storage.
+- `Tools/validate_browser_demo.py` checks the required demo features and runs Node.js syntax validation on its inline JavaScript. This validator is part of GitHub Actions.
+- This is a playable browser prototype using temporary canvas artwork. It does not represent a completed Unreal Engine build, final 3D assets, the 20-chapter campaign or verified cross-device gameplay. Manual browser playtesting is still required.
+
