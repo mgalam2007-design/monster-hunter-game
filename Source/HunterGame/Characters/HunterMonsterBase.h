@@ -6,6 +6,7 @@
 #include "HunterMonsterBase.generated.h"
 
 class AHunterPickupActor;
+class UStaticMeshComponent;
 
 USTRUCT(BlueprintType)
 struct FHunterMonsterLootDrop
@@ -48,6 +49,10 @@ public:
 
     UPROPERTY(BlueprintAssignable, Category="Monster|Combat")
     FHunterMonsterDied OnMonsterDied;
+
+    // Temporary engine-native silhouette; replace with a rigged skeletal mesh in production.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Monster|Visuals")
+    TArray<TObjectPtr<UStaticMeshComponent>> BlockoutVisuals;
 
 protected:
     virtual void BeginPlay() override;
