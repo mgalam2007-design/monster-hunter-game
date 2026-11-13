@@ -54,4 +54,7 @@ public:
 private:
     FHunterShopEntry* FindEntry(FName ItemId);
     const FHunterShopEntry* FindEntry(FName ItemId) const;
+
+    // Prevent event listeners from recursively starting overlapping transactions.
+    bool bTransactionInProgress = false;
 };
