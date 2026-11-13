@@ -171,3 +171,17 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Direct hunter damage also rejects invalid values and clamps against a finite maximum-health fallback.
 - Monster health percentage is now bounded to the 0–1 range.
 - `Tools/validate_monster_damage.py` checks these guards in GitHub Actions.
+
+## Player damage and movement safety pass
+
+- Arin rejects non-finite and non-positive incoming damage, ignores damage after death, validates the mitigated result and clamps equipment damage reduction to a safe range.
+- Arin's editable movement/combat values (sprint, dodge, respawn delay, attack cooldown and weapon trace window) are normalized at BeginPlay; movement axis values and progression speed multipliers are checked before use.
+- `Tools/validate_player_damage.py` and `Tools/validate_arin_tuning.py` exercise these source-level safeguards in GitHub Actions.
+- This does not replace Unreal compilation or hands-on controller/gameplay testing.
+
+## Monster AI safety pass
+
+- Monster AI ignores a defeated Arin when acquiring a target and drops a target that dies while being pursued.
+- Monster Tick rejects non-finite or non-positive frame deltas, and attack damage is checked before applying it.
+- `Tools/validate_monster_damage.py` now also checks these AI safeguards in GitHub Actions.
+- The existing AI still requires configured AI controllers, navigation bounds and in-editor testing; this source check does not prove pathfinding or combat feel.
