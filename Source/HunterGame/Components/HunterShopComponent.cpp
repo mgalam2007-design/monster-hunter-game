@@ -2,6 +2,7 @@
 
 #include "ArinValeCharacter.h"
 #include "Components/HunterCurrencyComponent.h"
+#include "Misc/GuardValue.h"
 
 FHunterShopEntry* UHunterShopComponent::FindEntry(FName ItemId)
 {
@@ -29,10 +30,12 @@ const FHunterShopEntry* UHunterShopComponent::FindEntry(FName ItemId) const
 
 bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int32 Quantity)
 {
-    if (ItemId.IsNone() || Quantity <= 0)
+    if (bTransactionInProgress || ItemId.IsNone() || Quantity <= 0)
     {
         return false;
     }
+
+    TGuardValue<bool> TransactionGuard(bTransactionInProgress, true);
 
     FHunterShopEntry* Entry = FindEntry(ItemId);
     UHunterInventoryComponent* Inventory = Buyer ? Buyer->GetInventoryComponent() : nullptr;
@@ -71,10 +74,12 @@ bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int3
 
 bool UHunterShopComponent::SellItem(AArinValeCharacter* Seller, FName ItemId, int32 Quantity)
 {
-    if (ItemId.IsNone() || Quantity <= 0)
+    if (bTransactionInProgress || ItemId.IsNone() || Quantity <= 0)
     {
         return false;
     }
+
+    TGuardValue<bool> TransactionGuard(bTransactionInProgress, true);
 
     FHunterShopEntry* Entry = FindEntry(ItemId);
     UHunterInventoryComponent* Inventory = Seller ? Seller->GetInventoryComponent() : nullptr;
