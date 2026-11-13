@@ -21,4 +21,23 @@ for token in (
     "if (!GetCharacterMovement()) return;",
 ):
     assert token in SOURCE, f"Missing player input safety guard: {token}"
+move_right_start = SOURCE.find("void AArinValeCharacter::MoveRight")
+move_right_end = SOURCE.find("void AArinValeCharacter::Turn", move_right_start)
+assert move_right_start >= 0 and move_right_end > move_right_start, "Could not locate MoveRight"
+assert "FMath::IsFinite(Value)" in SOURCE[move_right_start:move_right_end], "MoveRight must reject non-finite axis input"
+
+respawn_start = SOURCE.find("void AArinValeCharacter::RespawnAtLastCheckpoint")
+respawn_end = SOURCE.find("void AArinValeCharacter::", respawn_start + 10)
+assert respawn_start >= 0 and respawn_end > respawn_start, "Could not locate respawn implementation"
+respawn = SOURCE[respawn_start:respawn_end]
+for token in (
+    "HealthComponent->ReviveFullHealth()",
+    "StopSprint();",
+    "GetWorldTimerManager().ClearTimer(AttackCooldownHandle)",
+    "GetWorldTimerManager().ClearTimer(DodgeCooldownHandle)",
+    "GetWorldTimerManager().ClearTimer(WeaponTraceHandle)",
+    "EndWeaponTrace();",
+):
+    assert token in respawn, f"Respawn must restore clean combat/movement state: {token}"
+
 print("Validated Arin movement, dodge, respawn, attack tuning and input axis safeguards.")
