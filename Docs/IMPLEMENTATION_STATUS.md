@@ -162,3 +162,12 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Health percentage and preserved-health calculations are clamped to safe finite ranges.
 - `Tools/validate_health_component.py` checks the health mutation safeguards in GitHub Actions.
 - These are static source checks. Runtime behavior still needs Unreal compilation and gameplay testing.
+
+
+## Monster damage finite-value hardening
+
+- Monster `TakeDamage` rejects non-finite, zero/negative and post-death damage before applying it.
+- Returned damage is checked before it reaches monster health mutation.
+- Direct hunter damage also rejects invalid values and clamps against a finite maximum-health fallback.
+- Monster health percentage is now bounded to the 0–1 range.
+- `Tools/validate_monster_damage.py` checks these guards in GitHub Actions.
