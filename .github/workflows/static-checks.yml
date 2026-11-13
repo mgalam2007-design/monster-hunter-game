@@ -30,5 +30,8 @@ jobs:
       - name: Validate save-slot snapshot safeguards
         run: python Tools/validate_save_snapshot.py
 
+      - name: Validate character input and consumable safeguards
+        run: python Tools/validate_character_safety.py
+
       - name: Validate Unreal project descriptor
         run: python -c "import json; json.load(open('HunterGame.uproject', encoding='utf-8'))"
