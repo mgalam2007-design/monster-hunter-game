@@ -122,6 +122,44 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
             }
         }
     }
+    else if (ChapterNumber == 2)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 2: locate the survivor district, then rescue the missing civilians.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH02_MissingSurvivors")))
+        {
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective LocateObjective;
+            LocateObjective.ObjectiveId = TEXT("LocateSurvivorDistrict");
+            LocateObjective.Description = FText::FromString(TEXT("Find the missing survivors' district"));
+            LocateObjective.Type = EHunterObjectiveType::Reach;
+            LocateObjective.EventTag = TEXT("SurvivorDistrictLocated");
+            LocateObjective.RequiredCount = 1;
+            Objectives.Add(LocateObjective);
+
+            FHunterObjective RescueObjective;
+            RescueObjective.ObjectiveId = TEXT("RescueMissingCivilians");
+            RescueObjective.Description = FText::FromString(TEXT("Rescue 3 missing civilians"));
+            RescueObjective.Type = EHunterObjectiveType::Interact;
+            RescueObjective.EventTag = TEXT("SurvivorRescued");
+            RescueObjective.RequiredCount = 3;
+            Objectives.Add(RescueObjective);
+
+            if (!Quest->StartQuest(TEXT("CH02_MissingSurvivors"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
 
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
@@ -147,11 +185,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 2)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH02_MissingSurvivors")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 2-20 currently have narrative briefings but no authored
-        // objective sets. Fail closed rather than allowing an exit volume
-        // to complete an unimplemented chapter for free.
+        // Chapters 3-20 still need authored objective sets.
         return false;
     }
 
