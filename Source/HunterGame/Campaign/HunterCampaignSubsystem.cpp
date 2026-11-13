@@ -220,6 +220,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 4)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 4: investigate the abandoned transit gate and defeat its guardian.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH04_TransitGate")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective ReachObjective;
+            ReachObjective.ObjectiveId = TEXT("ReachTransitGate");
+            ReachObjective.Description = FText::FromString(TEXT("Reach the sealed underground gate"));
+            ReachObjective.Type = EHunterObjectiveType::Reach;
+            ReachObjective.EventTag = TEXT("TransitGateReached");
+            ReachObjective.RequiredCount = 1;
+            Objectives.Add(ReachObjective);
+
+            FHunterObjective GuardianObjective;
+            GuardianObjective.ObjectiveId = TEXT("DefeatTransitGuardian");
+            GuardianObjective.Description = FText::FromString(TEXT("Defeat the transit gate guardian"));
+            GuardianObjective.Type = EHunterObjectiveType::Defeat;
+            GuardianObjective.EventTag = TEXT("TransitGuardianDefeated");
+            GuardianObjective.RequiredCount = 1;
+            Objectives.Add(GuardianObjective);
+
+            if (!Quest->StartQuest(TEXT("CH04_TransitGate"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -266,9 +314,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 4)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH04_TransitGate")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 4-20 still need authored objective sets.
+        // Chapters 5-20 still need authored objective sets.
         return false;
     }
 
