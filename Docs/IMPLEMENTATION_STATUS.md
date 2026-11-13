@@ -143,3 +143,13 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - The same validator checks boss spawn-failure handling, boss identity matching, one-time defeat handling, and quest-event wiring.
 - GitHub Actions now runs this encounter validator alongside the monster and boss foundation checks.
 - These checks inspect source structure only; they do not compile Unreal C++ or prove runtime behavior in an Unreal level.
+
+
+## Swept melee weapon-trace improvement
+
+- Weapon tracing now sweeps a configurable sphere volume along both blade sockets and across the blade edge between frames, reducing missed hits during fast swings compared with four line-only traces.
+- Each segment collects its own hit results; a per-swing weak-actor set still ensures an actor receives damage only once per attack.
+- Trace activation and ticking verify both configured mesh sockets still exist; a missing mesh/socket safely ends the trace.
+- Trace radius and base damage are normalized against non-finite or out-of-range values. The trace remains configurable through the Blueprint component defaults.
+- `Tools/validate_weapon_trace.py` checks the swept-volume implementation, socket guards, hit de-duplication and finite damage settings in GitHub Actions.
+- This is static source validation only. The trace radius, collision channel, socket placement, and damage feel must still be tuned and tested against real skeletal weapon sockets in Unreal Editor.
