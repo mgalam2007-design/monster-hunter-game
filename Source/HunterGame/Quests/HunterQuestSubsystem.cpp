@@ -36,6 +36,7 @@ bool UHunterQuestSubsystem::StartQuest(FName NewQuestId, const TArray<FHunterObj
         Objective.bCompleted = false;
     }
     bQuestCompleted = false;
+    ++QuestStateRevision;
     OnQuestChanged.Broadcast();
     return true;
 }
@@ -77,18 +78,19 @@ bool UHunterQuestSubsystem::RegisterQuestEvent(FName EventTag, int32 Amount)
         }
     }
 
-    // Notify only after all objective mutations are complete. Blueprint listeners
-    // may clear or replace the quest while handling a notification.
+    // A revision token catches even a clear-and-restart using the same quest ID.
+    ++QuestStateRevision;
+    const uint64 UpdatedRevision = QuestStateRevision;
     for (const TPair<FName, int32>& Update : UpdatedObjectives)
     {
         OnObjectiveUpdated.Broadcast(Update.Key, Update.Value);
-        if (ActiveQuestId != QuestBeingUpdated)
+        if (QuestStateRevision != UpdatedRevision || ActiveQuestId != QuestBeingUpdated)
         {
             return true;
         }
     }
 
-    if (bQuestCompleted && ActiveQuestId == QuestBeingUpdated)
+    if (bQuestCompleted && QuestStateRevision == UpdatedRevision && ActiveQuestId == QuestBeingUpdated)
     {
         OnQuestCompleted.Broadcast(QuestBeingUpdated);
     }
@@ -101,6 +103,7 @@ void UHunterQuestSubsystem::ClearActiveQuest()
     ActiveQuestId = NAME_None;
     Objectives.Reset();
     bQuestCompleted = false;
+    ++QuestStateRevision;
     OnQuestChanged.Broadcast();
 }
 
@@ -138,15 +141,31 @@ bool UHunterQuestSubsystem::RestoreQuestState(FName QuestId, const TArray<FHunte
     ActiveQuestId = QuestId;
     Objectives = MoveTemp(RestoredObjectives);
     bQuestCompleted = bWasCompleted && bAllCompleted;
+    ++QuestStateRevision;
+    const uint64 RestoredRevision = QuestStateRevision;
+    const bool bRestoredQuestCompleted = bQuestCompleted;
+    const FName RestoredQuestId = ActiveQuestId;
 
-    for (const FHunterObjective& Objective : Objectives)
+    // Publish the installed snapshot first. Stop if a listener replaces or clears it.
+    OnQuestChanged.Broadcast();
+    if (QuestStateRevision != RestoredRevision || ActiveQuestId != RestoredQuestId)
+    {
+        return true;
+    }
+
+    const TArray<FHunterObjective> NotificationSnapshot = Objectives;
+    for (const FHunterObjective& Objective : NotificationSnapshot)
     {
         OnObjectiveUpdated.Broadcast(Objective.ObjectiveId, Objective.CurrentCount);
+        if (QuestStateRevision != RestoredRevision || ActiveQuestId != RestoredQuestId)
+        {
+            return true;
+        }
     }
-    if (bQuestCompleted)
+
+    if (bRestoredQuestCompleted && QuestStateRevision == RestoredRevision && ActiveQuestId == RestoredQuestId)
     {
-        OnQuestCompleted.Broadcast(ActiveQuestId);
+        OnQuestCompleted.Broadcast(RestoredQuestId);
     }
-    OnQuestChanged.Broadcast();
     return true;
 }
