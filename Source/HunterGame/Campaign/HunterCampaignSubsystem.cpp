@@ -286,6 +286,14 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         Inventory->RestoreItems(SaveObject->ArinInventoryItems);
     }
 
+    if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
+    {
+        const int32 SafeStage = FMath::Clamp(SaveObject->ArinEvolutionStage, 0, 4);
+        Progression->RestoreProgression(
+            FMath::Max(0, SaveObject->ArinExperience),
+            static_cast<EArinEvolutionStage>(SafeStage));
+    }
+
     if (UHunterEquipmentComponent* Equipment = Arin->GetEquipmentComponent())
     {
         Equipment->RestoreEquipment(SaveObject->ArinEquippedWeapon, SaveObject->ArinEquippedArmor);
@@ -305,14 +313,6 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         {
             Quest->ClearActiveQuest();
         }
-    }
-
-    if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
-    {
-        const int32 SafeStage = FMath::Clamp(SaveObject->ArinEvolutionStage, 0, 4);
-        Progression->RestoreProgression(
-            FMath::Max(0, SaveObject->ArinExperience),
-            static_cast<EArinEvolutionStage>(SafeStage));
     }
 
     // A corrupted save must never move Arin to a NaN/invalid world transform.
