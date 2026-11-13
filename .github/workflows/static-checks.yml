@@ -21,5 +21,8 @@ jobs:
       - name: Validate Blender Python script syntax
         run: python -m py_compile Tools/blender/create_arin_blockout.py
 
+      - name: Validate campaign quest and integration-guide consistency
+        run: python Tools/validate_campaign.py
+
       - name: Validate Unreal project descriptor
         run: python -c "import json; json.load(open('HunterGame.uproject', encoding='utf-8'))"
