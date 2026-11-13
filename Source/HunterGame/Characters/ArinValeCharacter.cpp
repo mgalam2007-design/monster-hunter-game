@@ -223,7 +223,7 @@ void AArinValeCharacter::MoveForward(float Value)
 
 void AArinValeCharacter::MoveRight(float Value)
 {
-    if ((!HealthComponent || !HealthComponent->IsDead()) && Controller && !FMath::IsNearlyZero(Value))
+    if (FMath::IsFinite(Value) && (!HealthComponent || !HealthComponent->IsDead()) && Controller && !FMath::IsNearlyZero(Value))
     {
         const FRotator YawRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
         AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y), Value);
@@ -476,6 +476,12 @@ void AArinValeCharacter::RespawnAtLastCheckpoint()
         GetCharacterMovement()->StopMovementImmediately();
         GetCharacterMovement()->SetMovementMode(MOVE_Walking);
     }
+    // A death during sprint must not leave Arin at sprint speed after revival.
+    StopSprint();
+    GetWorldTimerManager().ClearTimer(AttackCooldownHandle);
+    GetWorldTimerManager().ClearTimer(DodgeCooldownHandle);
+    GetWorldTimerManager().ClearTimer(WeaponTraceHandle);
+    EndWeaponTrace();
     bCanAttack = true;
     bCanDodge = true;
     bRespawnPending = false;
