@@ -268,6 +268,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 5)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 5: complete the mining-settlement guild contract.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH05_MiningContract")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("ClearMiningSettlement");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 4 creatures in the mining settlement"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("MiningCreatureDefeated");
+            DefeatObjective.RequiredCount = 4;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective CollectObjective;
+            CollectObjective.ObjectiveId = TEXT("RecoverOreSamples");
+            CollectObjective.Description = FText::FromString(TEXT("Recover 3 corrupted ore samples"));
+            CollectObjective.Type = EHunterObjectiveType::Collect;
+            CollectObjective.EventTag = TEXT("CorruptedOreCollected");
+            CollectObjective.RequiredCount = 3;
+            Objectives.Add(CollectObjective);
+
+            if (!Quest->StartQuest(TEXT("CH05_MiningContract"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -325,9 +373,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 5)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH05_MiningContract")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 5-20 still need authored objective sets.
+        // Chapters 6-20 still need authored objective sets.
         return false;
     }
 
