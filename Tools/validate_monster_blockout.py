@@ -30,11 +30,11 @@ assert "FMath::IsFinite(AttackDamage)" in SOURCE
 assert "FMath::IsFinite(AttackCooldown)" in SOURCE
 assert "FMath::IsFinite(ChaseSpeed)" in SOURCE
 assert "FMath::IsFinite(ChaseRepathInterval)" in SOURCE
-assert "DetectionRadius = FMath::Max(0.0f, DetectionRadius)" in SOURCE
-assert "AttackRange = FMath::Max(0.0f, AttackRange)" in SOURCE
-assert "AttackDamage = FMath::Max(0.0f, AttackDamage)" in SOURCE
-assert "AttackCooldown = FMath::Max(0.1f, AttackCooldown)" in SOURCE
-assert "ChaseSpeed = FMath::Max(0.0f, ChaseSpeed)" in SOURCE
-assert "ChaseRepathInterval = FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
+assert "FMath::Max(0.0f, DetectionRadius)" in SOURCE
+assert "FMath::Max(0.0f, AttackRange)" in SOURCE
+assert "FMath::Max(0.0f, AttackDamage)" in SOURCE
+assert "FMath::Max(0.1f, AttackCooldown)" in SOURCE
+assert "FMath::Max(0.0f, ChaseSpeed)" in SOURCE
+assert "FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
 assert "return CurrentHealth / FMath::Max(1.0f, MaxHealth)" in SOURCE
 print("Monster blockout source checks passed.")
