@@ -316,6 +316,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 6)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 6: complete the guild's advanced trial of strength and control.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH06_TrialOfSteel")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("DefeatSteelTrialElite");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat the elite opponent in the Trial of Steel"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("SteelTrialOpponentDefeated");
+            DefeatObjective.RequiredCount = 1;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective ApprovalObjective;
+            ApprovalObjective.ObjectiveId = TEXT("EarnSteelTrialApproval");
+            ApprovalObjective.Description = FText::FromString(TEXT("Activate the guild trial approval seal"));
+            ApprovalObjective.Type = EHunterObjectiveType::Interact;
+            ApprovalObjective.EventTag = TEXT("SteelTrialApproved");
+            ApprovalObjective.RequiredCount = 1;
+            Objectives.Add(ApprovalObjective);
+
+            if (!Quest->StartQuest(TEXT("CH06_TrialOfSteel"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -384,9 +432,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 6)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH06_TrialOfSteel")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 6-20 still need authored objective sets.
+        // Chapters 7-20 still need authored objective sets.
         return false;
     }
 
