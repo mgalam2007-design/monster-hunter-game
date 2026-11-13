@@ -93,3 +93,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - `Tools/validate_browser_demo.py` checks the required demo features and runs Node.js syntax validation on its inline JavaScript. This validator is part of GitHub Actions.
 - This is a playable browser prototype using temporary canvas artwork. It does not represent a completed Unreal Engine build, final 3D assets, the 20-chapter campaign or verified cross-device gameplay. Manual browser playtesting is still required.
 
+## Quest notification re-entry hardening
+
+- The quest subsystem now increments a state revision whenever a quest is started, cleared, restored or updated by an event.
+- Objective notification loops stop when a Blueprint/delegate listener changes quest state, including a clear-and-restart using the same quest ID. This prevents stale notifications from a previous state from being sent into a replacement quest.
+- Quest restoration now publishes the restored snapshot first and sends objective updates from a stable copy, checking the revision after each callback.
+- `Tools/validate_quest_notifications.py` checks these safeguards and runs in GitHub Actions.
+- This is a source-level safety improvement. It has not yet been compiled or exercised in Unreal Engine.
+
