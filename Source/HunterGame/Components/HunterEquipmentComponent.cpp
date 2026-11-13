@@ -27,7 +27,9 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
         return false;
     }
 
-    if (Progression && static_cast<int32>(Progression->GetEvolutionStage()) < NewItem.RequiredEvolutionStage)
+    // Stage-gated gear must fail closed if the progression component is unavailable.
+    if (NewItem.RequiredEvolutionStage > 0 &&
+        (!Progression || static_cast<int32>(Progression->GetEvolutionStage()) < NewItem.RequiredEvolutionStage))
     {
         return false;
     }
