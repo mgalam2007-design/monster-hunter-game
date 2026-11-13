@@ -82,4 +82,5 @@ private:
     FHunterEquipmentItem EquippedArmor;
 
     bool ReturnEquippedItem(FHunterEquipmentItem& Item);
+    bool bEquipmentTransactionInProgress = false;
 };
