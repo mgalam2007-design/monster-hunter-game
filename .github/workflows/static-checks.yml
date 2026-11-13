@@ -42,6 +42,9 @@ jobs:
       - name: Validate Unreal monster blockout
         run: python Tools/validate_monster_blockout.py
 
+      - name: Validate breach and boss encounter integration
+        run: python Tools/validate_encounters.py
+
       - name: Validate Unreal boss foundation
         run: python Tools/validate_boss_foundation.py
 
