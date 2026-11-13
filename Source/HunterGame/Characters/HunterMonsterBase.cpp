@@ -11,6 +11,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "Engine/StaticMesh.h"
+#include "Components/StaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 AHunterMonsterBase::AHunterMonsterBase()
 {
@@ -18,6 +21,38 @@ AHunterMonsterBase::AHunterMonsterBase()
     GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+
+    // Temporary readable silhouette. The inherited capsule remains responsible for collision.
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+    if (!CubeMesh.Succeeded() || !SphereMesh.Succeeded())
+    {
+        return;
+    }
+
+    auto AddVisual = [this](const FName Name, UStaticMesh* Mesh, const FVector& Location, const FVector& Scale)
+    {
+        UStaticMeshComponent* Part = CreateDefaultSubobject<UStaticMeshComponent>(Name);
+        Part->SetupAttachment(GetRootComponent());
+        Part->SetStaticMesh(Mesh);
+        Part->SetRelativeLocation(Location);
+        Part->SetRelativeScale3D(Scale);
+        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Part->SetGenerateOverlapEvents(false);
+        Part->SetCanEverAffectNavigation(false);
+        BlockoutVisuals.Add(Part);
+    };
+
+    AddVisual(TEXT("MonsterTorso"), CubeMesh.Object, FVector(0, 0, 4), FVector(0.78f, 0.58f, 1.02f));
+    AddVisual(TEXT("MonsterShoulderLeft"), CubeMesh.Object, FVector(0, -48, 42), FVector(0.52f, 0.46f, 0.48f));
+    AddVisual(TEXT("MonsterShoulderRight"), CubeMesh.Object, FVector(0, 48, 42), FVector(0.52f, 0.46f, 0.48f));
+    AddVisual(TEXT("MonsterArmLeft"), CubeMesh.Object, FVector(0, -55, -28), FVector(0.34f, 0.34f, 0.78f));
+    AddVisual(TEXT("MonsterArmRight"), CubeMesh.Object, FVector(0, 55, -28), FVector(0.34f, 0.34f, 0.78f));
+    AddVisual(TEXT("MonsterLegLeft"), CubeMesh.Object, FVector(0, -24, -88), FVector(0.34f, 0.34f, 0.72f));
+    AddVisual(TEXT("MonsterLegRight"), CubeMesh.Object, FVector(0, 24, -88), FVector(0.34f, 0.34f, 0.72f));
+    AddVisual(TEXT("MonsterHead"), SphereMesh.Object, FVector(0, 0, 104), FVector(0.52f, 0.48f, 0.58f));
+    AddVisual(TEXT("MonsterHornLeft"), CubeMesh.Object, FVector(0, -30, 145), FVector(0.12f, 0.12f, 0.48f));
+    AddVisual(TEXT("MonsterHornRight"), CubeMesh.Object, FVector(0, 30, 145), FVector(0.12f, 0.12f, 0.48f));
 }
 
 void AHunterMonsterBase::BeginPlay()
