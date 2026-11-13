@@ -156,10 +156,15 @@ void UHunterEquipmentComponent::RestoreEquipment(const FHunterEquipmentItem& Wea
     EquippedWeapon = Weapon;
     EquippedArmor = Armor;
 
-    const auto SanitizeEquipment = [](FHunterEquipmentItem& Item, EHunterEquipmentSlot ExpectedSlot)
+    const AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
+    const UArinProgressionComponent* Progression = Arin ? Arin->GetProgressionComponent() : nullptr;
+    const int32 CurrentStage = Progression ? static_cast<int32>(Progression->GetEvolutionStage()) : 0;
+
+    const auto SanitizeEquipment = [CurrentStage](FHunterEquipmentItem& Item, EHunterEquipmentSlot ExpectedSlot)
     {
         if (Item.ItemId.IsNone() || Item.Slot != ExpectedSlot ||
-            !FMath::IsFinite(Item.DamageBonus) || !FMath::IsFinite(Item.DamageReduction))
+            !FMath::IsFinite(Item.DamageBonus) || !FMath::IsFinite(Item.DamageReduction) ||
+            Item.RequiredEvolutionStage < 0 || Item.RequiredEvolutionStage > CurrentStage)
         {
             Item = FHunterEquipmentItem();
             return;
