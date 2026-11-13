@@ -69,17 +69,45 @@ def objective_counts_for_quest(source: str, quest_id: str) -> dict[str, int]:
     return counts
 
 
+
+def function_body(source: str, signature: str) -> str:
+    """Return one C++ function body using balanced braces."""
+    start = source.find(signature)
+    if start < 0:
+        fail(f"cannot find function {signature}")
+    opening = source.find("{", start)
+    if opening < 0:
+        fail(f"cannot find opening brace for {signature}")
+
+    depth = 0
+    for index in range(opening, len(source)):
+        if source[index] == "{":
+            depth += 1
+        elif source[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return source[opening + 1:index]
+    fail(f"unterminated function body for {signature}")
+
+
 def main() -> None:
     source = CAMPAIGN_CPP.read_text(encoding="utf-8")
     guide = GUIDE.read_text(encoding="utf-8")
     recipes = RECIPES.read_text(encoding="utf-8")
     total_events = 0
+    completion_body = function_body(source, "bool UHunterCampaignSubsystem::CompleteCurrentChapter()")
 
     for chapter, (quest_id, objectives) in MISSIONS.items():
         if source.count(quest_id) < 2:
             fail(f"Chapter {chapter}: quest ID {quest_id} must appear in both start and completion logic")
         if f"`{quest_id}`" not in guide:
             fail(f"Chapter {chapter}: quest ID {quest_id} is missing from the integration guide")
+
+        exact_gate = f'GetActiveQuestId() != FName(TEXT("{quest_id}"))'
+        if exact_gate not in completion_body:
+            fail(f"Chapter {chapter}: completion does not require its exact active quest ID")
+        if "!Quest->IsQuestComplete()" not in completion_body:
+            fail(f"Chapter {chapter}: completion does not fail closed for an incomplete quest")
 
         actual = objective_counts_for_quest(source, quest_id)
         expected = dict(objectives)
@@ -106,7 +134,8 @@ def main() -> None:
 
     print(
         f"Validated {len(MISSIONS)} chapter quest IDs, {total_events} objective event/count pairs, "
-        "final campaign completion, integration-guide coverage, and Chapters 02–20 recipe coverage."
+        "exact per-chapter completion gates, final campaign completion, integration-guide coverage, "
+        "and Chapters 02–20 recipe coverage."
     )
 
 
