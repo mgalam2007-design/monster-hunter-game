@@ -15,4 +15,10 @@ for token in (
     "FMath::IsFinite(GetCharacterMovement()->MaxWalkSpeed)",
 ):
     assert token in body, f"Missing Arin tuning normalization: {token}"
-print("Validated Arin movement, dodge, respawn and attack tuning normalization.")
+for token in (
+    "FMath::IsFinite(Value)",
+    "FMath::IsFinite(RawMultiplier)",
+    "if (!GetCharacterMovement()) return;",
+):
+    assert token in SOURCE, f"Missing player input safety guard: {token}"
+print("Validated Arin movement, dodge, respawn, attack tuning and input axis safeguards.")
