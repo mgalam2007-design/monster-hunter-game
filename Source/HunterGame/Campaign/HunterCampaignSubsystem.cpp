@@ -172,6 +172,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 3)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 3: pass the guild's controlled combat evaluation.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH03_GuildEvaluation")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("DefeatTrialOpponents");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 5 trial opponents"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("TrialOpponentDefeated");
+            DefeatObjective.RequiredCount = 5;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective SecureObjective;
+            SecureObjective.ObjectiveId = TEXT("SecureTrialArena");
+            SecureObjective.Description = FText::FromString(TEXT("Activate the trial arena's completion seal"));
+            SecureObjective.Type = EHunterObjectiveType::Interact;
+            SecureObjective.EventTag = TEXT("TrialSealActivated");
+            SecureObjective.RequiredCount = 1;
+            Objectives.Add(SecureObjective);
+
+            if (!Quest->StartQuest(TEXT("CH03_GuildEvaluation"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -207,9 +255,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 3)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH03_GuildEvaluation")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 3-20 still need authored objective sets.
+        // Chapters 4-20 still need authored objective sets.
         return false;
     }
 
