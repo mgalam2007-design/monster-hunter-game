@@ -676,6 +676,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 13)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 13: defend the northern fortress and restore its defensive beacons.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH13_SiegeOfTheNorth")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("RepelNorthernSiege");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 5 creatures attacking the northern fortress"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("NorthernSiegeCreatureDefeated");
+            DefeatObjective.RequiredCount = 5;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective BeaconObjective;
+            BeaconObjective.ObjectiveId = TEXT("RestoreFortressBeacons");
+            BeaconObjective.Description = FText::FromString(TEXT("Reactivate 2 fortress defense beacons"));
+            BeaconObjective.Type = EHunterObjectiveType::Interact;
+            BeaconObjective.EventTag = TEXT("FortressBeaconActivated");
+            BeaconObjective.RequiredCount = 2;
+            Objectives.Add(BeaconObjective);
+
+            if (!Quest->StartQuest(TEXT("CH13_SiegeOfTheNorth"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -821,9 +869,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 13)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH13_SiegeOfTheNorth")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 13-20 still need authored objective sets.
+        // Chapters 14-20 still need authored objective sets.
         return false;
     }
 
