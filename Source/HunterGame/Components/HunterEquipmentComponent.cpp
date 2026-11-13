@@ -5,7 +5,10 @@
 
 bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
 {
-    if (NewItem.ItemId.IsNone() || NewItem.RequiredEvolutionStage < 0)
+    if (NewItem.ItemId.IsNone() ||
+        static_cast<uint8>(NewItem.Slot) > static_cast<uint8>(EHunterEquipmentSlot::Armor) ||
+        NewItem.RequiredEvolutionStage < 0 || NewItem.RequiredEvolutionStage > 4 ||
+        !FMath::IsFinite(NewItem.DamageBonus) || !FMath::IsFinite(NewItem.DamageReduction))
     {
         return false;
     }
@@ -152,7 +155,23 @@ void UHunterEquipmentComponent::RestoreEquipment(const FHunterEquipmentItem& Wea
 {
     EquippedWeapon = Weapon;
     EquippedArmor = Armor;
-    EquippedWeapon.bIsEquipped = !EquippedWeapon.ItemId.IsNone();
-    EquippedArmor.bIsEquipped = !EquippedArmor.ItemId.IsNone();
+
+    const auto SanitizeEquipment = [](FHunterEquipmentItem& Item, EHunterEquipmentSlot ExpectedSlot)
+    {
+        if (Item.ItemId.IsNone() || Item.Slot != ExpectedSlot ||
+            !FMath::IsFinite(Item.DamageBonus) || !FMath::IsFinite(Item.DamageReduction))
+        {
+            Item = FHunterEquipmentItem();
+            return;
+        }
+
+        Item.DamageBonus = FMath::Max(0.0f, Item.DamageBonus);
+        Item.DamageReduction = FMath::Clamp(Item.DamageReduction, 0.0f, 0.8f);
+        Item.RequiredEvolutionStage = FMath::Clamp(Item.RequiredEvolutionStage, 0, 4);
+        Item.bIsEquipped = true;
+    };
+
+    SanitizeEquipment(EquippedWeapon, EHunterEquipmentSlot::Weapon);
+    SanitizeEquipment(EquippedArmor, EHunterEquipmentSlot::Armor);
     OnEquipmentChanged.Broadcast();
 }
