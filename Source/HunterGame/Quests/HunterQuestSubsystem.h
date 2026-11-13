@@ -43,6 +43,7 @@ struct FHunterObjective
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHunterObjectiveUpdated, FName, ObjectiveId, int32, CurrentCount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHunterQuestCompleted, FName, QuestId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHunterQuestChanged);
 
 UCLASS()
 class HUNTERGAME_API UHunterQuestSubsystem : public UGameInstanceSubsystem
@@ -79,6 +80,9 @@ public:
 
     UPROPERTY(BlueprintAssignable, Category="Quest")
     FHunterQuestCompleted OnQuestCompleted;
+
+    UPROPERTY(BlueprintAssignable, Category="Quest")
+    FHunterQuestChanged OnQuestChanged;
 
 private:
     UPROPERTY(VisibleAnywhere, Category="Quest")
