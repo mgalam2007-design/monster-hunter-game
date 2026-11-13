@@ -57,6 +57,7 @@ void AHunterBreachEncounterActor::StartEncounter(AArinValeCharacter* Arin)
         ? FMath::Max(1, FallbackMonsterCount)
         : MonsterSpawnPoints.Num();
 
+    PendingSpawnTransforms.Reserve(DesiredCount);
     for (int32 Index = 0; Index < DesiredCount; ++Index)
     {
         const FTransform SpawnTransform = MonsterSpawnPoints.IsValidIndex(Index)
@@ -64,25 +65,55 @@ void AHunterBreachEncounterActor::StartEncounter(AArinValeCharacter* Arin)
             : FTransform(Arin->GetActorRotation(),
                 Arin->GetActorLocation() + Arin->GetActorForwardVector() * (450.0f + Index * 180.0f)
                     + Arin->GetActorRightVector() * ((Index % 2 == 0) ? 220.0f : -220.0f));
+        PendingSpawnTransforms.Add(SpawnTransform);
+    }
 
-        AHunterMonsterBase* Monster = GetWorld()->SpawnActorDeferred<AHunterMonsterBase>(
-            MonsterClass, SpawnTransform, this, nullptr,
-            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+    BP_OnEncounterStarted(DesiredCount);
+    SpawnNextMonster();
+    if (NextSpawnIndex < PendingSpawnTransforms.Num())
+    {
+        GetWorldTimerManager().SetTimer(SpawnTimerHandle, this,
+            &AHunterBreachEncounterActor::SpawnNextMonster,
+            FMath::Max(0.1f, SpawnIntervalSeconds), true);
+    }
+    else
+    {
+        FinishSpawningWave();
+    }
+}
 
-        if (!Monster)
-        {
-            continue;
-        }
+void AHunterBreachEncounterActor::SpawnNextMonster()
+{
+    if (!MonsterClass || !GetWorld() || !PendingSpawnTransforms.IsValidIndex(NextSpawnIndex))
+    {
+        GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+        FinishSpawningWave();
+        return;
+    }
 
+    const FTransform SpawnTransform = PendingSpawnTransforms[NextSpawnIndex++];
+    AHunterMonsterBase* Monster = GetWorld()->SpawnActorDeferred<AHunterMonsterBase>(
+        MonsterClass, SpawnTransform, this, nullptr,
+        ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+
+    if (Monster)
+    {
         Monster->OnMonsterDied.AddDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
         SpawnedMonsters.Add(Monster);
         ++RemainingEnemies;
         UGameplayStatics::FinishSpawningActor(Monster, SpawnTransform);
     }
 
-    BP_OnEncounterStarted(RemainingEnemies);
+    if (NextSpawnIndex >= PendingSpawnTransforms.Num())
+    {
+        GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+        FinishSpawningWave();
+    }
+}
 
-    if (RemainingEnemies == 0)
+void AHunterBreachEncounterActor::FinishSpawningWave()
+{
+    if (NextSpawnIndex >= PendingSpawnTransforms.Num() && RemainingEnemies <= 0)
     {
         SpawnReward();
     }
