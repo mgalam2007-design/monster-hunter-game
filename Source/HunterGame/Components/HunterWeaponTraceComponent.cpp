@@ -14,6 +14,8 @@ UHunterWeaponTraceComponent::UHunterWeaponTraceComponent()
 void UHunterWeaponTraceComponent::BeginPlay()
 {
     Super::BeginPlay();
+    BaseDamage = FMath::IsFinite(BaseDamage) ? FMath::Max(1.0f, BaseDamage) : 35.0f;
+    TraceRadius = FMath::IsFinite(TraceRadius) ? FMath::Clamp(TraceRadius, 0.0f, 40.0f) : 12.0f;
 }
 
 void UHunterWeaponTraceComponent::BeginWeaponTrace()
@@ -23,6 +25,7 @@ void UHunterWeaponTraceComponent::BeginWeaponTrace()
     if (!Mesh || !Mesh->DoesSocketExist(BaseSocket) || !Mesh->DoesSocketExist(TipSocket))
     {
         UE_LOG(LogTemp, Warning, TEXT("Weapon trace requires valid '%s' and '%s' sockets on the character mesh."), *BaseSocket.ToString(), *TipSocket.ToString());
+        EndWeaponTrace();
         return;
     }
 
@@ -42,7 +45,7 @@ void UHunterWeaponTraceComponent::EndWeaponTrace()
 
 void UHunterWeaponTraceComponent::SetBaseDamage(float NewDamage)
 {
-    BaseDamage = FMath::Max(1.0f, NewDamage);
+    BaseDamage = FMath::IsFinite(NewDamage) ? FMath::Max(1.0f, NewDamage) : 35.0f;
 }
 
 void UHunterWeaponTraceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -52,7 +55,11 @@ void UHunterWeaponTraceComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     USkeletalMeshComponent* Mesh = Character ? Character->GetMesh() : nullptr;
-    if (!Mesh) { EndWeaponTrace(); return; }
+    if (!Mesh || !Mesh->DoesSocketExist(BaseSocket) || !Mesh->DoesSocketExist(TipSocket))
+    {
+        EndWeaponTrace();
+        return;
+    }
 
     const FVector CurrentBase = Mesh->GetSocketLocation(BaseSocket);
     const FVector CurrentTip = Mesh->GetSocketLocation(TipSocket);
@@ -65,29 +72,57 @@ void UHunterWeaponTraceComponent::TraceWeaponSegment(const FVector& CurrentBase,
 {
     UWorld* World = GetWorld();
     AActor* OwnerActor = GetOwner();
-    if (!World || !OwnerActor) return;
+    if (!World || !IsValid(OwnerActor))
+    {
+        return;
+    }
 
     FCollisionQueryParams Params(SCENE_QUERY_STAT(HunterWeaponTrace), false, OwnerActor);
     Params.AddIgnoredActor(OwnerActor);
-    TArray<FHitResult> Hits;
 
-    const FVector Samples[] = { PreviousBase, PreviousTip, CurrentBase, CurrentTip };
-    for (int32 Index = 0; Index < 4; ++Index)
+    const FCollisionShape BladeShape = FCollisionShape::MakeSphere(TraceRadius);
+    const FVector SweepSegments[][2] =
     {
-        const FVector& Start = Samples[Index];
-        const FVector& End = Samples[(Index + 1) % 4];
-        World->LineTraceMultiByChannel(Hits, Start, End, TraceChannel, Params);
-    }
+        { PreviousBase, CurrentBase },
+        { PreviousTip, CurrentTip },
+        { PreviousBase, PreviousTip },
+        { CurrentBase, CurrentTip }
+    };
 
-    for (const FHitResult& Hit : Hits)
+    const FVector BladeMotion = (CurrentTip - PreviousTip).GetSafeNormal();
+    const FVector FallbackDirection = OwnerActor->GetActorForwardVector();
+    const FVector DamageDirection = BladeMotion.IsNearlyZero() ? FallbackDirection : BladeMotion;
+
+    for (const auto& Segment : SweepSegments)
     {
-        AActor* HitActor = Hit.GetActor();
-        if (!IsValid(HitActor) || HitActors.Contains(HitActor)) continue;
-        HitActors.Add(HitActor);
+        TArray<FHitResult> SegmentHits;
+        World->SweepMultiByChannel(
+            SegmentHits,
+            Segment[0],
+            Segment[1],
+            FQuat::Identity,
+            TraceChannel,
+            BladeShape,
+            Params);
 
-        const float Damage = BaseDamage;
-        UGameplayStatics::ApplyPointDamage(HitActor, Damage, (CurrentTip - PreviousTip).GetSafeNormal(),
-            Hit, Cast<ACharacter>(OwnerActor) ? Cast<ACharacter>(OwnerActor)->GetController() : nullptr,
-            OwnerActor, UDamageType::StaticClass());
+        for (const FHitResult& Hit : SegmentHits)
+        {
+            AActor* HitActor = Hit.GetActor();
+            if (!IsValid(HitActor) || HitActors.Contains(HitActor))
+            {
+                continue;
+            }
+
+            HitActors.Add(HitActor);
+            ACharacter* AttackingCharacter = Cast<ACharacter>(OwnerActor);
+            UGameplayStatics::ApplyPointDamage(
+                HitActor,
+                BaseDamage,
+                DamageDirection,
+                Hit,
+                AttackingCharacter ? AttackingCharacter->GetController() : nullptr,
+                OwnerActor,
+                UDamageType::StaticClass());
+        }
     }
 }
