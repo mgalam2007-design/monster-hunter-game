@@ -23,7 +23,13 @@ assert "ChaseRepathInterval" in HEADER
 assert "ChaseRepathTimer <= 0.0f" in SOURCE
 assert "ChaseRepathTimer = FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
 # Editable Blueprint defaults are normalized before entering combat.
-assert "MaxHealth = FMath::Max(1.0f, MaxHealth)" in SOURCE
+assert "FMath::IsFinite(MaxHealth)" in SOURCE
+assert "FMath::IsFinite(DetectionRadius)" in SOURCE
+assert "FMath::IsFinite(AttackRange)" in SOURCE
+assert "FMath::IsFinite(AttackDamage)" in SOURCE
+assert "FMath::IsFinite(AttackCooldown)" in SOURCE
+assert "FMath::IsFinite(ChaseSpeed)" in SOURCE
+assert "FMath::IsFinite(ChaseRepathInterval)" in SOURCE
 assert "DetectionRadius = FMath::Max(0.0f, DetectionRadius)" in SOURCE
 assert "AttackRange = FMath::Max(0.0f, AttackRange)" in SOURCE
 assert "AttackDamage = FMath::Max(0.0f, AttackDamage)" in SOURCE
