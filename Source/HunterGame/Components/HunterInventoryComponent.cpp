@@ -25,7 +25,6 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
     }
 
     // Normalize incoming metadata before comparing it with existing stacks.
-    // This keeps clamped values merge-compatible with already-normalized items.
     Item.MaxStack = FMath::Max(1, Item.MaxStack);
     Item.HealthRestoreAmount = FMath::Max(0.0f, Item.HealthRestoreAmount);
     Item.EnergyRestoreAmount = FMath::Max(0.0f, Item.EnergyRestoreAmount);
@@ -39,9 +38,10 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
         return false;
     }
 
-    // Validate every matching stack before changing any quantity, so a metadata
-    // conflict cannot leave a partially applied inventory transaction.
-    for (const FHunterInventoryItem& Existing : Items)
+    // Build the complete result separately so validation and allocation do
+    // not expose a partially modified live inventory.
+    TArray<FHunterInventoryItem> UpdatedItems = Items;
+    for (const FHunterInventoryItem& Existing : UpdatedItems)
     {
         if (Existing.ItemId == Item.ItemId && !HasMatchingStackMetadata(Existing, Item))
         {
@@ -50,29 +50,20 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
     }
 
     int32 Remaining = Item.Quantity;
-
-    for (FHunterInventoryItem& Existing : Items)
+    for (FHunterInventoryItem& Existing : UpdatedItems)
     {
         if (Existing.ItemId != Item.ItemId)
         {
             continue;
-        }
-        if (!HasMatchingStackMetadata(Existing, Item))
-        {
-            return false;
         }
 
         const int32 Space = FMath::Max(0, Existing.MaxStack - Existing.Quantity);
         const int32 Added = FMath::Min(Space, Remaining);
         Existing.Quantity += Added;
         Remaining -= Added;
-        if (Added > 0)
-        {
-            OnInventoryChanged.Broadcast(Item.ItemId);
-        }
         if (Remaining <= 0)
         {
-            return true;
+            break;
         }
     }
 
@@ -80,11 +71,14 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
     {
         FHunterInventoryItem NewStack = Item;
         NewStack.Quantity = FMath::Min(Item.MaxStack, Remaining);
-        Items.Add(NewStack);
+        UpdatedItems.Add(NewStack);
         Remaining -= NewStack.Quantity;
-        OnInventoryChanged.Broadcast(Item.ItemId);
     }
 
+    // Commit before notifying listeners, which may initiate another
+    // inventory operation from their callback.
+    Items = MoveTemp(UpdatedItems);
+    OnInventoryChanged.Broadcast(Item.ItemId);
     return true;
 }
 
