@@ -134,7 +134,8 @@ void AHunterBreachEncounterActor::HandleMonsterDied(AActor* DeadMonster)
 
     Monster->OnMonsterDied.RemoveDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
     RemainingEnemies = FMath::Max(0, RemainingEnemies - 1);
-    if (RemainingEnemies == 0)
+    // Do not complete the encounter while later paced spawns are still pending.
+    if (RemainingEnemies == 0 && NextSpawnIndex >= PendingSpawnTransforms.Num())
     {
         SpawnReward();
     }
