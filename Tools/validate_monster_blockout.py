@@ -36,5 +36,5 @@ assert "FMath::Max(0.0f, AttackDamage)" in SOURCE
 assert "FMath::Max(0.1f, AttackCooldown)" in SOURCE
 assert "FMath::Max(0.0f, ChaseSpeed)" in SOURCE
 assert "FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
-assert "return CurrentHealth / FMath::Max(1.0f, MaxHealth)" in SOURCE
+assert "return FMath::Clamp(SafeCurrentHealth / SafeMaxHealth, 0.0f, 1.0f)" in SOURCE
 print("Monster blockout source checks passed.")
