@@ -33,7 +33,25 @@ def main() -> None:
     if "FMath::Clamp(SafeCurrentHealth / SafeMaxHealth, 0.0f, 1.0f)" not in percent:
         fail("monster health percentage must be finite and clamped")
 
-    print("Validated monster damage input guards and bounded health percentage.")
+    tick_start = source.find("void AHunterMonsterBase::Tick")
+    target_start = source.find("void AHunterMonsterBase::FindTarget")
+    combat_start = source.find("void AHunterMonsterBase::UpdateCombat")
+    if min(tick_start, target_start, combat_start) < 0:
+        fail("could not locate monster AI safety functions")
+    tick = source[tick_start:target_start]
+    find_target = source[target_start:combat_start]
+    combat_end = source.find("float AHunterMonsterBase::TakeDamage", combat_start)
+    combat = source[combat_start:combat_end]
+    if "!FMath::IsFinite(DeltaSeconds)" not in tick:
+        fail("monster Tick must reject non-finite frame deltas")
+    if "PlayerHealth->IsDead()" not in find_target:
+        fail("monster target acquisition must ignore defeated players")
+    if "TargetHealth && TargetHealth->IsDead()" not in combat:
+        fail("monster combat must drop defeated player targets")
+    if "FMath::IsFinite(AttackDamage)" not in combat:
+        fail("monster attacks must validate damage before applying it")
+
+    print("Validated monster damage, health percentage and AI safety guards.")
 
 
 if __name__ == "__main__":
