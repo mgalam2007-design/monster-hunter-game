@@ -8,7 +8,7 @@ UHunterHealthComponent::UHunterHealthComponent()
 void UHunterHealthComponent::BeginPlay()
 {
     Super::BeginPlay();
-    MaxHealth = FMath::Max(1.0f, MaxHealth);
+    MaxHealth = FMath::IsFinite(MaxHealth) ? FMath::Max(1.0f, MaxHealth) : 100.0f;
     CurrentHealth = MaxHealth;
     bIsDead = false;
     OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);
@@ -16,7 +16,7 @@ void UHunterHealthComponent::BeginPlay()
 
 float UHunterHealthComponent::ApplyDamage(float Amount)
 {
-    if (bIsDead || Amount <= 0.0f)
+    if (bIsDead || !FMath::IsFinite(Amount) || Amount <= 0.0f)
     {
         return 0.0f;
     }
@@ -41,7 +41,7 @@ float UHunterHealthComponent::ApplyDamage(float Amount)
 
 float UHunterHealthComponent::Heal(float Amount)
 {
-    if (bIsDead || Amount <= 0.0f)
+    if (bIsDead || !FMath::IsFinite(Amount) || Amount <= 0.0f)
     {
         return 0.0f;
     }
@@ -78,17 +78,26 @@ void UHunterHealthComponent::RestoreFullHealth()
 
 float UHunterHealthComponent::GetHealthPercent() const
 {
-    return MaxHealth > 0.0f ? CurrentHealth / MaxHealth : 0.0f;
+    return FMath::IsFinite(MaxHealth) && MaxHealth > 0.0f
+        ? FMath::Clamp(CurrentHealth / MaxHealth, 0.0f, 1.0f)
+        : 0.0f;
 }
 
 void UHunterHealthComponent::SetMaxHealth(float NewMaxHealth, bool bPreserveHealthPercentage)
 {
-    const float PreviousMax = FMath::Max(1.0f, MaxHealth);
-    const float HealthRatio = CurrentHealth / PreviousMax;
+    if (!FMath::IsFinite(NewMaxHealth))
+    {
+        return;
+    }
+
+    const float PreviousMax = FMath::IsFinite(MaxHealth) ? FMath::Max(1.0f, MaxHealth) : 100.0f;
+    const float HealthRatio = FMath::IsFinite(CurrentHealth)
+        ? FMath::Clamp(CurrentHealth / PreviousMax, 0.0f, 1.0f)
+        : 1.0f;
     MaxHealth = FMath::Max(1.0f, NewMaxHealth);
     CurrentHealth = bPreserveHealthPercentage
         ? FMath::Clamp(HealthRatio * MaxHealth, 0.0f, MaxHealth)
-        : FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
+        : FMath::Clamp(FMath::IsFinite(CurrentHealth) ? CurrentHealth : MaxHealth, 0.0f, MaxHealth);
     if (CurrentHealth > 0.0f)
     {
         bIsDead = false;
