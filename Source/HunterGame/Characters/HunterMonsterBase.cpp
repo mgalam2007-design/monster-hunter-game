@@ -144,19 +144,33 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
 float AHunterMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
     AController* EventInstigator, AActor* DamageCauser)
 {
+    if (!FMath::IsFinite(DamageAmount) || DamageAmount <= 0.0f || bIsDead)
+    {
+        return 0.0f;
+    }
+
     const float AppliedDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    if (!FMath::IsFinite(AppliedDamage) || AppliedDamage <= 0.0f)
+    {
+        return 0.0f;
+    }
+
     ReceiveHunterDamage(AppliedDamage, DamageCauser);
     return AppliedDamage;
 }
 
 void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageSource)
 {
-    if (bIsDead || DamageAmount <= 0.0f)
+    if (bIsDead || !FMath::IsFinite(DamageAmount) || DamageAmount <= 0.0f)
     {
         return;
     }
 
-    CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, FMath::Max(1.0f, MaxHealth));
+    const float SafeMaxHealth = FMath::IsFinite(MaxHealth) ? FMath::Max(1.0f, MaxHealth) : 120.0f;
+    CurrentHealth = FMath::Clamp(
+        (FMath::IsFinite(CurrentHealth) ? CurrentHealth : SafeMaxHealth) - DamageAmount,
+        0.0f,
+        SafeMaxHealth);
 
     if (!TargetCharacter.IsValid())
     {
@@ -178,7 +192,9 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
 
 float AHunterMonsterBase::GetHealthPercent() const
 {
-    return CurrentHealth / FMath::Max(1.0f, MaxHealth);
+    const float SafeMaxHealth = FMath::IsFinite(MaxHealth) ? FMath::Max(1.0f, MaxHealth) : 120.0f;
+    const float SafeCurrentHealth = FMath::IsFinite(CurrentHealth) ? CurrentHealth : SafeMaxHealth;
+    return FMath::Clamp(SafeCurrentHealth / SafeMaxHealth, 0.0f, 1.0f);
 }
 
 void AHunterMonsterBase::Die()
