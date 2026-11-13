@@ -14,6 +14,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Animation/AnimInstance.h"
 #include "Blueprint/UserWidget.h"
@@ -44,7 +45,7 @@ AArinValeCharacter::AArinValeCharacter()
         TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 
     auto AddBlockoutPart = [this](const FName PartName, UStaticMesh* Mesh,
-        const FVector& Location, const FVector& Scale, const FRotator& Rotation = FRotator::ZeroRotator)
+        const FVector& Location, const FVector& Scale, const FRotator& Rotation)
     {
         if (!Mesh)
         {
@@ -65,17 +66,17 @@ AArinValeCharacter::AArinValeCharacter()
 
     UStaticMesh* Cube = CubeMesh.Succeeded() ? CubeMesh.Object : nullptr;
     UStaticMesh* Sphere = SphereMesh.Succeeded() ? SphereMesh.Object : nullptr;
-    AddBlockoutPart(TEXT("ArinBlockoutTorso"), Cube, FVector(0, 0, 8), FVector(0.34f, 0.23f, 0.48f));
-    AddBlockoutPart(TEXT("ArinBlockoutShoulderL"), Cube, FVector(0, -27, 36), FVector(0.18f, 0.29f, 0.15f));
-    AddBlockoutPart(TEXT("ArinBlockoutShoulderR"), Cube, FVector(0, 27, 36), FVector(0.18f, 0.29f, 0.15f));
-    AddBlockoutPart(TEXT("ArinBlockoutArmL"), Cube, FVector(0, -32, -2), FVector(0.14f, 0.15f, 0.39f));
-    AddBlockoutPart(TEXT("ArinBlockoutArmR"), Cube, FVector(0, 32, -2), FVector(0.14f, 0.15f, 0.39f));
-    AddBlockoutPart(TEXT("ArinBlockoutLegL"), Cube, FVector(0, -13, -48), FVector(0.16f, 0.17f, 0.42f));
-    AddBlockoutPart(TEXT("ArinBlockoutLegR"), Cube, FVector(0, 13, -48), FVector(0.16f, 0.17f, 0.42f));
-    AddBlockoutPart(TEXT("ArinBlockoutBootL"), Cube, FVector(10, -13, -78), FVector(0.25f, 0.19f, 0.10f));
-    AddBlockoutPart(TEXT("ArinBlockoutBootR"), Cube, FVector(10, 13, -78), FVector(0.25f, 0.19f, 0.10f));
-    AddBlockoutPart(TEXT("ArinBlockoutHead"), Sphere, FVector(0, 0, 63), FVector(0.19f, 0.19f, 0.22f));
-    AddBlockoutPart(TEXT("ArinBlockoutHair"), Cube, FVector(-3, 0, 79), FVector(0.20f, 0.21f, 0.08f));
+    AddBlockoutPart(TEXT("ArinBlockoutTorso"), Cube, FVector(0, 0, 8), FVector(0.34f, 0.23f, 0.48f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutShoulderL"), Cube, FVector(0, -27, 36), FVector(0.18f, 0.29f, 0.15f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutShoulderR"), Cube, FVector(0, 27, 36), FVector(0.18f, 0.29f, 0.15f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutArmL"), Cube, FVector(0, -32, -2), FVector(0.14f, 0.15f, 0.39f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutArmR"), Cube, FVector(0, 32, -2), FVector(0.14f, 0.15f, 0.39f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutLegL"), Cube, FVector(0, -13, -48), FVector(0.16f, 0.17f, 0.42f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutLegR"), Cube, FVector(0, 13, -48), FVector(0.16f, 0.17f, 0.42f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutBootL"), Cube, FVector(10, -13, -78), FVector(0.25f, 0.19f, 0.10f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutBootR"), Cube, FVector(10, 13, -78), FVector(0.25f, 0.19f, 0.10f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutHead"), Sphere, FVector(0, 0, 63), FVector(0.19f, 0.19f, 0.22f), FRotator::ZeroRotator);
+    AddBlockoutPart(TEXT("ArinBlockoutHair"), Cube, FVector(-3, 0, 79), FVector(0.20f, 0.21f, 0.08f), FRotator::ZeroRotator);
     AddBlockoutPart(TEXT("ArinBlockoutSword"), Cube, FVector(17, 43, 8), FVector(0.07f, 0.07f, 0.48f), FRotator(0, 0, 8));
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
