@@ -120,6 +120,7 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 ## Visible monster prototype foundation
 
 - The reusable monster base now assembles a temporary humanoid/creature silhouette from Unreal's built-in cube and sphere meshes: torso, shoulders, arms, legs, head and horns.
+- AI chase path requests are now throttled by an editable repath interval instead of being submitted on every Tick while pursuing a target.
 - The visual pieces have collision and navigation influence disabled. The inherited Character capsule remains responsible for movement and collision, so the blockout does not add extra hitboxes.
 - `Tools/validate_monster_blockout.py` checks the required source components and is included in GitHub Actions.
 - This is a shared placeholder silhouette for early encounter assembly, not a final monster roster. Distinct enemy species, materials, skeletal meshes, rigs, animations, attack telegraphs and boss-specific geometry remain to be authored.
