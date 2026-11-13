@@ -30,6 +30,16 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
         return false;
     }
 
+    // Validate every matching stack before changing any quantity, so a metadata
+    // conflict cannot leave a partially applied inventory transaction.
+    for (const FHunterInventoryItem& Existing : Items)
+    {
+        if (Existing.ItemId == Item.ItemId && !HasMatchingStackMetadata(Existing, Item))
+        {
+            return false;
+        }
+    }
+
     Item.MaxStack = FMath::Max(1, Item.MaxStack);
     Item.HealthRestoreAmount = FMath::Max(0.0f, Item.HealthRestoreAmount);
     Item.EnergyRestoreAmount = FMath::Max(0.0f, Item.EnergyRestoreAmount);
