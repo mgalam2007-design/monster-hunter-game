@@ -37,9 +37,12 @@ bool UHunterShopComponent::BuyItem(AArinValeCharacter* Buyer, FName ItemId, int3
     FHunterShopEntry* Entry = FindEntry(ItemId);
     UHunterInventoryComponent* Inventory = Buyer ? Buyer->GetInventoryComponent() : nullptr;
     UHunterCurrencyComponent* Currency = Buyer ? Buyer->GetCurrencyComponent() : nullptr;
-    if (!Entry || !Inventory || !Currency || Entry->Item.ItemType == EHunterItemType::Quest ||
-        Entry->Item.Quantity <= 0 || Entry->Item.MaxStack <= 0 || (Entry->Stock >= 0 && Entry->Stock < Quantity) ||
-        Entry->BuyPrice < 0 || Entry->BuyPrice > MAX_int64 / Quantity)
+    if (!Entry || !Inventory || !Currency ||
+        static_cast<uint8>(Entry->Item.ItemType) > static_cast<uint8>(EHunterItemType::Quest) ||
+        Entry->Item.ItemType == EHunterItemType::Quest || Entry->Item.Quantity <= 0 || Entry->Item.MaxStack <= 0 ||
+        !FMath::IsFinite(Entry->Item.HealthRestoreAmount) || !FMath::IsFinite(Entry->Item.EnergyRestoreAmount) ||
+        !FMath::IsFinite(Entry->Item.DamageBonus) || !FMath::IsFinite(Entry->Item.DamageReduction) ||
+        (Entry->Stock >= 0 && Entry->Stock < Quantity) || Entry->BuyPrice < 0 || Entry->BuyPrice > MAX_int64 / Quantity)
     {
         return false;
     }
