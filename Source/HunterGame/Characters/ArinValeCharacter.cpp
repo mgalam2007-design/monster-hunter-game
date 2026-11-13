@@ -145,9 +145,27 @@ void AArinValeCharacter::BeginPlay()
 float AArinValeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
     AController* EventInstigator, AActor* DamageCauser)
 {
-    const float DamageReduction = EquipmentComponent ? EquipmentComponent->GetDamageReduction() : 0.0f;
+    if (!FMath::IsFinite(DamageAmount) || DamageAmount <= 0.0f ||
+        (HealthComponent && HealthComponent->IsDead()))
+    {
+        return 0.0f;
+    }
+
+    const float RawDamageReduction = EquipmentComponent ? EquipmentComponent->GetDamageReduction() : 0.0f;
+    const float DamageReduction = FMath::IsFinite(RawDamageReduction)
+        ? FMath::Clamp(RawDamageReduction, 0.0f, 0.95f) : 0.0f;
     const float MitigatedDamage = DamageAmount * (1.0f - DamageReduction);
+    if (!FMath::IsFinite(MitigatedDamage) || MitigatedDamage <= 0.0f)
+    {
+        return 0.0f;
+    }
+
     const float AppliedDamage = Super::TakeDamage(MitigatedDamage, DamageEvent, EventInstigator, DamageCauser);
+    if (!FMath::IsFinite(AppliedDamage) || AppliedDamage <= 0.0f)
+    {
+        return 0.0f;
+    }
+
     if (HealthComponent)
     {
         HealthComponent->ApplyDamage(AppliedDamage);
