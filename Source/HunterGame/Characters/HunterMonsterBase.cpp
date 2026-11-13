@@ -73,6 +73,7 @@ void AHunterMonsterBase::Tick(float DeltaSeconds)
     }
 
     AttackTimer = FMath::Max(0.0f, AttackTimer - DeltaSeconds);
+    ChaseRepathTimer = FMath::Max(0.0f, ChaseRepathTimer - DeltaSeconds);
 
     if (!TargetCharacter.IsValid())
     {
@@ -113,11 +114,12 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
 
     if (Distance > AttackRange)
     {
-        if (bCanChasePlayer)
+        if (bCanChasePlayer && ChaseRepathTimer <= 0.0f)
         {
             if (AAIController* AI = Cast<AAIController>(GetController()))
             {
                 AI->MoveToActor(Target, AttackRange * 0.8f);
+                ChaseRepathTimer = FMath::Max(0.05f, ChaseRepathInterval);
             }
         }
         return;
