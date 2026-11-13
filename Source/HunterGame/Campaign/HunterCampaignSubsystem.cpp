@@ -868,6 +868,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 17)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 17: hold the last sanctuary while the remaining civilians evacuate.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH17_LastSanctuary")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective RescueObjective;
+            RescueObjective.ObjectiveId = TEXT("EvacuateSanctuaryCivilians");
+            RescueObjective.Description = FText::FromString(TEXT("Escort 5 civilian groups to safety"));
+            RescueObjective.Type = EHunterObjectiveType::Interact;
+            RescueObjective.EventTag = TEXT("SanctuaryGroupEvacuated");
+            RescueObjective.RequiredCount = 5;
+            Objectives.Add(RescueObjective);
+
+            FHunterObjective DefendObjective;
+            DefendObjective.ObjectiveId = TEXT("DefeatSanctuaryInvaders");
+            DefendObjective.Description = FText::FromString(TEXT("Defeat 6 creatures attacking the sanctuary"));
+            DefendObjective.Type = EHunterObjectiveType::Defeat;
+            DefendObjective.EventTag = TEXT("SanctuaryInvaderDefeated");
+            DefendObjective.RequiredCount = 6;
+            Objectives.Add(DefendObjective);
+
+            if (!Quest->StartQuest(TEXT("CH17_LastSanctuary"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -1057,9 +1105,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 17)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH17_LastSanctuary")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 17-20 still need authored objective sets.
+        // Chapters 18-20 still need authored objective sets.
         return false;
     }
 
