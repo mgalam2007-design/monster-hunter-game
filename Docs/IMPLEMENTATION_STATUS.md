@@ -101,3 +101,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - `Tools/validate_quest_notifications.py` checks these safeguards and runs in GitHub Actions.
 - This is a source-level safety improvement. It has not yet been compiled or exercised in Unreal Engine.
 
+## Visible Arin prototype foundation
+
+- Arin now receives a temporary engine-native static-mesh blockout assembled from Unreal's built-in cube and sphere meshes. It includes torso, shoulders, arms, legs, boots, head, hair and a sword, so the default C++ pawn is no longer intentionally invisible when those engine primitive assets are available.
+- The blockout parts are attached to the character capsule and have collision disabled, leaving movement/collision to the existing character capsule.
+- This is temporary greybox geometry, not the final rigged Arin model. It has no skinning, animation, material palette, facial detail or weapon socket integration.
+- `Tools/validate_playable_foundation.py` checks the blockout components and verifies every legacy input binding in the character code has a matching `DefaultInput.ini` mapping. It runs in GitHub Actions.
+- The C++ has not yet been compiled or viewed in Unreal Editor; engine asset path resolution and visual alignment still require an editor test.
+
