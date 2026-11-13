@@ -19,4 +19,7 @@ assert "SetCollisionEnabled(ECollisionEnabled::NoCollision)" in SOURCE
 assert "SetCanEverAffectNavigation(false)" in SOURCE
 assert "SetupAttachment(GetRootComponent())" in SOURCE
 assert "GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed" in SOURCE
+assert "ChaseRepathInterval" in HEADER
+assert "ChaseRepathTimer <= 0.0f" in SOURCE
+assert "ChaseRepathTimer = FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
 print("Monster blockout source checks passed.")
