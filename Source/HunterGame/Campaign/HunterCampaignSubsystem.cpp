@@ -820,6 +820,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 16)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 16: reactivate the world-boundary beacons and defend them from attackers.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH16_SevenBeacons")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective BeaconObjective;
+            BeaconObjective.ObjectiveId = TEXT("ActivateBoundaryBeacons");
+            BeaconObjective.Description = FText::FromString(TEXT("Activate 7 boundary beacons"));
+            BeaconObjective.Type = EHunterObjectiveType::Interact;
+            BeaconObjective.EventTag = TEXT("BoundaryBeaconActivated");
+            BeaconObjective.RequiredCount = 7;
+            Objectives.Add(BeaconObjective);
+
+            FHunterObjective DefenseObjective;
+            DefenseObjective.ObjectiveId = TEXT("DefendBeaconKeepers");
+            DefenseObjective.Description = FText::FromString(TEXT("Defeat 3 creatures attacking the beacon network"));
+            DefenseObjective.Type = EHunterObjectiveType::Defeat;
+            DefenseObjective.EventTag = TEXT("BeaconAttackerDefeated");
+            DefenseObjective.RequiredCount = 3;
+            Objectives.Add(DefenseObjective);
+
+            if (!Quest->StartQuest(TEXT("CH16_SevenBeacons"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -998,9 +1046,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 16)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH16_SevenBeacons")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 16-20 still need authored objective sets.
+        // Chapters 17-20 still need authored objective sets.
         return false;
     }
 
