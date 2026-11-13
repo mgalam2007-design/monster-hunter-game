@@ -2,9 +2,12 @@
 
 #include "ArinValeCharacter.h"
 #include "ArinProgressionComponent.h"
+#include "Misc/GuardValue.h"
 
 bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
 {
+    if (bEquipmentTransactionInProgress) return false;
+    TGuardValue<bool> TransactionGuard(bEquipmentTransactionInProgress, true);
     if (NewItem.ItemId.IsNone() ||
         static_cast<uint8>(NewItem.Slot) > static_cast<uint8>(EHunterEquipmentSlot::Armor) ||
         NewItem.RequiredEvolutionStage < 0 || NewItem.RequiredEvolutionStage > 4 ||
@@ -61,7 +64,10 @@ bool UHunterEquipmentComponent::EquipItem(const FHunterEquipmentItem& NewItem)
     if (!ReturnEquippedItem(SlotItem))
     {
         SourceInventoryItem.Quantity = 1;
-        Inventory->AddItem(SourceInventoryItem);
+        if (!Inventory->AddItem(SourceInventoryItem))
+        {
+            UE_LOG(LogTemp, Error, TEXT("Equipment rollback failed for item '%s'; manual inventory recovery may be required."), *NewItem.ItemId.ToString());
+        }
         return false;
     }
 
@@ -143,6 +149,8 @@ bool UHunterEquipmentComponent::ReturnEquippedItem(FHunterEquipmentItem& Item)
 
 bool UHunterEquipmentComponent::UnequipSlot(EHunterEquipmentSlot Slot)
 {
+    if (bEquipmentTransactionInProgress) return false;
+    TGuardValue<bool> TransactionGuard(bEquipmentTransactionInProgress, true);
     FHunterEquipmentItem& Item = Slot == EHunterEquipmentSlot::Weapon ? EquippedWeapon : EquippedArmor;
     if (Item.ItemId.IsNone() || !ReturnEquippedItem(Item))
     {
