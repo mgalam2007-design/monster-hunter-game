@@ -109,3 +109,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - `Tools/validate_playable_foundation.py` checks the blockout components and verifies every legacy input binding in the character code has a matching `DefaultInput.ini` mapping. It runs in GitHub Actions.
 - The C++ has not yet been compiled or viewed in Unreal Editor; engine asset path resolution and visual alignment still require an editor test.
 
+## Unreal breach arena greybox
+
+- Added `AHunterPrototypeArenaActor`, a placeable C++ actor that builds a basic enclosed combat arena from Unreal's built-in cube mesh.
+- The arena includes a floor, perimeter walls, split rear wall with a central gate opening, gate frame, four cover pillars and a blue point light.
+- Arena width, depth and wall height are editable properties. Geometry blocks movement and is configured to contribute to navigation.
+- `Tools/validate_arena_greybox.py` checks the required geometry, collision, navigation and gate lighting; it runs in GitHub Actions.
+- This provides a first environment blockout for encounter assembly, not a finished art level. It still needs to be placed in an Unreal map, checked for collision/navmesh and lit/materialed in-editor.
+
