@@ -412,6 +412,54 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
         }
     }
 
+    else if (ChapterNumber == 8)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest)
+        {
+            return false;
+        }
+
+        // Chapter 8: survive the expedition ambush and complete Arin's first true awakening.
+        if (Quest->GetActiveQuestId() != FName(TEXT("CH08_HunterReborn")))
+        {
+            if (Quest->IsQuestActive())
+            {
+                if (!Quest->IsQuestComplete())
+                {
+                    return false;
+                }
+                Quest->ClearActiveQuest();
+            }
+
+            TArray<FHunterObjective> Objectives;
+
+            FHunterObjective DefeatObjective;
+            DefeatObjective.ObjectiveId = TEXT("DefeatAwakeningAmbushers");
+            DefeatObjective.Description = FText::FromString(TEXT("Defeat 6 creatures in the awakening expedition"));
+            DefeatObjective.Type = EHunterObjectiveType::Defeat;
+            DefeatObjective.EventTag = TEXT("AwakeningCreatureDefeated");
+            DefeatObjective.RequiredCount = 6;
+            Objectives.Add(DefeatObjective);
+
+            FHunterObjective ActivateObjective;
+            ActivateObjective.ObjectiveId = TEXT("ActivateAwakeningAltar");
+            ActivateObjective.Description = FText::FromString(TEXT("Activate the awakening altar"));
+            ActivateObjective.Type = EHunterObjectiveType::Interact;
+            ActivateObjective.EventTag = TEXT("AwakeningAltarActivated");
+            ActivateObjective.RequiredCount = 1;
+            Objectives.Add(ActivateObjective);
+
+            if (!Quest->StartQuest(TEXT("CH08_HunterReborn"), Objectives))
+            {
+                return false;
+            }
+        }
+    }
+
     CurrentChapterNumber = ChapterNumber;
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
@@ -502,9 +550,20 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
             return false;
         }
     }
+    else if (CurrentChapterNumber == 8)
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterQuestSubsystem* Quest = GameInstance
+            ? GameInstance->GetSubsystem<UHunterQuestSubsystem>()
+            : nullptr;
+        if (!Quest || Quest->GetActiveQuestId() != FName(TEXT("CH08_HunterReborn")) || !Quest->IsQuestComplete())
+        {
+            return false;
+        }
+    }
     else
     {
-        // Chapters 8-20 still need authored objective sets.
+        // Chapters 9-20 still need authored objective sets.
         return false;
     }
 
