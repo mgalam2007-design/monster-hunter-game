@@ -24,6 +24,15 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
         return false;
     }
 
+    // Normalize incoming metadata before comparing it with existing stacks.
+    // This keeps clamped values merge-compatible with already-normalized items.
+    Item.MaxStack = FMath::Max(1, Item.MaxStack);
+    Item.HealthRestoreAmount = FMath::Max(0.0f, Item.HealthRestoreAmount);
+    Item.EnergyRestoreAmount = FMath::Max(0.0f, Item.EnergyRestoreAmount);
+    Item.DamageBonus = FMath::Max(0.0f, Item.DamageBonus);
+    Item.DamageReduction = FMath::Clamp(Item.DamageReduction, 0.0f, 0.8f);
+    Item.RequiredEvolutionStage = FMath::Clamp(Item.RequiredEvolutionStage, 0, 4);
+
     const int64 ExistingTotal = static_cast<int64>(GetItemCount(Item.ItemId));
     if (ExistingTotal + static_cast<int64>(Item.Quantity) > MAX_int32)
     {
@@ -40,12 +49,6 @@ bool UHunterInventoryComponent::AddItem(FHunterInventoryItem Item)
         }
     }
 
-    Item.MaxStack = FMath::Max(1, Item.MaxStack);
-    Item.HealthRestoreAmount = FMath::Max(0.0f, Item.HealthRestoreAmount);
-    Item.EnergyRestoreAmount = FMath::Max(0.0f, Item.EnergyRestoreAmount);
-    Item.DamageBonus = FMath::Max(0.0f, Item.DamageBonus);
-    Item.DamageReduction = FMath::Clamp(Item.DamageReduction, 0.0f, 0.8f);
-    Item.RequiredEvolutionStage = FMath::Clamp(Item.RequiredEvolutionStage, 0, 4);
     int32 Remaining = Item.Quantity;
 
     for (FHunterInventoryItem& Existing : Items)
