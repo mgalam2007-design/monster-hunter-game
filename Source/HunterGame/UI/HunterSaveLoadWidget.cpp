@@ -61,7 +61,33 @@ void UHunterSaveLoadWidget::RefreshSaveSlot()
         const UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(
             UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 
-        if (SaveObject && SaveObject->SaveVersion >= 1 && SaveObject->SaveVersion <= 6)
+        bool bSnapshotValid = SaveObject &&
+            SaveObject->SaveVersion >= 1 && SaveObject->SaveVersion <= 6;
+
+        if (bSnapshotValid)
+        {
+            bSnapshotValid =
+                SaveObject->CurrentChapterNumber >= 1 &&
+                SaveObject->CurrentChapterNumber <= 20 &&
+                SaveObject->ArinExperience >= 0 &&
+                SaveObject->ArinCurrency >= 0 &&
+                SaveObject->CompletedChapterNumbers.Num() <= 20;
+
+            TSet<int32> UniqueCompletedChapters;
+            for (const int32 CompletedChapter : SaveObject->CompletedChapterNumbers)
+            {
+                if (CompletedChapter < 1 || CompletedChapter > 20 ||
+                    UniqueCompletedChapters.Contains(CompletedChapter))
+                {
+                    bSnapshotValid = false;
+                    break;
+                }
+
+                UniqueCompletedChapters.Add(CompletedChapter);
+            }
+        }
+
+        if (bSnapshotValid)
         {
             Snapshot.CurrentChapterNumber = SaveObject->CurrentChapterNumber;
             Snapshot.CompletedChapterCount = SaveObject->CompletedChapterNumbers.Num();
@@ -70,6 +96,7 @@ void UHunterSaveLoadWidget::RefreshSaveSlot()
         }
         else
         {
+            // Never expose malformed save metadata as a valid menu entry.
             Snapshot.bSaveExists = false;
         }
     }
