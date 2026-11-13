@@ -9,7 +9,7 @@ if not html_path.is_file():
     raise SystemExit("Missing Demo/index.html")
 
 html = html_path.read_text(encoding="utf-8")
-scripts = re.findall(r"<script>([\\s\\S]*?)</script>", html)
+scripts = re.findall(r"<script>([\s\S]*?)</script>", html)
 if len(scripts) != 1:
     raise SystemExit(f"Expected one inline game script, found {len(scripts)}")
 
