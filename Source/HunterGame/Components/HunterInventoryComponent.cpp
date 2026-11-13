@@ -130,17 +130,77 @@ bool UHunterInventoryComponent::HasItem(FName ItemId, int32 Amount) const
 
 void UHunterInventoryComponent::RestoreItems(const TArray<FHunterInventoryItem>& SavedItems)
 {
-    Items.Reset();
+    TArray<FHunterInventoryItem> RestoredItems;
+
+    // Build the restored inventory off to the side. Invalid entries and
+    // conflicting metadata are skipped without exposing partial restore state.
     for (FHunterInventoryItem Item : SavedItems)
     {
-        if (Item.ItemId.IsNone() || Item.Quantity <= 0)
+        if (Item.ItemId.IsNone() || Item.Quantity <= 0 ||
+            static_cast<uint8>(Item.ItemType) > static_cast<uint8>(EHunterItemType::Quest) ||
+            !FMath::IsFinite(Item.HealthRestoreAmount) || !FMath::IsFinite(Item.EnergyRestoreAmount) ||
+            !FMath::IsFinite(Item.DamageBonus) || !FMath::IsFinite(Item.DamageReduction))
         {
             continue;
         }
 
         Item.MaxStack = FMath::Max(1, Item.MaxStack);
-        AddItem(Item);
+        Item.HealthRestoreAmount = FMath::Max(0.0f, Item.HealthRestoreAmount);
+        Item.EnergyRestoreAmount = FMath::Max(0.0f, Item.EnergyRestoreAmount);
+        Item.DamageBonus = FMath::Max(0.0f, Item.DamageBonus);
+        Item.DamageReduction = FMath::Clamp(Item.DamageReduction, 0.0f, 0.8f);
+        Item.RequiredEvolutionStage = FMath::Clamp(Item.RequiredEvolutionStage, 0, 4);
+
+        int64 ExistingTotal = 0;
+        bool bMetadataMatches = true;
+        for (const FHunterInventoryItem& Existing : RestoredItems)
+        {
+            if (Existing.ItemId != Item.ItemId)
+            {
+                continue;
+            }
+
+            ExistingTotal += Existing.Quantity;
+            if (!HasMatchingStackMetadata(Existing, Item))
+            {
+                bMetadataMatches = false;
+                break;
+            }
+        }
+
+        if (!bMetadataMatches || ExistingTotal + static_cast<int64>(Item.Quantity) > MAX_int32)
+        {
+            continue;
+        }
+
+        int32 Remaining = Item.Quantity;
+        for (FHunterInventoryItem& Existing : RestoredItems)
+        {
+            if (Existing.ItemId != Item.ItemId)
+            {
+                continue;
+            }
+
+            const int32 Space = FMath::Max(0, Existing.MaxStack - Existing.Quantity);
+            const int32 Added = FMath::Min(Space, Remaining);
+            Existing.Quantity += Added;
+            Remaining -= Added;
+            if (Remaining <= 0)
+            {
+                break;
+            }
+        }
+
+        while (Remaining > 0)
+        {
+            FHunterInventoryItem NewStack = Item;
+            NewStack.Quantity = FMath::Min(Item.MaxStack, Remaining);
+            RestoredItems.Add(NewStack);
+            Remaining -= NewStack.Quantity;
+        }
     }
+
+    Items = MoveTemp(RestoredItems);
     OnInventoryChanged.Broadcast(NAME_None);
 }
 
