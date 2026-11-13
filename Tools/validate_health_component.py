@@ -19,7 +19,7 @@ def main() -> None:
         "!FMath::IsFinite(Amount)",
         "!FMath::IsFinite(NewMaxHealth)",
         "FMath::Clamp(CurrentHealth / MaxHealth, 0.0f, 1.0f)",
-        "FMath::Clamp(HealthRatio, 0.0f, 1.0f)",
+        "FMath::Clamp(CurrentHealth / PreviousMax, 0.0f, 1.0f)",
     )
     for token in required:
         if token not in source:
