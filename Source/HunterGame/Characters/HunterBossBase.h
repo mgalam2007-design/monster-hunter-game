@@ -18,6 +18,8 @@ class HUNTERGAME_API AHunterBossBase : public AHunterMonsterBase
 public:
     AHunterBossBase();
 
+    virtual void BeginPlay() override;
+
     virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
         AController* EventInstigator, AActor* DamageCauser) override;
 
