@@ -135,3 +135,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Boss visual pieces have collision and navigation influence disabled; the inherited character capsule remains responsible for collision.
 - `Tools/validate_boss_foundation.py` checks the boss silhouette, default tuning and phase-scaling safeguards in GitHub Actions.
 - This is still a primitive blockout, not a designed boss model, rig, animation set or complete phase-specific attack system. Unreal compilation, visual alignment and combat testing remain required.
+
+
+## Encounter integration validation
+
+- Added `Tools/validate_encounters.py` to statically verify breach-wave pacing, successful-spawn tracking, death-event removal, completion gating, and one-time reward protection.
+- The same validator checks boss spawn-failure handling, boss identity matching, one-time defeat handling, and quest-event wiring.
+- GitHub Actions now runs this encounter validator alongside the monster and boss foundation checks.
+- These checks inspect source structure only; they do not compile Unreal C++ or prove runtime behavior in an Unreal level.
