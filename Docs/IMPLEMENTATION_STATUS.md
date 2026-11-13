@@ -185,3 +185,12 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Monster Tick rejects non-finite or non-positive frame deltas, and attack damage is checked before applying it.
 - `Tools/validate_monster_damage.py` now also checks these AI safeguards in GitHub Actions.
 - The existing AI still requires configured AI controllers, navigation bounds and in-editor testing; this source check does not prove pathfinding or combat feel.
+
+
+## Campaign save-load integrity
+
+- Campaign loading now validates the complete save snapshot before changing campaign chapter state or restoring player data.
+- Loads reject unsupported chapter numbers, negative XP/currency, evolution stages outside 0–4, oversized completion lists, invalid chapter IDs and duplicate completed chapters.
+- This prevents malformed or edited save data from partially mutating the live campaign before being rejected.
+- `Tools/validate_campaign_load.py` checks the ordering and presence of these source safeguards in GitHub Actions.
+- This is a static source validation only; actual save-file compatibility and restoration still require Unreal compilation and runtime testing.
