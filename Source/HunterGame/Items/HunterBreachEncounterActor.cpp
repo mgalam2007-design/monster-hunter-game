@@ -69,14 +69,13 @@ void AHunterBreachEncounterActor::StartEncounter(AArinValeCharacter* Arin)
     PendingSpawnTransforms.Reserve(DesiredCount);
     for (int32 Index = 0; Index < DesiredCount; ++Index)
     {
-        const FTransform AuthoredTransform = MonsterSpawnPoints.IsValidIndex(Index)
-            ? MonsterSpawnPoints[Index]
-            : FTransform::Identity;
+        const bool bHasValidAuthoredTransform = MonsterSpawnPoints.IsValidIndex(Index)
+            && MonsterSpawnPoints[Index].IsValid();
         const FTransform FallbackTransform(Arin->GetActorRotation(),
             Arin->GetActorLocation() + Arin->GetActorForwardVector() * (450.0f + Index * 180.0f)
                 + Arin->GetActorRightVector() * ((Index % 2 == 0) ? 220.0f : -220.0f));
-        const FTransform SpawnTransform = AuthoredTransform.IsValid()
-            ? AuthoredTransform
+        const FTransform SpawnTransform = bHasValidAuthoredTransform
+            ? MonsterSpawnPoints[Index]
             : FallbackTransform;
         PendingSpawnTransforms.Add(SpawnTransform);
     }
