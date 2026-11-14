@@ -8,14 +8,14 @@ BOSS_H = (ROOT / "Source/HunterGame/Items/HunterBossEncounterActor.h").read_text
 
 # Breach wave: start once, pace spawns, track only successfully spawned enemies,
 # and wait for both the spawn queue and active enemy count before rewarding.
-assert "if (bEncounterStarted || !Arin || !MonsterClass || !GetWorld())" in BREACH
+assert "if (bEncounterStarted || !Arin || !MonsterClass || !RewardPickupClass ||" in BREACH
 assert "SpawnTimerHandle" in BREACH_H
 assert "FMath::Max(0.1f, SpawnIntervalSeconds)" in BREACH
 assert "SpawnedMonsters.Add(Monster)" in BREACH
 assert "++RemainingEnemies" in BREACH
 assert "SpawnedMonsters.RemoveSingle(Monster) == 0" in BREACH
 assert "RemainingEnemies == 0 && NextSpawnIndex >= PendingSpawnTransforms.Num()" in BREACH
-assert "if (bEncounterComplete)" in BREACH
+assert "if (bEncounterComplete ||" in BREACH
 assert "RewardQuestEventTag" in BREACH
 assert "BP_OnEncounterCompleted()" in BREACH
 
