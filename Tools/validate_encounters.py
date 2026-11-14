@@ -33,3 +33,12 @@ assert "HasEncounterStarted() const" in BOSS_H
 assert "IsEncounterComplete() const" in BOSS_H
 
 print("Breach and boss encounter source checks passed.")
+
+# Editor-authored encounter settings must be normalized before use.
+assert "FMath::IsFinite(TriggerRadius)" in BREACH
+assert "FMath::Clamp(TriggerRadius, 50.0f, 5000.0f)" in BREACH
+assert "FMath::IsFinite(SpawnIntervalSeconds)" in BREACH
+assert "FMath::Clamp(SpawnIntervalSeconds, 0.1f, 30.0f)" in BREACH
+assert "FMath::Clamp(FallbackMonsterCount, 1, 20)" in BREACH
+assert "FMath::Clamp(MonsterSpawnPoints.Num(), 1, 20)" in BREACH
+assert "AuthoredTransform.IsValid()" in BREACH
