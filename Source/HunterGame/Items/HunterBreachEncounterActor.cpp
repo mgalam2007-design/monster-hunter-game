@@ -56,7 +56,8 @@ void AHunterBreachEncounterActor::HandleTriggerOverlap(UPrimitiveComponent* Over
 
 void AHunterBreachEncounterActor::StartEncounter(AArinValeCharacter* Arin)
 {
-    if (bEncounterStarted || !Arin || !MonsterClass || !GetWorld())
+    if (bEncounterStarted || !Arin || !MonsterClass || !RewardPickupClass ||
+        RewardItem.ItemId.IsNone() || RewardQuestEventTag.IsNone() || !GetWorld())
     {
         return;
     }
@@ -153,30 +154,45 @@ void AHunterBreachEncounterActor::HandleMonsterDied(AActor* DeadMonster)
     }
 }
 
+void AHunterBreachEncounterActor::RetryRewardSpawn()
+{
+    if (bEncounterStarted && !bEncounterComplete &&
+        RemainingEnemies <= 0 && NextSpawnIndex >= PendingSpawnTransforms.Num())
+    {
+        SpawnReward();
+    }
+}
+
 void AHunterBreachEncounterActor::SpawnReward()
 {
-    if (bEncounterComplete)
+    if (bEncounterComplete || !GetWorld() || !RewardPickupClass ||
+        RewardItem.ItemId.IsNone() || RewardQuestEventTag.IsNone())
     {
         return;
     }
 
-    bEncounterComplete = true;
-    if (RewardPickupClass && !RewardItem.ItemId.IsNone() && GetWorld())
-    {
-        const FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 45.0f);
-        const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
-        AHunterPickupActor* Pickup = GetWorld()->SpawnActorDeferred<AHunterPickupActor>(
-            RewardPickupClass, SpawnTransform, this, nullptr,
-            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+    const FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 45.0f);
+    const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
+    AHunterPickupActor* Pickup = GetWorld()->SpawnActorDeferred<AHunterPickupActor>(
+        RewardPickupClass, SpawnTransform, this, nullptr,
+        ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 
-        if (Pickup)
-        {
-            Pickup->SetPickupItem(RewardItem);
-            Pickup->SetQuestEventTag(RewardQuestEventTag);
-            UGameplayStatics::FinishSpawningActor(Pickup, SpawnTransform);
-            BP_OnRewardSpawned(Pickup);
-        }
+    if (!Pickup)
+    {
+        BP_OnRewardSpawnFailed();
+        return;
     }
 
+    Pickup->SetPickupItem(RewardItem);
+    Pickup->SetQuestEventTag(RewardQuestEventTag);
+    UGameplayStatics::FinishSpawningActor(Pickup, SpawnTransform);
+    if (!IsValid(Pickup))
+    {
+        BP_OnRewardSpawnFailed();
+        return;
+    }
+
+    bEncounterComplete = true;
+    BP_OnRewardSpawned(Pickup);
     BP_OnEncounterCompleted();
 }
