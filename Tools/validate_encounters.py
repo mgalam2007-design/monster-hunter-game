@@ -43,3 +43,16 @@ assert "FMath::Clamp(FallbackMonsterCount, 1, 20)" in BREACH
 assert "FMath::Clamp(MonsterSpawnPoints.Num(), 1, 20)" in BREACH
 assert "MonsterSpawnPoints[Index].IsValid()" in BREACH
 assert "bHasValidAuthoredTransform" in BREACH
+
+# A breach must be configured with its quest reward before starting. It only
+# completes after the pickup is successfully spawned; failed spawns can be retried.
+assert "RewardItem.ItemId.IsNone() || RewardQuestEventTag.IsNone()" in BREACH
+assert "void AHunterBreachEncounterActor::RetryRewardSpawn()" in BREACH
+assert "RemainingEnemies <= 0 && NextSpawnIndex >= PendingSpawnTransforms.Num()" in BREACH
+reward_body = BREACH[BREACH.index("void AHunterBreachEncounterActor::SpawnReward()"):]
+assert "if (!Pickup)" in reward_body
+assert "BP_OnRewardSpawnFailed()" in reward_body
+assert "if (!IsValid(Pickup))" in reward_body
+assert reward_body.index("bEncounterComplete = true;") > reward_body.index("if (!IsValid(Pickup))")
+assert "BP_OnEncounterCompleted()" in reward_body
+assert "RetryRewardSpawn" in BREACH_H and "BP_OnRewardSpawnFailed" in BREACH_H
