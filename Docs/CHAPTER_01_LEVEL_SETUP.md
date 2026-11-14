@@ -55,7 +55,7 @@ This guide turns the committed C++ foundations into the first editor-authored pl
    - Display Name: Breach Shard
 7. Set **Reward Quest Event Tag** to `BreachShardCollected`.
 8. Place the encounter actor at the arena entrance and adjust **Trigger Radius** so it starts when Arin commits to entering the arena, not while standing in the safe spawn corridor.
-9. Use the Blueprint encounter events for a start cue, completion cue and reward appearance if desired.
+9. Use the Blueprint encounter events for a start cue, completion cue and reward appearance if desired. At runtime, the encounter normalizes the trigger radius (50–5000), spawn interval (0.1–30 seconds) and fallback wave count (1–20); it also limits authored spawn arrays to 20 entries and replaces invalid authored spawn transforms with safe positions around Arin.
 
 The director tracks only successfully spawned enemies. The reward is spawned only after all scheduled spawn attempts have finished and all successfully spawned enemies have been defeated.
 
