@@ -19,6 +19,22 @@ def main() -> None:
         fail("LoadCampaign function was not found")
     body = source[start:]
 
+    save_start = source.find("bool UHunterCampaignSubsystem::SaveCampaign(")
+    load_start = source.find("bool UHunterCampaignSubsystem::LoadCampaign(")
+    if save_start < 0 or load_start <= save_start:
+        fail("SaveCampaign/LoadCampaign functions were not found in order")
+    save_body = source[save_start:load_start]
+    for description, fragment in {
+        "save chapter bounds": "CurrentChapterNumber > Chapters.Num()",
+        "finite checkpoint transform": "ArinTransform.IsValid()",
+        "single validated transform snapshot": "SaveObject->ArinWorldTransform = ArinTransform;",
+    }.items():
+        if fragment not in save_body:
+            fail(f"SaveCampaign is missing {description}")
+    if save_body.find("ArinTransform.IsValid()") > save_body.find("CreateSaveGameObject"):
+        fail("checkpoint transform must be validated before creating/writing a save object")
+
+
     required = {
         "chapter lower/upper bounds": "SaveObject->CurrentChapterNumber > Chapters.Num()",
         "nonnegative experience": "SaveObject->ArinExperience < 0",
@@ -41,7 +57,7 @@ def main() -> None:
         if body.find(fragment) > validation_end:
             fail("all snapshot validation must happen before campaign state mutation")
 
-    print("Validated early rejection of malformed campaign snapshots before state restoration.")
+    print("Validated checkpoint snapshot guards and early rejection of malformed campaign loads before state restoration.")
 
 
 if __name__ == "__main__":
