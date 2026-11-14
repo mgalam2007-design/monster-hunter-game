@@ -194,3 +194,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - This prevents malformed or edited save data from partially mutating the live campaign before being rejected.
 - `Tools/validate_campaign_load.py` checks the ordering and presence of these source safeguards in GitHub Actions.
 - This is a static source validation only; actual save-file compatibility and restoration still require Unreal compilation and runtime testing.
+
+
+## Breach wave spawn integrity
+
+- Breach enemies are now counted as active wave members only after deferred spawning has completed and the actor is still valid. If a Blueprint destroys itself during initialization, it no longer leaves a phantom remaining-enemy count that can block the reward forever.
+- `Tools/validate_encounters.py` checks that actor initialization and validity checks happen before adding the monster to the live wave count.
+- This is a source-level regression check; Blueprint BeginPlay behavior and actual encounter completion still need Unreal Editor testing.
