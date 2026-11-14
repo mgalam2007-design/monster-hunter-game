@@ -1313,7 +1313,16 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
 
 bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FString& SlotName, int32 UserIndex)
 {
-    if (!Arin || SlotName.IsEmpty())
+    if (!Arin || SlotName.IsEmpty() ||
+        CurrentChapterNumber < 1 || CurrentChapterNumber > Chapters.Num())
+    {
+        return false;
+    }
+
+    // Never write a checkpoint that would later be rejected or teleport Arin
+    // to an invalid transform during respawn/load.
+    const FTransform ArinTransform = Arin->GetActorTransform();
+    if (!ArinTransform.IsValid())
     {
         return false;
     }
@@ -1325,7 +1334,7 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     SaveObject->CurrentChapterNumber = CurrentChapterNumber;
-    SaveObject->ArinWorldTransform = Arin->GetActorTransform();
+    SaveObject->ArinWorldTransform = ArinTransform;
     SaveObject->bHasArinWorldTransform = true;
     SaveObject->CompletedChapterNumbers.Reset();
 
