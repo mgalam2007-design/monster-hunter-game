@@ -201,3 +201,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Breach enemies are now counted as active wave members only after deferred spawning has completed and the actor is still valid. If a Blueprint destroys itself during initialization, it no longer leaves a phantom remaining-enemy count that can block the reward forever.
 - `Tools/validate_encounters.py` checks that actor initialization and validity checks happen before adding the monster to the live wave count.
 - This is a source-level regression check; Blueprint BeginPlay behavior and actual encounter completion still need Unreal Editor testing.
+
+
+## Pickup overlap claim integrity
+
+- `AHunterPickupActor` now claims a pickup before attempting the inventory grant, preventing multiple component-overlap callbacks or re-entrant inventory delegates from granting the same item repeatedly in one frame.
+- If the inventory is missing or rejects the item, the claim is released so the player can try again. After a successful grant, the pickup remains claimed even when configured not to destroy itself.
+- Added `Tools/validate_pickup_claim.py` to CI. This is source-level validation; collision behavior and inventory integration still require Unreal Editor playtesting.
