@@ -52,6 +52,9 @@ protected:
     void BP_OnPickedUp(AActor* Picker);
 
 private:
+    // Prevent duplicate overlap callbacks or re-entrant pickup events from granting twice.
+    bool bPickupClaimed = false;
+
     UFUNCTION()
     void HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
