@@ -46,14 +46,18 @@ void AHunterPickupActor::HandleOverlap(UPrimitiveComponent* OverlappedComponent,
     const FHitResult& SweepResult)
 {
     AArinValeCharacter* Arin = Cast<AArinValeCharacter>(OtherActor);
-    if (!Arin || PickupItem.ItemId.IsNone())
+    if (!Arin || bPickupClaimed || PickupItem.ItemId.IsNone())
     {
         return;
     }
 
+    // Claim before inventory delegates run: multiple component overlaps in one
+    // frame must not grant the same pickup more than once.
+    bPickupClaimed = true;
     UHunterInventoryComponent* Inventory = Arin->GetInventoryComponent();
     if (!Inventory || !Inventory->AddItem(PickupItem))
     {
+        bPickupClaimed = false;
         return;
     }
 
