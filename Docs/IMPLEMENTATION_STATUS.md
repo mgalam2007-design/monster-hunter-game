@@ -208,3 +208,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - `AHunterPickupActor` now claims a pickup before attempting the inventory grant, preventing multiple component-overlap callbacks or re-entrant inventory delegates from granting the same item repeatedly in one frame.
 - If the inventory is missing or rejects the item, the claim is released so the player can try again. After a successful grant, the pickup remains claimed even when configured not to destroy itself.
 - Added `Tools/validate_pickup_claim.py` to CI. This is source-level validation; collision behavior and inventory integration still require Unreal Editor playtesting.
+
+
+## Chapter 1 objective-to-completion integration check
+
+- Added `Tools/validate_chapter_one_flow.py` to check the Chapter 1 contract across campaign quest definitions, monster defeat events, breach reward pickup configuration hooks, inventory-accepted pickup events, quest objective matching and chapter-exit completion gating.
+- The check confirms the expected Chapter 1 event tags are consistent in source: `MonsterDefeated` ×3 and `BreachShardCollected` ×1.
+- GitHub Actions runs this validator as a source-level integration check. The actual Unreal Blueprint instances must still be configured with the matching defeat and reward event tags, and the full encounter must be played in Unreal Editor.
