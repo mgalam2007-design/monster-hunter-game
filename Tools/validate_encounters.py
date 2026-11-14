@@ -13,6 +13,7 @@ assert "SpawnTimerHandle" in BREACH_H
 assert "FMath::Max(0.1f, SpawnIntervalSeconds)" in BREACH
 assert "SpawnedMonsters.Add(Monster)" in BREACH
 assert "++RemainingEnemies" in BREACH
+assert BREACH.index("UGameplayStatics::FinishSpawningActor(Monster, SpawnTransform);") < BREACH.index("if (IsValid(Monster))") < BREACH.index("++RemainingEnemies")
 assert "SpawnedMonsters.RemoveSingle(Monster) == 0" in BREACH
 assert "RemainingEnemies == 0 && NextSpawnIndex >= PendingSpawnTransforms.Num()" in BREACH
 assert "if (bEncounterComplete ||" in BREACH
