@@ -111,10 +111,15 @@ void AHunterBreachEncounterActor::SpawnNextMonster()
 
     if (Monster)
     {
-        Monster->OnMonsterDied.AddDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
-        SpawnedMonsters.Add(Monster);
-        ++RemainingEnemies;
+        // Finish construction before counting the actor as a live wave member.
+        // A Blueprint BeginPlay failure may destroy it during FinishSpawningActor.
         UGameplayStatics::FinishSpawningActor(Monster, SpawnTransform);
+        if (IsValid(Monster))
+        {
+            Monster->OnMonsterDied.AddDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
+            SpawnedMonsters.Add(Monster);
+            ++RemainingEnemies;
+        }
     }
 
     if (NextSpawnIndex >= PendingSpawnTransforms.Num())
