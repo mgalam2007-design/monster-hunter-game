@@ -81,6 +81,9 @@ jobs:
       - name: Validate pickup duplicate-claim safeguards
         run: python Tools/validate_pickup_claim.py
 
+      - name: Validate Chapter 1 objective-to-completion flow
+        run: python Tools/validate_chapter_one_flow.py
+
       - name: Validate browser demo features and JavaScript syntax
         run: python Tools/validate_browser_demo.py
 
