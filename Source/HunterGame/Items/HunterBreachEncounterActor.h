@@ -33,6 +33,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Encounter")
     void StartEncounter(AArinValeCharacter* Arin);
 
+    UFUNCTION(BlueprintCallable, Category="Encounter|Reward")
+    void RetryRewardSpawn();
+
 protected:
     virtual void BeginPlay() override;
 
@@ -71,6 +74,9 @@ protected:
 
     UFUNCTION(BlueprintImplementableEvent, Category="Encounter")
     void BP_OnRewardSpawned(AHunterPickupActor* RewardPickup);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Encounter|Reward")
+    void BP_OnRewardSpawnFailed();
 
 private:
     UPROPERTY(Transient)
