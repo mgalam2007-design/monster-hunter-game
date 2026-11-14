@@ -41,4 +41,5 @@ assert "FMath::IsFinite(SpawnIntervalSeconds)" in BREACH
 assert "FMath::Clamp(SpawnIntervalSeconds, 0.1f, 30.0f)" in BREACH
 assert "FMath::Clamp(FallbackMonsterCount, 1, 20)" in BREACH
 assert "FMath::Clamp(MonsterSpawnPoints.Num(), 1, 20)" in BREACH
-assert "AuthoredTransform.IsValid()" in BREACH
+assert "MonsterSpawnPoints[Index].IsValid()" in BREACH
+assert "bHasValidAuthoredTransform" in BREACH
