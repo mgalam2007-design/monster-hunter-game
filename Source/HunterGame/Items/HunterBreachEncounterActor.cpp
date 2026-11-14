@@ -25,6 +25,15 @@ void AHunterBreachEncounterActor::BeginPlay()
 {
     Super::BeginPlay();
 
+    // Normalize editor-authored values before they reach collision or timers.
+    TriggerRadius = FMath::IsFinite(TriggerRadius)
+        ? FMath::Clamp(TriggerRadius, 50.0f, 5000.0f)
+        : 350.0f;
+    SpawnIntervalSeconds = FMath::IsFinite(SpawnIntervalSeconds)
+        ? FMath::Clamp(SpawnIntervalSeconds, 0.1f, 30.0f)
+        : 1.25f;
+    FallbackMonsterCount = FMath::Clamp(FallbackMonsterCount, 1, 20);
+
     if (StartTrigger)
     {
         StartTrigger->SetSphereRadius(TriggerRadius);
@@ -54,17 +63,21 @@ void AHunterBreachEncounterActor::StartEncounter(AArinValeCharacter* Arin)
 
     bEncounterStarted = true;
     const int32 DesiredCount = MonsterSpawnPoints.IsEmpty()
-        ? FMath::Max(1, FallbackMonsterCount)
-        : MonsterSpawnPoints.Num();
+        ? FallbackMonsterCount
+        : FMath::Clamp(MonsterSpawnPoints.Num(), 1, 20);
 
     PendingSpawnTransforms.Reserve(DesiredCount);
     for (int32 Index = 0; Index < DesiredCount; ++Index)
     {
-        const FTransform SpawnTransform = MonsterSpawnPoints.IsValidIndex(Index)
+        const FTransform AuthoredTransform = MonsterSpawnPoints.IsValidIndex(Index)
             ? MonsterSpawnPoints[Index]
-            : FTransform(Arin->GetActorRotation(),
-                Arin->GetActorLocation() + Arin->GetActorForwardVector() * (450.0f + Index * 180.0f)
-                    + Arin->GetActorRightVector() * ((Index % 2 == 0) ? 220.0f : -220.0f));
+            : FTransform::Identity;
+        const FTransform FallbackTransform(Arin->GetActorRotation(),
+            Arin->GetActorLocation() + Arin->GetActorForwardVector() * (450.0f + Index * 180.0f)
+                + Arin->GetActorRightVector() * ((Index % 2 == 0) ? 220.0f : -220.0f));
+        const FTransform SpawnTransform = AuthoredTransform.IsValid()
+            ? AuthoredTransform
+            : FallbackTransform;
         PendingSpawnTransforms.Add(SpawnTransform);
     }
 
