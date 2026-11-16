@@ -66,6 +66,8 @@ void AHunterMonsterBase::BeginPlay()
     AttackRange = FMath::IsFinite(AttackRange) ? FMath::Max(0.0f, AttackRange) : 180.0f;
     AttackDamage = FMath::IsFinite(AttackDamage) ? FMath::Max(0.0f, AttackDamage) : 12.0f;
     AttackCooldown = FMath::IsFinite(AttackCooldown) ? FMath::Max(0.1f, AttackCooldown) : 1.6f;
+    AttackWindupDuration = FMath::IsFinite(AttackWindupDuration)
+        ? FMath::Clamp(AttackWindupDuration, 0.0f, 2.0f) : 0.45f;
     ChaseSpeed = FMath::IsFinite(ChaseSpeed) ? FMath::Max(0.0f, ChaseSpeed) : 430.0f;
     ChaseRepathInterval = FMath::IsFinite(ChaseRepathInterval) ? FMath::Max(0.05f, ChaseRepathInterval) : 0.35f;
     GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
@@ -82,6 +84,7 @@ void AHunterMonsterBase::Tick(float DeltaSeconds)
     }
 
     AttackTimer = FMath::Max(0.0f, AttackTimer - DeltaSeconds);
+    AttackWindupTimer = FMath::Max(0.0f, AttackWindupTimer - DeltaSeconds);
     ChaseRepathTimer = FMath::Max(0.0f, ChaseRepathTimer - DeltaSeconds);
 
     if (!TargetCharacter.IsValid())
@@ -117,12 +120,41 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
     const float Distance = FVector::Dist(GetActorLocation(), Target->GetActorLocation());
     if (Distance > DetectionRadius * 1.35f)
     {
+        bAttackPending = false;
+        PendingAttackTarget.Reset();
+        AttackWindupTimer = 0.0f;
         TargetCharacter.Reset();
         if (AAIController* AI = Cast<AAIController>(GetController()))
         {
             AI->StopMovement();
         }
         return;
+    }
+
+    if (bAttackPending)
+    {
+        if (!PendingAttackTarget.IsValid() || PendingAttackTarget.Get() != Target || Distance > AttackRange)
+        {
+            bAttackPending = false;
+            PendingAttackTarget.Reset();
+            AttackWindupTimer = 0.0f;
+            AttackTimer = FMath::Min(AttackTimer, 0.2f);
+        }
+        else if (AttackWindupTimer <= 0.0f)
+        {
+            bAttackPending = false;
+            PendingAttackTarget.Reset();
+            AttackTimer = FMath::Max(0.1f, AttackCooldown);
+            BP_OnMonsterAttack(Target);
+            if (FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
+            {
+                UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, nullptr);
+            }
+        }
+        else
+        {
+            return;
+        }
     }
 
     if (Distance > AttackRange)
@@ -138,13 +170,15 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
         return;
     }
 
-    if (AttackTimer <= 0.0f)
+    if (AttackTimer <= 0.0f && !bAttackPending)
     {
-        AttackTimer = FMath::Max(0.1f, AttackCooldown);
-        BP_OnMonsterAttack(Target);
-        if (FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
+        bAttackPending = true;
+        PendingAttackTarget = Target;
+        AttackWindupTimer = AttackWindupDuration;
+        BP_OnMonsterAttackTelegraph(Target);
+        if (AttackWindupTimer <= 0.0f)
         {
-            UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, nullptr);
+            AttackWindupTimer = 0.0f;
         }
     }
 }
@@ -213,6 +247,9 @@ void AHunterMonsterBase::Die()
     }
 
     bIsDead = true;
+    bAttackPending = false;
+    PendingAttackTarget.Reset();
+    AttackWindupTimer = 0.0f;
     GetCharacterMovement()->DisableMovement();
     SetActorEnableCollision(false);
     BP_OnMonsterDeath();
