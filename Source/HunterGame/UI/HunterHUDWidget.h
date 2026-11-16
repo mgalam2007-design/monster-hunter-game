@@ -10,6 +10,11 @@ class UHunterHealthComponent;
 class UHunterAbilityComponent;
 class UHunterCurrencyComponent;
 class UArinProgressionComponent;
+class UCanvasPanel;
+class UBorder;
+class UVerticalBox;
+class UTextBlock;
+class UProgressBar;
 
 USTRUCT(BlueprintType)
 struct FHunterHUDSnapshot
@@ -97,6 +102,36 @@ private:
 
     UFUNCTION()
     void HandleCurrencyChanged(int64 NewBalance);
+
+    void BuildNativeLayout();
+    void ApplyNativeLayout();
+
+    UPROPERTY(Transient)
+    TObjectPtr<UCanvasPanel> NativeRoot;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UTextBlock> StageText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UTextBlock> HealthText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UTextBlock> EnergyText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UTextBlock> ExperienceText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UTextBlock> CurrencyText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UProgressBar> HealthBar;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UProgressBar> EnergyBar;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UProgressBar> ExperienceBar;
 
     void BindToCharacter();
     void UnbindFromCharacter();
