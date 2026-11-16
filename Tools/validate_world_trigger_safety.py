@@ -17,3 +17,9 @@ assert ": 220.0f;" in EXIT
 assert "SaveSlotName.IsEmpty()" in EXIT
 
 print("Validated finite, minimum-sized checkpoint and chapter-exit trigger setup.")
+
+# Chapter exits only travel after a successful save and an explicitly configured map.
+EXIT_HEADER = (ROOT / "Source/HunterGame/Items/HunterChapterExitActor.h").read_text(encoding="utf-8")
+assert "FName NextChapterMapName = NAME_None" in EXIT_HEADER
+assert "if (bSaved && !NextChapterMapName.IsNone() && GetWorld())" in EXIT
+assert "UGameplayStatics::OpenLevel(this, NextChapterMapName)" in EXIT
