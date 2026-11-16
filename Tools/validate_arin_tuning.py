@@ -10,9 +10,10 @@ assert start >= 0 and end > start, "Could not locate Arin BeginPlay"
 body = SOURCE[start:end]
 for token in (
     "FMath::IsFinite(SprintSpeed)", "FMath::IsFinite(DodgeStrength)",
-    "FMath::IsFinite(DodgeUpwardStrength)", "FMath::IsFinite(RespawnDelay)",
+    "FMath::IsFinite(DodgeUpwardStrength)", "FMath::IsFinite(DodgeInvulnerabilityDuration)", "FMath::IsFinite(RespawnDelay)",
     "FMath::IsFinite(SwordAttackCooldown)", "FMath::IsFinite(DefaultWeaponTraceWindow)",
     "FMath::IsFinite(GetCharacterMovement()->MaxWalkSpeed)",
+    "FMath::Clamp(DodgeInvulnerabilityDuration, 0.0f, 0.5f)",
 ):
     assert token in body, f"Missing Arin tuning normalization: {token}"
 for token in (
@@ -37,6 +38,8 @@ for token in (
     "StopSprint();",
     "GetWorldTimerManager().ClearTimer(AttackCooldownHandle)",
     "GetWorldTimerManager().ClearTimer(DodgeCooldownHandle)",
+    "GetWorldTimerManager().ClearTimer(DodgeInvulnerabilityHandle)",
+    "bIsDodging = false;",
     "GetWorldTimerManager().ClearTimer(WeaponTraceHandle)",
     "EndWeaponTrace();",
 ):
