@@ -47,6 +47,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign|Rewards", meta=(ClampMin="0"))
     int64 CompletionCurrencyReward = 50;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign|Travel")
+    FName NextChapterMapName = NAME_None;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign")
     bool bOneTimeActivation = true;
 
