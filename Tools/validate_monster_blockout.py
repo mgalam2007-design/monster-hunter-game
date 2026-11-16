@@ -34,6 +34,17 @@ assert "FMath::Max(0.0f, DetectionRadius)" in SOURCE
 assert "FMath::Max(0.0f, AttackRange)" in SOURCE
 assert "FMath::Max(0.0f, AttackDamage)" in SOURCE
 assert "FMath::Max(0.1f, AttackCooldown)" in SOURCE
+assert "AttackWindupDuration" in HEADER
+assert "BP_OnMonsterAttackTelegraph(AActor* Target)" in HEADER
+assert "AttackWindupDuration = FMath::IsFinite(AttackWindupDuration)" in SOURCE
+assert "FMath::Clamp(AttackWindupDuration, 0.0f, 2.0f)" in SOURCE
+assert "AttackWindupTimer = FMath::Max(0.0f, AttackWindupTimer - DeltaSeconds)" in SOURCE
+assert "PendingAttackTarget = Target" in SOURCE
+assert "BP_OnMonsterAttackTelegraph(Target)" in SOURCE
+assert "Distance > AttackRange" in SOURCE
+assert "BP_OnMonsterAttack(Target)" in SOURCE
+assert "bAttackPending = false" in SOURCE
+assert "PendingAttackTarget.Reset()" in SOURCE
 assert "FMath::Max(0.0f, ChaseSpeed)" in SOURCE
 assert "FMath::Max(0.05f, ChaseRepathInterval)" in SOURCE
 assert "return FMath::Clamp(SafeCurrentHealth / SafeMaxHealth, 0.0f, 1.0f)" in SOURCE
