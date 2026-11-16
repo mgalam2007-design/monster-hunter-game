@@ -8,6 +8,8 @@
 #include "HunterInventoryWidget.generated.h"
 
 class AArinValeCharacter;
+class UCanvasPanel;
+class UVerticalBox;
 
 USTRUCT(BlueprintType)
 struct FHunterInventoryDisplayEntry
@@ -100,6 +102,15 @@ private:
 
     UFUNCTION()
     void HandleEquipmentChanged();
+
+    void BuildNativeLayout();
+    void ApplyNativeLayout();
+
+    UPROPERTY(Transient)
+    TObjectPtr<UCanvasPanel> NativeRoot;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UVerticalBox> NativeStack;
 
     void BindCharacter();
     void UnbindCharacter();
