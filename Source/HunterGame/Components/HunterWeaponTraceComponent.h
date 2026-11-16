@@ -46,11 +46,21 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon")
     TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Pawn;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon|Fallback")
+    bool bAllowProceduralFallback = true;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon|Fallback")
+    FVector FallbackBaseOffset = FVector(45.0f, 40.0f, 35.0f);
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Weapon|Fallback")
+    FVector FallbackTipOffset = FVector(145.0f, 40.0f, 35.0f);
+
 private:
     bool bIsTracing = false;
     FVector PreviousBase = FVector::ZeroVector;
     FVector PreviousTip = FVector::ZeroVector;
     TSet<TWeakObjectPtr<AActor>> HitActors;
 
+    bool GetBladePoints(FVector& OutBase, FVector& OutTip) const;
     void TraceWeaponSegment(const FVector& CurrentBase, const FVector& CurrentTip);
 };
