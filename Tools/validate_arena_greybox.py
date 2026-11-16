@@ -39,8 +39,19 @@ def main() -> None:
         fail("Arena dimensions must be editable properties")
     if "SetMobility(EComponentMobility::Static)" not in source:
         fail("Static arena geometry should be marked static")
+    if "virtual void OnConstruction(const FTransform& Transform) override;" not in header:
+        fail("Editable dimensions need an editor construction hook")
+    if "void AHunterPrototypeArenaActor::OnConstruction" not in source:
+        fail("Arena construction hook is not implemented")
+    for prop, fallback in (("ArenaHalfWidth", "1800.0f"), ("ArenaHalfDepth", "1800.0f"), ("WallHeight", "600.0f")):
+        if f"FMath::IsFinite({prop})" not in source or fallback not in source:
+            fail(f"{prop} must be finite-checked with a safe fallback")
+    if "Piece->SetRelativeLocation(Location)" not in source or "Piece->SetRelativeScale3D(Scale)" not in source:
+        fail("Construction hook must reapply component transforms")
+    if "GateLight->SetRelativeLocation" not in source:
+        fail("Gate light must follow the editable arena dimensions")
 
-    print(f"Validated {len(required_parts)} arena pieces, blocking collision, navigation and gate lighting.")
+    print(f"Validated {len(required_parts)} arena pieces, blocking collision, navigation, gate lighting and editor-time resizing.")
 
 
 if __name__ == "__main__":
