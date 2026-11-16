@@ -19,6 +19,7 @@ assert "SetCollisionEnabled(ECollisionEnabled::NoCollision)" in SOURCE
 assert "SetCanEverAffectNavigation(false)" in SOURCE
 assert "SetupAttachment(GetRootComponent())" in SOURCE
 assert "AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned" in SOURCE
+assert "AIControllerClass = AAIController::StaticClass()" in SOURCE
 assert "GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed" in SOURCE
 assert "ChaseRepathInterval" in HEADER
 assert "ChaseRepathTimer <= 0.0f" in SOURCE
