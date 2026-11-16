@@ -114,8 +114,10 @@ void AHunterBreachEncounterActor::SpawnNextMonster()
         // Finish construction before counting the actor as a live wave member.
         // A Blueprint BeginPlay failure may destroy it during FinishSpawningActor.
         UGameplayStatics::FinishSpawningActor(Monster, SpawnTransform);
-        if (IsValid(Monster))
+        if (IsValid(Monster) && !Monster->IsMonsterDead())
         {
+            // A Blueprint may defeat itself during BeginPlay before this actor
+            // can subscribe to its death delegate. Never count that actor as live.
             Monster->OnMonsterDied.AddDynamic(this, &AHunterBreachEncounterActor::HandleMonsterDied);
             SpawnedMonsters.Add(Monster);
             ++RemainingEnemies;
