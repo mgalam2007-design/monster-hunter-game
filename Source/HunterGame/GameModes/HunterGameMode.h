@@ -11,4 +11,7 @@ class HUNTERGAME_API AHunterGameMode : public AGameModeBase
 
 public:
     AHunterGameMode();
+
+protected:
+    virtual void BeginPlay() override;
 };
