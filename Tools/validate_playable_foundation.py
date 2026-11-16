@@ -66,3 +66,13 @@ assert "HealthBar->SetPercent(Snapshot.HealthPercent)" in hud_source
 assert "EnergyBar->SetPercent(Snapshot.EnergyPercent)" in hud_source
 assert "ExperienceBar->SetPercent(Snapshot.ExperiencePercent)" in hud_source
 assert "HUDWidgetClass = UHunterHUDWidget::StaticClass()" in arin_source
+
+# Native quest tracker must render chapter/objective progress and be enabled by default.
+tracker_header = (ROOT / "Source/HunterGame/UI/HunterQuestTrackerWidget.h").read_text(encoding="utf-8")
+tracker_source = (ROOT / "Source/HunterGame/UI/HunterQuestTrackerWidget.cpp").read_text(encoding="utf-8")
+assert "BuildNativeLayout" in tracker_header
+assert "ApplyNativeLayout" in tracker_header
+assert "UVerticalBox" in tracker_source
+assert "Snapshot.ChapterTitle" in tracker_source
+assert "Objective.CurrentCount" in tracker_source
+assert "QuestTrackerWidgetClass = UHunterQuestTrackerWidget::StaticClass()" in arin_source
