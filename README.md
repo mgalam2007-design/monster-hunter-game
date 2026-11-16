@@ -13,7 +13,7 @@ An original third-person 3D anime action RPG built with **Unreal Engine 5 and C+
 This repository currently contains the C++ project scaffold:
 - Third-person character class with camera boom and follow camera
 - Basic movement, look, jump, sprint, and directional dodge
-- Starter sword attack hook, ready to connect to a montage and hit detection
+- Swept melee hit detection with a procedural blade fallback for the unrigged blockout character
 - Progression-gated abilities: area-damage Energy Strike, forward Shadow Step and configurable Shadow Echo actor
 - Inventory consumables that restore health and/or energy
 - Stackable inventory, world pickups, weapon/armor stat equipment and campaign persistence
@@ -25,9 +25,9 @@ This repository currently contains the C++ project scaffold:
 2. Clone this repository.
 3. Right-click `HunterGame.uproject` and generate Visual Studio project files.
 4. Open `HunterGame.uproject`, allow Unreal to compile the C++ modules, then press Play.
-5. In the editor, create an input mapping context (or use the legacy input bindings in `Config/DefaultInput.ini`) and assign the default game mode. Confirm the legacy input mappings in `Config/DefaultInput.ini`. Confirm the legacy input mappings in `Config/DefaultInput.ini`.
+5. Confirm the project compiles and opens in the editor. The default game mode and legacy input mappings are already configured in the repository.
 
-## Controls (legacy input bindings)
+## Generate and test Chapter 1\n1. Compile the `HunterGame` C++ module in Unreal Editor.\n2. Open **Tools → Execute Python Script** and run `Tools/unreal/create_chapter01_level.py`.\n3. The script creates `/Game/Maps/Chapter01/L_CH01_FirstBreach` with the arena, PlayerStart, three-enemy breach encounter, Breach Shard reward, checkpoint, chapter exit, lighting and NavMesh bounds.\n4. Build navigation in the editor, open the generated level, press **P** to inspect the NavMesh, then press **Play**.\n5. Move into the arena to trigger the wave. Defeat the three enemies, collect the shard, and reach the chapter exit.\n\nThe native game mode starts the current campaign quest automatically. Arin has a generated HUD and quest tracker; press **I** to open the inventory panel.\n\n## Controls (legacy input bindings)
 - WASD: move
 - Mouse: look
 - Space: jump
@@ -44,4 +44,4 @@ This repository currently contains the C++ project scaffold:
 - F: use the first usable health/energy consumable in inventory
 
 ## Important asset status
-The repository does **not** yet contain the finished Arin Vale 3D mesh, textures, skeleton, or animation assets. Those must be authored in Blender or another 3D tool, then imported into Unreal. The code scaffold is the foundation, not a claim that the final character art is already implemented.
+The repository does **not** yet contain finished Arin/monster skeletal meshes, textures, animation assets, final environments, or authored cinematic sequences. The Chapter 1 generator creates a greybox map, not a finished production level. Unreal compilation, map generation and runtime gameplay still need to be verified in the editor; GitHub static checks do not perform those tests.
