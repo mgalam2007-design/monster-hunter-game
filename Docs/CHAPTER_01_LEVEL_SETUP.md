@@ -124,3 +124,16 @@ The repository now includes `AHunterPrototypeArenaActor`, which creates a tempor
 
 This actor supplies collision geometry and a simple layout only. Its Details-panel dimensions now rebuild the floor, walls, gate, pillars and gate-light placement through its construction hook; finite values are clamped to safe ranges. It does not create a level asset, player start, NavMesh volume, enemies, quest triggers, materials or final environment art automatically.
 
+
+
+## 11. Generate the first greybox level automatically
+
+A starter level-generation script is now committed at `Tools/unreal/create_chapter01_level.py`.
+
+1. Compile the `HunterGame` C++ module in the Unreal Editor installation used for this project.
+2. Open the project in Unreal Editor.
+3. Run the script through **Tools → Execute Python Script**.
+4. It creates and saves `/Game/Maps/Chapter01/L_CH01_FirstBreach` with the native arena, player start, Arin, three native monster actors, an entry checkpoint, a chapter exit and a NavMesh bounds volume.
+5. Open the generated level, press **P** to inspect navigation coverage, and test enemy pursuit.
+
+The script is an editor-side greybox generator, not a committed binary `.umap`. It does not yet create the configured reward item/quest chain, Blueprint children, authored UI, meshes, animation assets or final lighting. Verify the generated level in the actual Unreal Editor before treating it as playable.
