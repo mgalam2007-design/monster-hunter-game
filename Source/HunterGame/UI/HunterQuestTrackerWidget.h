@@ -6,6 +6,9 @@
 #include "Campaign/HunterCampaignSubsystem.h"
 #include "HunterQuestTrackerWidget.generated.h"
 
+class UCanvasPanel;
+class UVerticalBox;
+
 USTRUCT(BlueprintType)
 struct FHunterQuestTrackerSnapshot
 {
@@ -92,6 +95,15 @@ private:
 
     UFUNCTION()
     void HandleChapterCompleted(int32 ChapterNumber);
+
+    void BuildNativeLayout();
+    void ApplyNativeLayout();
+
+    UPROPERTY(Transient)
+    TObjectPtr<UCanvasPanel> NativeRoot;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UVerticalBox> NativeStack;
 
     void BindSubsystems();
     void UnbindSubsystems();
