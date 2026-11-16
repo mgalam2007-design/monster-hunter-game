@@ -1,6 +1,7 @@
 #include "ArinValeCharacter.h"
 
 #include "ArinProgressionComponent.h"
+#include "UI/HunterHUDWidget.h"
 #include "Campaign/HunterCampaignSubsystem.h"
 #include "Engine/GameInstance.h"
 #include "Components/HunterHealthComponent.h"
@@ -24,6 +25,7 @@
 
 AArinValeCharacter::AArinValeCharacter()
 {
+    HUDWidgetClass = UHunterHUDWidget::StaticClass();
     PrimaryActorTick.bCanEverTick = false;
     bUseControllerRotationPitch = false;
     bUseControllerRotationYaw = false;
