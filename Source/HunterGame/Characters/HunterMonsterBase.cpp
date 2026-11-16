@@ -21,6 +21,7 @@ AHunterMonsterBase::AHunterMonsterBase()
     PrimaryActorTick.bCanEverTick = true;
     // Spawned wave enemies need an AI controller to execute MoveToActor pursuit.
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+    AIControllerClass = AAIController::StaticClass();
     GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
