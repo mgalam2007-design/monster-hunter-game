@@ -117,6 +117,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement")
     float DodgeUpwardStrength = 90.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement", meta=(ClampMin="0.0", ClampMax="0.5"))
+    float DodgeInvulnerabilityDuration = 0.22f;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn", meta=(ClampMin="0.0"))
     float RespawnDelay = 3.0f;
 
@@ -159,13 +162,16 @@ private:
     float UnmodifiedMaxHealth = 100.0f;
     bool bCanDodge = true;
     bool bCanAttack = true;
+    bool bIsDodging = false;
     bool bRespawnPending = false;
 
     FTimerHandle DodgeCooldownHandle;
+    FTimerHandle DodgeInvulnerabilityHandle;
     FTimerHandle AttackCooldownHandle;
     FTimerHandle WeaponTraceHandle;
     FTimerHandle RespawnTimerHandle;
 
     void ResetDodge();
+    void ResetDodgeInvulnerability();
     void ResetAttack();
 };
