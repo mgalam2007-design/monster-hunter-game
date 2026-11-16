@@ -222,3 +222,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - The breach director now checks `IsMonsterDead()` after deferred spawning finishes and before binding the death delegate or incrementing the active enemy count.
 - This covers a Blueprint enemy that defeats itself during `BeginPlay`: its death event may occur before the encounter director can subscribe, so it must not be counted as a live enemy that can never decrement the wave count.
 - `Tools/validate_encounters.py` checks the post-initialization alive-state guard in CI. This remains a source-level check; Blueprint initialization and encounter completion still need Unreal Editor testing.
+
+
+## Chapter 1 editor automation progress
+- Added `Tools/unreal/create_chapter01_level.py`, an Unreal Editor Python script that creates and saves a Chapter 1 greybox level with the native arena, Arin, three native monster actors, a checkpoint, chapter exit and NavMesh bounds.
+- Added a repository static contract check for the generator and included it in GitHub Actions.
+- This script has **not** been executed in Unreal Editor in this environment. The resulting binary level asset, AI navigation verification, quest/reward wiring, visual assets, UI and runtime playtest remain outstanding.
