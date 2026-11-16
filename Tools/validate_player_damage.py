@@ -12,6 +12,7 @@ for token in (
     "!FMath::IsFinite(DamageAmount)",
     "DamageAmount <= 0.0f",
     "HealthComponent->IsDead()",
+    "bIsDodging",
     "FMath::IsFinite(RawDamageReduction)",
     "FMath::Clamp(RawDamageReduction, 0.0f, 0.95f)",
     "!FMath::IsFinite(MitigatedDamage)",
