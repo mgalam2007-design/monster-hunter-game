@@ -109,6 +109,8 @@ void AArinValeCharacter::BeginPlay()
     DodgeStrength = FMath::IsFinite(DodgeStrength) ? FMath::Max(0.0f, DodgeStrength) : 900.0f;
     DodgeUpwardStrength = FMath::IsFinite(DodgeUpwardStrength)
         ? FMath::Max(0.0f, DodgeUpwardStrength) : 90.0f;
+    DodgeInvulnerabilityDuration = FMath::IsFinite(DodgeInvulnerabilityDuration)
+        ? FMath::Clamp(DodgeInvulnerabilityDuration, 0.0f, 0.5f) : 0.22f;
     RespawnDelay = FMath::IsFinite(RespawnDelay) ? FMath::Max(0.0f, RespawnDelay) : 3.0f;
     SwordAttackCooldown = FMath::IsFinite(SwordAttackCooldown)
         ? FMath::Max(0.05f, SwordAttackCooldown) : 0.55f;
@@ -162,7 +164,7 @@ void AArinValeCharacter::BeginPlay()
 float AArinValeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
     AController* EventInstigator, AActor* DamageCauser)
 {
-    if (!FMath::IsFinite(DamageAmount) || DamageAmount <= 0.0f ||
+    if (!FMath::IsFinite(DamageAmount) || DamageAmount <= 0.0f || bIsDodging ||
         (HealthComponent && HealthComponent->IsDead()))
     {
         return 0.0f;
@@ -257,17 +259,27 @@ void AArinValeCharacter::StopSprint()
 
 void AArinValeCharacter::Dodge()
 {
-    if (!bCanDodge || (HealthComponent && HealthComponent->IsDead())) return;
+    if (!bCanDodge || bRespawnPending || (HealthComponent && HealthComponent->IsDead())) return;
 
     FVector DodgeDirection = GetLastMovementInputVector().GetSafeNormal();
     if (DodgeDirection.IsNearlyZero()) DodgeDirection = GetActorForwardVector();
 
     LaunchCharacter(DodgeDirection * DodgeStrength + FVector::UpVector * DodgeUpwardStrength, true, true);
     bCanDodge = false;
+    bIsDodging = true;
+    GetWorldTimerManager().ClearTimer(DodgeInvulnerabilityHandle);
+    GetWorldTimerManager().SetTimer(
+        DodgeInvulnerabilityHandle,
+        this,
+        &AArinValeCharacter::ResetDodgeInvulnerability,
+        DodgeInvulnerabilityDuration,
+        false);
     GetWorldTimerManager().SetTimer(DodgeCooldownHandle, this, &AArinValeCharacter::ResetDodge, 0.8f, false);
 }
 
 void AArinValeCharacter::ResetDodge() { bCanDodge = true; }
+
+void AArinValeCharacter::ResetDodgeInvulnerability() { bIsDodging = false; }
 
 void AArinValeCharacter::BeginWeaponTrace()
 {
@@ -423,7 +435,9 @@ void AArinValeCharacter::HandleArinDeath()
     bRespawnPending = true;
     GetWorldTimerManager().ClearTimer(AttackCooldownHandle);
     GetWorldTimerManager().ClearTimer(DodgeCooldownHandle);
+    GetWorldTimerManager().ClearTimer(DodgeInvulnerabilityHandle);
     GetWorldTimerManager().ClearTimer(WeaponTraceHandle);
+    bIsDodging = false;
     EndWeaponTrace();
     bCanAttack = false;
     bCanDodge = false;
@@ -480,7 +494,9 @@ void AArinValeCharacter::RespawnAtLastCheckpoint()
     StopSprint();
     GetWorldTimerManager().ClearTimer(AttackCooldownHandle);
     GetWorldTimerManager().ClearTimer(DodgeCooldownHandle);
+    GetWorldTimerManager().ClearTimer(DodgeInvulnerabilityHandle);
     GetWorldTimerManager().ClearTimer(WeaponTraceHandle);
+    bIsDodging = false;
     EndWeaponTrace();
     bCanAttack = true;
     bCanDodge = true;
