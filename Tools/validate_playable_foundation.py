@@ -86,3 +86,7 @@ assert "Snapshot.EquippedWeapon.DisplayName" in inventory_source
 assert "Snapshot.EquippedArmor.DisplayName" in inventory_source
 assert "Snapshot.Entries" in inventory_source
 assert "InventoryWidgetClass = UHunterInventoryWidget::StaticClass()" in arin_source
+
+assert "FInputModeGameAndUI GameAndUI" in arin_source
+assert "GameAndUI.SetWidgetToFocus(ActiveInventoryWidget->TakeWidget())" in arin_source
+assert "PlayerController->SetInputMode(GameOnly)" in arin_source
