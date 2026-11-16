@@ -120,5 +120,5 @@ The repository now includes `AHunterPrototypeArenaActor`, which creates a tempor
 6. Add or resize a `NavMeshBoundsVolume` so it covers the entire floor. Press **P** and verify green navigation coverage; if pillars or walls obstruct routes, adjust their placement or the NavMesh bounds.
 7. Press Play and verify the arena blocks Arin and enemies correctly. The blue gate light is only a temporary visual marker.
 
-This actor supplies collision geometry and a simple layout only. It does not create a level asset, player start, NavMesh volume, enemies, quest triggers, materials or final environment art automatically.
+This actor supplies collision geometry and a simple layout only. Its Details-panel dimensions now rebuild the floor, walls, gate, pillars and gate-light placement through its construction hook; finite values are clamped to safe ranges. It does not create a level asset, player start, NavMesh volume, enemies, quest triggers, materials or final environment art automatically.
 
