@@ -42,6 +42,8 @@ def make_spawn_transform(location):
 
 
 def build_chapter_one():
+    # Ensure the destination package folder exists before creating the map asset.
+    unreal.EditorAssetLibrary.make_directory("/Game/Maps/Chapter01")
     if not unreal.EditorLevelLibrary.new_level(LEVEL_PATH):
         raise RuntimeError("Could not create " + LEVEL_PATH)
 
