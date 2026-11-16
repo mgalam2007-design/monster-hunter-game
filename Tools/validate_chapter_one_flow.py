@@ -45,3 +45,9 @@ assert "if (!bCompletionCommitted)" in exit_actor
 assert "Campaign->SaveCampaign(Arin, SaveSlotName, UserIndex)" in exit_actor
 
 print("Chapter 1 objective/event/reward/completion contracts: PASS")
+
+# Directly launching a campaign map must initialize its active chapter quest.
+game_mode = read("Source/HunterGame/GameModes/HunterGameMode.cpp")
+assert "void AHunterGameMode::BeginPlay()" in game_mode
+assert "Campaign->GetCurrentChapterNumber()" in game_mode
+assert "Campaign->StartChapter(ChapterNumber)" in game_mode
