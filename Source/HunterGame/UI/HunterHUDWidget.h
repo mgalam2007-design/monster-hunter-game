@@ -61,7 +61,7 @@ struct FHunterHUDSnapshot
     bool bIsDead = false;
 };
 
-/** Blueprint-presentable HUD data bridge. Create a Widget Blueprint child to design the actual screen. */
+/** Native HUD with a generated UMG layout and a Blueprint snapshot extension point. */
 UCLASS()
 class HUNTERGAME_API UHunterHUDWidget : public UUserWidget
 {
