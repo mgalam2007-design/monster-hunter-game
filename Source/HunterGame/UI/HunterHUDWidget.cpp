@@ -5,10 +5,19 @@
 #include "Components/HunterAbilityComponent.h"
 #include "Components/HunterCurrencyComponent.h"
 #include "ArinProgressionComponent.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Border.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
+#include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 
 void UHunterHUDWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
+    BuildNativeLayout();
     BindToCharacter();
     RefreshHUD();
 }
@@ -125,7 +134,86 @@ void UHunterHUDWidget::RefreshHUD()
         Snapshot.Currency = Currency->GetBalance();
     }
 
+    ApplyNativeLayout();
     BP_OnHUDSnapshotUpdated(Snapshot);
+}
+
+void UHunterHUDWidget::BuildNativeLayout()
+{
+    if (!WidgetTree || WidgetTree->RootWidget)
+    {
+        return;
+    }
+
+    NativeRoot = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("NativeHUDRoot"));
+    WidgetTree->RootWidget = NativeRoot;
+
+    UBorder* Panel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("HUDPanel"));
+    Panel->SetBrushColor(FLinearColor(0.015f, 0.025f, 0.045f, 0.88f));
+    Panel->SetPadding(FMargin(16.0f));
+    UCanvasPanelSlot* PanelSlot = NativeRoot->AddChildToCanvas(Panel);
+    PanelSlot->SetPosition(FVector2D(28.0f, 28.0f));
+    PanelSlot->SetSize(FVector2D(340.0f, 220.0f));
+
+    UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("HUDStack"));
+    Panel->SetContent(Stack);
+
+    auto AddText = [this, Stack](const FName Name, const FText& Initial, int32 FontSize)
+    {
+        UTextBlock* Text = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), Name);
+        Text->SetText(Initial);
+        FSlateFontInfo Font = Text->GetFont();
+        Font.Size = FontSize;
+        Text->SetFont(Font);
+        Text->SetColorAndOpacity(FSlateColor(FLinearColor(0.9f, 0.93f, 1.0f, 1.0f)));
+        Stack->AddChildToVerticalBox(Text);
+        return Text;
+    };
+    auto AddBar = [this, Stack](const FName Name, const FLinearColor FillColor)
+    {
+        UProgressBar* Bar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), Name);
+        Bar->SetFillColorAndOpacity(FillColor);
+        Bar->SetPercent(1.0f);
+        UVerticalBoxSlot* Slot = Stack->AddChildToVerticalBox(Bar);
+        Slot->SetPadding(FMargin(0.0f, 3.0f, 0.0f, 7.0f));
+        return Bar;
+    };
+
+    StageText = AddText(TEXT("EvolutionStage"), FText::FromString(TEXT("HUNTER // AWAKENING")), 18);
+    HealthText = AddText(TEXT("HealthLabel"), FText::FromString(TEXT("HP 100 / 100")), 12);
+    HealthBar = AddBar(TEXT("HealthBar"), FLinearColor(0.82f, 0.12f, 0.16f, 1.0f));
+    EnergyText = AddText(TEXT("EnergyLabel"), FText::FromString(TEXT("ENERGY 100 / 100")), 12);
+    EnergyBar = AddBar(TEXT("EnergyBar"), FLinearColor(0.08f, 0.48f, 0.95f, 1.0f));
+    ExperienceText = AddText(TEXT("ExperienceLabel"), FText::FromString(TEXT("EXPERIENCE")), 12);
+    ExperienceBar = AddBar(TEXT("ExperienceBar"), FLinearColor(0.9f, 0.62f, 0.12f, 1.0f));
+    CurrencyText = AddText(TEXT("CurrencyLabel"), FText::FromString(TEXT("GOLD 0")), 13);
+}
+
+void UHunterHUDWidget::ApplyNativeLayout()
+{
+    if (StageText)
+    {
+        StageText->SetText(FText::Format(NSLOCTEXT("HunterHUD", "StageFormat", "HUNTER // {0}"), Snapshot.EvolutionStageName));
+    }
+    if (HealthText)
+    {
+        HealthText->SetText(FText::FromString(FString::Printf(TEXT("HP  %.0f / %.0f"), Snapshot.Health, Snapshot.MaxHealth)));
+    }
+    if (HealthBar) HealthBar->SetPercent(Snapshot.HealthPercent);
+    if (EnergyText)
+    {
+        EnergyText->SetText(FText::FromString(FString::Printf(TEXT("ENERGY  %.0f / %.0f"), Snapshot.Energy, Snapshot.MaxEnergy)));
+    }
+    if (EnergyBar) EnergyBar->SetPercent(Snapshot.EnergyPercent);
+    if (ExperienceText)
+    {
+        ExperienceText->SetText(FText::FromString(FString::Printf(TEXT("XP  %d / %d"), Snapshot.Experience, Snapshot.ExperienceForNextStage)));
+    }
+    if (ExperienceBar) ExperienceBar->SetPercent(Snapshot.ExperiencePercent);
+    if (CurrencyText)
+    {
+        CurrencyText->SetText(FText::FromString(FString::Printf(TEXT("GOLD  %lld"), static_cast<long long>(Snapshot.Currency))));
+    }
 }
 
 void UHunterHUDWidget::HandleHealthChanged(float CurrentHealth, float MaxHealth)
