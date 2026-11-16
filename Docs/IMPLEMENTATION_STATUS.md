@@ -266,3 +266,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Weapon tracing now falls back to configurable blade base/tip positions in Arin's actor space when a skeletal mesh or `weapon_r` / `weapon_tip` sockets are unavailable.
 - The swept-volume trace and per-swing hit de-duplication remain in place, so the native blockout Arin can test basic melee damage before the final rigged model is imported.
 - Authored animation/socket traces remain preferred when available. This is a functional greybox fallback, not final sword animation timing or presentation.
+
+
+### Native inventory interaction update (November 16, 2026)
+- The generated native inventory panel now renders an **EQUIP** action beside weapon and armor entries and a **USE** action beside consumables.
+- Consumable buttons are disabled when the character cannot currently benefit from that item; successful use consumes one item and refreshes the displayed inventory.
+- Equipment actions route through the existing equipment component, retaining its evolution-stage and item validation rules.
+- These controls are source-authored UMG and are covered by static source-contract checks. They still require Unreal Editor compilation and an in-game mouse/keyboard test; no runtime test is claimed.
