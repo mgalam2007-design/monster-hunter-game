@@ -268,12 +268,19 @@ void AArinValeCharacter::Dodge()
     bCanDodge = false;
     bIsDodging = true;
     GetWorldTimerManager().ClearTimer(DodgeInvulnerabilityHandle);
-    GetWorldTimerManager().SetTimer(
-        DodgeInvulnerabilityHandle,
-        this,
-        &AArinValeCharacter::ResetDodgeInvulnerability,
-        DodgeInvulnerabilityDuration,
-        false);
+    if (DodgeInvulnerabilityDuration > 0.0f)
+    {
+        GetWorldTimerManager().SetTimer(
+            DodgeInvulnerabilityHandle,
+            this,
+            &AArinValeCharacter::ResetDodgeInvulnerability,
+            DodgeInvulnerabilityDuration,
+            false);
+    }
+    else
+    {
+        bIsDodging = false;
+    }
     GetWorldTimerManager().SetTimer(DodgeCooldownHandle, this, &AArinValeCharacter::ResetDodge, 0.8f, false);
 }
 
