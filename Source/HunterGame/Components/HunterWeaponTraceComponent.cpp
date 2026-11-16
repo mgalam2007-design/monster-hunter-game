@@ -18,19 +18,47 @@ void UHunterWeaponTraceComponent::BeginPlay()
     TraceRadius = FMath::IsFinite(TraceRadius) ? FMath::Clamp(TraceRadius, 0.0f, 40.0f) : 12.0f;
 }
 
+bool UHunterWeaponTraceComponent::GetBladePoints(FVector& OutBase, FVector& OutTip) const
+{
+    const ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character)
+    {
+        return false;
+    }
+
+    const USkeletalMeshComponent* Mesh = Character->GetMesh();
+    if (Mesh && Mesh->DoesSocketExist(BaseSocket) && Mesh->DoesSocketExist(TipSocket))
+    {
+        OutBase = Mesh->GetSocketLocation(BaseSocket);
+        OutTip = Mesh->GetSocketLocation(TipSocket);
+        return true;
+    }
+
+    if (!bAllowProceduralFallback)
+    {
+        return false;
+    }
+
+    const FTransform ActorTransform = Character->GetActorTransform();
+    OutBase = ActorTransform.TransformPosition(FallbackBaseOffset);
+    OutTip = ActorTransform.TransformPosition(FallbackTipOffset);
+    return true;
+}
+
 void UHunterWeaponTraceComponent::BeginWeaponTrace()
 {
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    USkeletalMeshComponent* Mesh = Character ? Character->GetMesh() : nullptr;
-    if (!Mesh || !Mesh->DoesSocketExist(BaseSocket) || !Mesh->DoesSocketExist(TipSocket))
+    FVector CurrentBase;
+    FVector CurrentTip;
+    if (!GetBladePoints(CurrentBase, CurrentTip))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Weapon trace requires valid '%s' and '%s' sockets on the character mesh."), *BaseSocket.ToString(), *TipSocket.ToString());
+        UE_LOG(LogTemp, Warning, TEXT("Weapon trace needs '%s' and '%s' sockets or the procedural fallback enabled."),
+            *BaseSocket.ToString(), *TipSocket.ToString());
         EndWeaponTrace();
         return;
     }
 
-    PreviousBase = Mesh->GetSocketLocation(BaseSocket);
-    PreviousTip = Mesh->GetSocketLocation(TipSocket);
+    PreviousBase = CurrentBase;
+    PreviousTip = CurrentTip;
     HitActors.Reset();
     bIsTracing = true;
     SetComponentTickEnabled(true);
@@ -51,18 +79,19 @@ void UHunterWeaponTraceComponent::SetBaseDamage(float NewDamage)
 void UHunterWeaponTraceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-    if (!bIsTracing) return;
+    if (!bIsTracing)
+    {
+        return;
+    }
 
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    USkeletalMeshComponent* Mesh = Character ? Character->GetMesh() : nullptr;
-    if (!Mesh || !Mesh->DoesSocketExist(BaseSocket) || !Mesh->DoesSocketExist(TipSocket))
+    FVector CurrentBase;
+    FVector CurrentTip;
+    if (!GetBladePoints(CurrentBase, CurrentTip))
     {
         EndWeaponTrace();
         return;
     }
 
-    const FVector CurrentBase = Mesh->GetSocketLocation(BaseSocket);
-    const FVector CurrentTip = Mesh->GetSocketLocation(TipSocket);
     TraceWeaponSegment(CurrentBase, CurrentTip);
     PreviousBase = CurrentBase;
     PreviousTip = CurrentTip;
