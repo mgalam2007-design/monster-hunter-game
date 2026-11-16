@@ -434,6 +434,18 @@ void AArinValeCharacter::ToggleInventoryMenu()
     if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
     {
         PlayerController->bShowMouseCursor = bShouldOpen;
+        if (bShouldOpen)
+        {
+            FInputModeGameAndUI GameAndUI;
+            GameAndUI.SetWidgetToFocus(ActiveInventoryWidget->TakeWidget());
+            GameAndUI.SetHideCursorDuringCapture(false);
+            PlayerController->SetInputMode(GameAndUI);
+        }
+        else
+        {
+            FInputModeGameOnly GameOnly;
+            PlayerController->SetInputMode(GameOnly);
+        }
     }
 }
 
