@@ -242,3 +242,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Arin assigns this widget class by default, so the core combat HUD no longer requires a separately authored Widget Blueprint to appear.
 - The existing Blueprint snapshot event remains available for future visual customization. The quest tracker and inventory screens still need their own authored/native layouts.
 - Static validation checks the generated layout bindings and default class assignment. Actual Unreal compilation and viewport verification remain outstanding.
+
+
+## Native quest tracker
+- Added a native UMG quest panel showing the current chapter, active objective descriptions, completion states and objective counts.
+- Arin enables the native tracker by default alongside the native HUD; the tracker subscribes to quest/campaign subsystem events and refreshes when objectives or chapters change.
+- Both native panels are generated in C++ at runtime and do not require a Widget Blueprint for their basic presentation. The inventory screen, title/menu flow, and art polish remain unfinished.
