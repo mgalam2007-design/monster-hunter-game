@@ -53,3 +53,13 @@ for token in (
     assert token in respawn, f"Respawn must restore clean combat/movement state: {token}"
 
 print("Validated Arin movement, dodge, respawn, attack tuning and input axis safeguards.")
+
+# Player widgets must also initialize after possession, not only in BeginPlay.
+character_source = (ROOT / "Source/HunterGame/Characters/ArinValeCharacter.cpp").read_text(encoding="utf-8")
+character_header = (ROOT / "Source/HunterGame/Characters/ArinValeCharacter.h").read_text(encoding="utf-8")
+assert "virtual void PossessedBy(AController* NewController) override" in character_header
+assert "virtual void PawnClientRestart() override" in character_header
+assert "void AArinValeCharacter::InitializePlayerWidgets()" in character_source
+assert "Super::PossessedBy(NewController)" in character_source
+assert "Super::PawnClientRestart()" in character_source
+assert "if (HUDWidgetClass && !ActiveHUDWidget)" in character_source
