@@ -2,6 +2,7 @@
 
 #include "ArinProgressionComponent.h"
 #include "UI/HunterHUDWidget.h"
+#include "UI/HunterQuestTrackerWidget.h"
 #include "Campaign/HunterCampaignSubsystem.h"
 #include "Engine/GameInstance.h"
 #include "Components/HunterHealthComponent.h"
@@ -26,6 +27,7 @@
 AArinValeCharacter::AArinValeCharacter()
 {
     HUDWidgetClass = UHunterHUDWidget::StaticClass();
+    QuestTrackerWidgetClass = UHunterQuestTrackerWidget::StaticClass();
     PrimaryActorTick.bCanEverTick = false;
     bUseControllerRotationPitch = false;
     bUseControllerRotationYaw = false;
