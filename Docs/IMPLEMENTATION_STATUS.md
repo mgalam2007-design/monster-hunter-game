@@ -215,3 +215,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Added `Tools/validate_chapter_one_flow.py` to check the Chapter 1 contract across campaign quest definitions, monster defeat events, breach reward pickup configuration hooks, inventory-accepted pickup events, quest objective matching and chapter-exit completion gating.
 - The check confirms the expected Chapter 1 event tags are consistent in source: `MonsterDefeated` ×3 and `BreachShardCollected` ×1.
 - GitHub Actions runs this validator as a source-level integration check. The actual Unreal Blueprint instances must still be configured with the matching defeat and reward event tags, and the full encounter must be played in Unreal Editor.
+
+
+## Breach enemy death-during-initialization safeguard
+
+- The breach director now checks `IsMonsterDead()` after deferred spawning finishes and before binding the death delegate or incrementing the active enemy count.
+- This covers a Blueprint enemy that defeats itself during `BeginPlay`: its death event may occur before the encounter director can subscribe, so it must not be counted as a live enemy that can never decrement the wave count.
+- `Tools/validate_encounters.py` checks the post-initialization alive-state guard in CI. This remains a source-level check; Blueprint initialization and encounter completion still need Unreal Editor testing.
