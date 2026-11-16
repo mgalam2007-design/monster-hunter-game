@@ -96,6 +96,8 @@ def build_chapter_one():
                          "CH01_Chapter_Exit")
     set_property(chapter_exit, "completion_experience_reward", 100)
     set_property(chapter_exit, "completion_currency_reward", 50)
+    set_property(chapter_exit, "next_chapter_map_name",
+                 unreal.Name("/Game/Maps/Chapter02/L_CH02_MissingSurvivors"))
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 250),
                 "CH01_NavMeshBounds")
