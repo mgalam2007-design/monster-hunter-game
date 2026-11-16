@@ -10,6 +10,9 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
+#include "Components/HorizontalBox.h"
+#include "Components/HorizontalBoxSlot.h"
 
 void UHunterInventoryWidget::NativeOnInitialized()
 {
@@ -182,8 +185,38 @@ void UHunterInventoryWidget::ApplyNativeLayout()
         {
             const FString ItemName = Entry.Item.DisplayName.IsEmpty()
                 ? Entry.Item.ItemId.ToString() : Entry.Item.DisplayName.ToString();
-            const FString ItemLine = FString::Printf(TEXT("%s   x%d"), *ItemName, Entry.Item.Quantity);
-            AddLine(FText::FromString(ItemLine), 13, FLinearColor(0.88f, 0.91f, 0.97f, 1.0f));
+            UHorizontalBox* ItemRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+            UVerticalBoxSlot* RowSlot = NativeStack->AddChildToVerticalBox(ItemRow);
+            RowSlot->SetPadding(FMargin(0.0f, 2.0f, 0.0f, 4.0f));
+
+            UTextBlock* ItemLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            ItemLabel->SetText(FText::FromString(FString::Printf(TEXT("%s   x%d"), *ItemName, Entry.Item.Quantity)));
+            FSlateFontInfo ItemFont = ItemLabel->GetFont();
+            ItemFont.Size = 12;
+            ItemLabel->SetFont(ItemFont);
+            ItemLabel->SetColorAndOpacity(FSlateColor(FLinearColor(0.88f, 0.91f, 0.97f, 1.0f)));
+            UHorizontalBoxSlot* LabelSlot = ItemRow->AddChildToHorizontalBox(ItemLabel);
+            LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+
+            if (Entry.Item.ItemType == EHunterItemType::Weapon || Entry.Item.ItemType == EHunterItemType::Armor)
+            {
+                UButton* EquipButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+                UTextBlock* EquipLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+                EquipLabel->SetText(FText::FromString(TEXT("EQUIP")));
+                EquipButton->SetContent(EquipLabel);
+                EquipButton->OnClicked.AddLambda([this, ItemId = Entry.Item.ItemId]() { EquipItemById(ItemId); });
+                ItemRow->AddChildToHorizontalBox(EquipButton);
+            }
+            else if (Entry.Item.ItemType == EHunterItemType::Consumable)
+            {
+                UButton* UseButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+                UTextBlock* UseLabel = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+                UseLabel->SetText(FText::FromString(TEXT("USE")));
+                UseButton->SetContent(UseLabel);
+                UseButton->SetIsEnabled(Entry.bCanUseConsumable);
+                UseButton->OnClicked.AddLambda([this, ItemId = Entry.Item.ItemId]() { UseConsumableById(ItemId); });
+                ItemRow->AddChildToHorizontalBox(UseButton);
+            }
         }
     }
     AddLine(FText::FromString(TEXT("Press I to close")), 11, FLinearColor(0.45f, 0.65f, 0.82f, 1.0f));
