@@ -42,6 +42,9 @@ jobs:
       - name: Validate Chapter 1 Unreal Editor level generator
         run: python Tools/validate_chapter01_level_generator.py
 
+      - name: Validate Chapter 2 Unreal Editor level generator
+        run: python Tools/validate_chapter02_level_generator.py
+
       - name: Validate Unreal breach arena greybox
         run: python Tools/validate_arena_greybox.py
 
