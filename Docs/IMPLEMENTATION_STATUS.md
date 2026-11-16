@@ -248,3 +248,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Added a native UMG quest panel showing the current chapter, active objective descriptions, completion states and objective counts.
 - Arin enables the native tracker by default alongside the native HUD; the tracker subscribes to quest/campaign subsystem events and refreshes when objectives or chapters change.
 - Both native panels are generated in C++ at runtime and do not require a Widget Blueprint for their basic presentation. The inventory screen, title/menu flow, and art polish remain unfinished.
+
+
+## Native inventory screen
+- Added a generated UMG inventory panel with stack/item counts, equipped weapon and armor summaries, and live inventory item rows.
+- Arin enables the native inventory panel by default; it opens through the existing inventory input binding and starts collapsed.
+- The panel currently presents inventory and equipment state. Direct mouse-driven equip/use controls and polished icons/tooltips remain to be implemented.
