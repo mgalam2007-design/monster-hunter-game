@@ -6,6 +6,7 @@
 #include "Components/HunterCurrencyComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/GameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 AHunterChapterExitActor::AHunterChapterExitActor()
 {
@@ -100,5 +101,13 @@ bool AHunterChapterExitActor::TryCompleteChapter(AArinValeCharacter* Arin)
     }
 
     BP_OnChapterExitResult(CommittedChapterNumber, true, bSaved);
+
+    // Travel is opt-in: only map names explicitly configured on the exit are opened.
+    // Keep the final chapter exit in place when no successor map is assigned.
+    if (bSaved && !NextChapterMapName.IsNone() && GetWorld())
+    {
+        UGameplayStatics::OpenLevel(this, NextChapterMapName);
+    }
+
     return bSaved;
 }
