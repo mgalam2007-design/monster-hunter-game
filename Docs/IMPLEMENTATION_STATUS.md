@@ -235,3 +235,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Native monsters now explicitly use `AAIController` and auto-possess when placed or spawned, supporting the encounter director's runtime wave spawning and pursuit.
 - The Chapter 1 editor generator adds directional lighting, skylight and fog to make the greybox inspectable immediately.
 - GitHub static checks cover the new map-start quest initialization and AI controller assignment. Unreal C++ compilation and editor/runtime validation are still required.
+
+
+## Native player HUD
+- `UHunterHUDWidget` now builds a native UMG panel at runtime with evolution stage, health, energy, experience and currency readouts plus live progress bars.
+- Arin assigns this widget class by default, so the core combat HUD no longer requires a separately authored Widget Blueprint to appear.
+- The existing Blueprint snapshot event remains available for future visual customization. The quest tracker and inventory screens still need their own authored/native layouts.
+- Static validation checks the generated layout bindings and default class assignment. Actual Unreal compilation and viewport verification remain outstanding.
