@@ -228,3 +228,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Added `Tools/unreal/create_chapter01_level.py`, an Unreal Editor Python script that creates and saves a Chapter 1 greybox level with the native arena, Arin, three native monster actors, a checkpoint, chapter exit and NavMesh bounds.
 - Added a repository static contract check for the generator and included it in GitHub Actions.
 - This script has **not** been executed in Unreal Editor in this environment. The resulting binary level asset, AI navigation verification, quest/reward wiring, visual assets, UI and runtime playtest remain outstanding.
+
+
+## Chapter 1 direct-launch integration
+- `AHunterGameMode::BeginPlay` now initializes the campaign's current chapter quest when a map starts. This removes the need for a separate menu click just to activate the Chapter 1 objective chain during direct level testing; the campaign subsystem preserves an already active/restored quest.
+- Native monsters now explicitly use `AAIController` and auto-possess when placed or spawned, supporting the encounter director's runtime wave spawning and pursuit.
+- The Chapter 1 editor generator adds directional lighting, skylight and fog to make the greybox inspectable immediately.
+- GitHub static checks cover the new map-start quest initialization and AI controller assignment. Unreal C++ compilation and editor/runtime validation are still required.
