@@ -54,3 +54,15 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# Native HUD must construct its own visible layout and be enabled by default.
+hud_header = (ROOT / "Source/HunterGame/UI/HunterHUDWidget.h").read_text(encoding="utf-8")
+hud_source = (ROOT / "Source/HunterGame/UI/HunterHUDWidget.cpp").read_text(encoding="utf-8")
+arin_source = (ROOT / "Source/HunterGame/Characters/ArinValeCharacter.cpp").read_text(encoding="utf-8")
+assert "BuildNativeLayout" in hud_header
+assert "UProgressBar" in hud_header
+assert "UCanvasPanel" in hud_source
+assert "HealthBar->SetPercent(Snapshot.HealthPercent)" in hud_source
+assert "EnergyBar->SetPercent(Snapshot.EnergyPercent)" in hud_source
+assert "ExperienceBar->SetPercent(Snapshot.ExperiencePercent)" in hud_source
+assert "HUDWidgetClass = UHunterHUDWidget::StaticClass()" in arin_source
