@@ -37,7 +37,6 @@ def set_property(actor, name, value):
 def make_spawn_transform(location):
     transform = unreal.Transform()
     transform.set_editor_property("translation", unreal.Vector(*location))
-    transform.set_editor_property("rotation", unreal.Rotator(0.0, 0.0, 0.0).quaternion())
     transform.set_editor_property("scale3d", unreal.Vector(1.0, 1.0, 1.0))
     return transform
 
