@@ -253,7 +253,7 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 ## Native inventory screen
 - Added a generated UMG inventory panel with stack/item counts, equipped weapon and armor summaries, and live inventory item rows.
 - Arin enables the native inventory panel by default; it opens through the existing inventory input binding and starts collapsed.
-- The panel currently presents inventory and equipment state. Direct mouse-driven equip/use controls and polished icons/tooltips remain to be implemented.
+- The panel presents inventory/equipment state and now includes mouse-driven equip/use controls. Polished icons, tooltips, sorting and pagination remain outstanding.
 
 
 ## Native inventory screen
@@ -273,3 +273,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Consumable buttons are disabled when the character cannot currently benefit from that item; successful use consumes one item and refreshes the displayed inventory.
 - Equipment actions route through the existing equipment component, retaining its evolution-stage and item validation rules.
 - These controls are source-authored UMG and are covered by static source-contract checks. They still require Unreal Editor compilation and an in-game mouse/keyboard test; no runtime test is claimed.
+
+
+## Chapter exit map travel hook (November 16, 2026)
+- Chapter exits now expose an optional NextChapterMapName setting for an explicitly configured successor map.
+- The exit only opens that map after chapter completion and campaign save both succeed; an unset map name leaves the player in the current level, which supports the final chapter and avoids guessing nonexistent map assets.
+- This is a configurable transition hook, not evidence that successor maps have been created. Each destination must be generated/authored and assigned in its exit actor, then tested in Unreal Editor.
