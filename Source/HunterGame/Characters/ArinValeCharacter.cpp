@@ -139,32 +139,60 @@ void AArinValeCharacter::BeginPlay()
         HealthComponent->OnOwnerDied.AddDynamic(this, &AArinValeCharacter::HandleArinDeath);
     }
     ApplyEvolutionStats();
-    if (IsLocallyControlled())
+    InitializePlayerWidgets();
+    UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
+}
+
+void AArinValeCharacter::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+    InitializePlayerWidgets();
+}
+
+void AArinValeCharacter::PawnClientRestart()
+{
+    Super::PawnClientRestart();
+    InitializePlayerWidgets();
+}
+
+void AArinValeCharacter::InitializePlayerWidgets()
+{
+    if (!IsLocallyControlled())
     {
-        if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+        return;
+    }
+
+    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if (!PlayerController)
+    {
+        return;
+    }
+
+    if (HUDWidgetClass && !ActiveHUDWidget)
+    {
+        ActiveHUDWidget = CreateWidget<UUserWidget>(PlayerController, HUDWidgetClass);
+        if (ActiveHUDWidget)
         {
-            if (HUDWidgetClass)
-            {
-                ActiveHUDWidget = CreateWidget<UUserWidget>(PlayerController, HUDWidgetClass);
-                if (ActiveHUDWidget) ActiveHUDWidget->AddToViewport();
-            }
-            if (QuestTrackerWidgetClass)
-            {
-                ActiveQuestTrackerWidget = CreateWidget<UUserWidget>(PlayerController, QuestTrackerWidgetClass);
-                if (ActiveQuestTrackerWidget) ActiveQuestTrackerWidget->AddToViewport();
-            }
-            if (InventoryWidgetClass)
-            {
-                ActiveInventoryWidget = CreateWidget<UUserWidget>(PlayerController, InventoryWidgetClass);
-                if (ActiveInventoryWidget)
-                {
-                    ActiveInventoryWidget->AddToViewport();
-                    ActiveInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
-                }
-            }
+            ActiveHUDWidget->AddToViewport();
         }
     }
-    UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
+    if (QuestTrackerWidgetClass && !ActiveQuestTrackerWidget)
+    {
+        ActiveQuestTrackerWidget = CreateWidget<UUserWidget>(PlayerController, QuestTrackerWidgetClass);
+        if (ActiveQuestTrackerWidget)
+        {
+            ActiveQuestTrackerWidget->AddToViewport();
+        }
+    }
+    if (InventoryWidgetClass && !ActiveInventoryWidget)
+    {
+        ActiveInventoryWidget = CreateWidget<UUserWidget>(PlayerController, InventoryWidgetClass);
+        if (ActiveInventoryWidget)
+        {
+            ActiveInventoryWidget->AddToViewport();
+            ActiveInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
+        }
+    }
 }
 
 float AArinValeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
