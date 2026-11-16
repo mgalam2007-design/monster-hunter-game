@@ -12,12 +12,17 @@ required = [
     "HunterCheckpointActor",
     "HunterChapterExitActor",
     "NavMeshBoundsVolume",
-    "CH01_BreachStalker_",
+    "HunterBreachEncounterActor",
+    "HunterPickupActor",
+    "HunterInventoryItem",
+    "BreachShardCollected",
+    "MonsterDefeated",
+    "monster_spawn_points",
     "save_current_level",
-    "AutoPossessAI",
 ]
 missing = [token for token in required if token not in source]
 if missing:
     raise SystemExit("Chapter 1 level generator missing: " + ", ".join(missing))
 compile(source, str(SCRIPT), "exec")
+assert "HunterBreachEncounterActor" in source and "BreachShardCollected" in source
 print("Chapter 1 Unreal Editor level generator contract passed.")
