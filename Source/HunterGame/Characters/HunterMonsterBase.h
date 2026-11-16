@@ -75,6 +75,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Combat")
     float AttackCooldown = 1.6f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Combat", meta=(ClampMin="0.0", ClampMax="2.0"))
+    float AttackWindupDuration = 0.45f;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster|Rewards", meta=(ClampMin="0"))
     int32 ExperienceReward = 25;
 
@@ -100,6 +103,9 @@ protected:
     bool bCanChasePlayer = true;
 
     UFUNCTION(BlueprintImplementableEvent, Category="Monster|Combat")
+    void BP_OnMonsterAttackTelegraph(AActor* Target);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Monster|Combat")
     void BP_OnMonsterAttack(AActor* Target);
 
     UFUNCTION(BlueprintImplementableEvent, Category="Monster|Combat")
@@ -108,7 +114,10 @@ protected:
 private:
     TWeakObjectPtr<ACharacter> TargetCharacter;
     float AttackTimer = 0.0f;
+    float AttackWindupTimer = 0.0f;
     float ChaseRepathTimer = 0.0f;
+    TWeakObjectPtr<ACharacter> PendingAttackTarget;
+    bool bAttackPending = false;
     bool bIsDead = false;
 
     void FindTarget();
