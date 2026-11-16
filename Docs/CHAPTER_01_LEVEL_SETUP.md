@@ -37,7 +37,9 @@ This guide turns the committed C++ foundations into the first editor-authored pl
    - Currency Reward: 5
    - Defeat Quest Event Tag: `MonsterDefeated`
 4. Set a suitable AI Controller class if required by the project setup and confirm the level has a working NavMesh.
-5. Add a simple attack presentation using the Blueprint attack event and an attack montage when one exists.
+5. Implement `BP_OnMonsterAttackTelegraph` for a clear warning pose, short sound, material flash or Niagara cue. The default windup is 0.45 seconds and can be tuned from 0–2 seconds on the enemy Blueprint.
+6. Implement `BP_OnMonsterAttack` as the impact animation/presentation. Damage is applied only after the windup, and the strike is cancelled if Arin moves outside attack range before impact.
+7. Add a simple attack presentation using an attack montage when one exists.
 6. Test one placed enemy before using it in the wave.
 
 ## 4. Configure the breach encounter
