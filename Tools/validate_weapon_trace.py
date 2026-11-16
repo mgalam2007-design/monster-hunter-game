@@ -22,6 +22,9 @@ def main() -> None:
         "FName BaseSocket",
         "FName TipSocket",
         "TSet<TWeakObjectPtr<AActor>> HitActors",
+        "bool bAllowProceduralFallback = true",
+        "FallbackBaseOffset = FVector(45.0f, 40.0f, 35.0f)",
+        "FallbackTipOffset = FVector(145.0f, 40.0f, 35.0f)",
     )
     for token in required_header:
         if token not in header:
@@ -32,6 +35,9 @@ def main() -> None:
         "FMath::IsFinite(TraceRadius)",
         "DoesSocketExist(BaseSocket)",
         "DoesSocketExist(TipSocket)",
+        "GetBladePoints(CurrentBase, CurrentTip)",
+        "ActorTransform.TransformPosition(FallbackBaseOffset)",
+        "ActorTransform.TransformPosition(FallbackTipOffset)",
         "FCollisionShape::MakeSphere(TraceRadius)",
         "SweepMultiByChannel(",
         "HitActors.Contains(HitActor)",
