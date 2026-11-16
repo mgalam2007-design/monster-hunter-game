@@ -260,3 +260,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Added a generated UMG inventory panel with stack/item counts, equipped weapon and armor summaries, and live inventory item rows.
 - Arin enables the native inventory panel by default; it opens through the existing inventory input binding and starts collapsed.
 - The panel currently presents inventory and equipment state. Direct mouse-driven equip/use controls and polished icons/tooltips remain to be implemented.
+
+
+## Blockout-ready melee combat
+- Weapon tracing now falls back to configurable blade base/tip positions in Arin's actor space when a skeletal mesh or `weapon_r` / `weapon_tip` sockets are unavailable.
+- The swept-volume trace and per-swing hit de-duplication remain in place, so the native blockout Arin can test basic melee damage before the final rigged model is imported.
+- Authored animation/socket traces remain preferred when available. This is a functional greybox fallback, not final sword animation timing or presentation.
