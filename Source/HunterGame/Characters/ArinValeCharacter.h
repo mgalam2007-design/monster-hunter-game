@@ -57,6 +57,8 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    virtual void PossessedBy(AController* NewController) override;
+    virtual void PawnClientRestart() override;
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
     void MoveForward(float Value);
@@ -75,6 +77,7 @@ protected:
 
     void RespawnAtLastCheckpoint();
     void ApplyEvolutionStats();
+    void InitializePlayerWidgets();
     void UseEnergyStrike();
     void UseShadowStep();
     void UseShadowEcho();
