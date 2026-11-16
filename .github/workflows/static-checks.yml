@@ -39,6 +39,9 @@ jobs:
       - name: Validate character input and consumable safeguards
         run: python Tools/validate_character_safety.py
 
+      - name: Validate Chapter 1 Unreal Editor level generator
+        run: python Tools/validate_chapter01_level_generator.py
+
       - name: Validate Unreal breach arena greybox
         run: python Tools/validate_arena_greybox.py
 
