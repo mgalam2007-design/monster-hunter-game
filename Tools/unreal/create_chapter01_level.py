@@ -42,7 +42,7 @@ def build_chapter_one():
         raise RuntimeError("Could not create level " + LEVEL_PATH)
 
     arena_class = load_native_class("HunterPrototypeArenaActor")
-    arin_class = load_native_class("ArinValeCharacter")
+    load_native_class("ArinValeCharacter")  # Fail early if the default pawn class is unavailable.
     monster_class = load_native_class("HunterMonsterBase")
     checkpoint_class = load_native_class("HunterCheckpointActor")
     exit_class = load_native_class("HunterChapterExitActor")
@@ -54,9 +54,8 @@ def build_chapter_one():
 
     player_start = spawn(editor, unreal.PlayerStart, (0, -1450, 110),
                          "CH01_PlayerStart", unreal.Rotator(0, 0, 90))
-    arin = spawn(editor, arin_class, (0, -1450, 110), "CH01_Arin_Playtest")
-    configure_if_present(arin, "auto_possess_player",
-                         unreal.AutoReceiveInput.PLAYER_0)
+    # AHunterGameMode already spawns AArinValeCharacter as its default pawn.
+    # Keep one PlayerStart so the game mode creates exactly one player pawn.
 
     # Three independent native enemies make the greybox immediately testable.
     enemy_positions = [(-500, 250, 110), (0, 650, 110), (500, 250, 110)]
