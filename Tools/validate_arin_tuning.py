@@ -27,6 +27,13 @@ move_right_end = SOURCE.find("void AArinValeCharacter::Turn", move_right_start)
 assert move_right_start >= 0 and move_right_end > move_right_start, "Could not locate MoveRight"
 assert "FMath::IsFinite(Value)" in SOURCE[move_right_start:move_right_end], "MoveRight must reject non-finite axis input"
 
+dodge_start = SOURCE.find("void AArinValeCharacter::Dodge()")
+dodge_end = SOURCE.find("void AArinValeCharacter::ResetDodge()", dodge_start)
+assert dodge_start >= 0 and dodge_end > dodge_start, "Could not locate dodge implementation"
+dodge = SOURCE[dodge_start:dodge_end]
+assert "if (DodgeInvulnerabilityDuration > 0.0f)" in dodge, "Positive dodge window must schedule its expiry"
+assert "else" in dodge and "bIsDodging = false;" in dodge, "Zero-length dodge window must not leave invulnerability stuck on"
+
 respawn_start = SOURCE.find("void AArinValeCharacter::RespawnAtLastCheckpoint")
 respawn_end = SOURCE.find("void AArinValeCharacter::", respawn_start + 10)
 assert respawn_start >= 0, "Could not locate respawn implementation"
