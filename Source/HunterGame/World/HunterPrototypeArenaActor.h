@@ -37,4 +37,7 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Arena")
     TObjectPtr<UPointLightComponent> GateLight;
+
+protected:
+    virtual void OnConstruction(const FTransform& Transform) override;
 };
