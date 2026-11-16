@@ -85,6 +85,11 @@ assert "ApplyNativeLayout" in inventory_header
 assert "Snapshot.EquippedWeapon.DisplayName" in inventory_source
 assert "Snapshot.EquippedArmor.DisplayName" in inventory_source
 assert "Snapshot.Entries" in inventory_source
+assert "UButton" in inventory_source
+assert "OnClicked.AddLambda" in inventory_source
+assert "EquipItemById(ItemId)" in inventory_source
+assert "UseConsumableById(ItemId)" in inventory_source
+assert "SetIsEnabled(Entry.bCanUseConsumable)" in inventory_source
 assert "InventoryWidgetClass = UHunterInventoryWidget::StaticClass()" in arin_source
 
 assert "FInputModeGameAndUI GameAndUI" in arin_source
