@@ -76,3 +76,13 @@ assert "UVerticalBox" in tracker_source
 assert "Snapshot.ChapterTitle" in tracker_source
 assert "Objective.CurrentCount" in tracker_source
 assert "QuestTrackerWidgetClass = UHunterQuestTrackerWidget::StaticClass()" in arin_source
+
+# Native inventory screen must show equipped gear and current item stacks.
+inventory_header = (ROOT / "Source/HunterGame/UI/HunterInventoryWidget.h").read_text(encoding="utf-8")
+inventory_source = (ROOT / "Source/HunterGame/UI/HunterInventoryWidget.cpp").read_text(encoding="utf-8")
+assert "BuildNativeLayout" in inventory_header
+assert "ApplyNativeLayout" in inventory_header
+assert "Snapshot.EquippedWeapon.DisplayName" in inventory_source
+assert "Snapshot.EquippedArmor.DisplayName" in inventory_source
+assert "Snapshot.Entries" in inventory_source
+assert "InventoryWidgetClass = UHunterInventoryWidget::StaticClass()" in arin_source
