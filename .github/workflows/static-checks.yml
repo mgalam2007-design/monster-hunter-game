@@ -45,6 +45,9 @@ jobs:
       - name: Validate Chapter 2 Unreal Editor level generator
         run: python Tools/validate_chapter02_level_generator.py
 
+      - name: Validate quest trigger interaction and cleanup
+        run: python Tools/validate_quest_trigger_interaction.py
+
       - name: Validate Unreal breach arena greybox
         run: python Tools/validate_arena_greybox.py
 
