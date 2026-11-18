@@ -20,5 +20,5 @@ for token in (
 interaction_body = SOURCE.split("void AHunterQuestTriggerActor::HandleInteractPressed()", 1)[1]
 interaction_body = interaction_body.split("bool AHunterQuestTriggerActor::TryRegisterQuestEvent", 1)[0]
 assert "TryRegisterQuestEvent(Arin)" in interaction_body
-assert "RegisterQuestEvent" not in interaction_body
+assert "->RegisterQuestEvent" not in interaction_body
 print("Quest trigger interaction and overlap cleanup contract passed.")
