@@ -285,3 +285,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - The Chapter 2 Unreal Editor generator now places a simple visible civilian silhouette (cube body and sphere head) beside each of the three rescue interaction markers.
 - The placeholders make the rescue locations legible in the greybox map and are intentionally temporary. They have no skeletal rig, animation, dialogue, AI, or bespoke materials.
 - The Chapter 2 static generator validator checks that all three civilian blockouts are generated. The script still needs to be run in Unreal Editor and visually checked; this does not claim an Unreal compile or runtime playtest.
+
+
+## Chapter 2 civilian blockout refinement (November 18, 2026)
+- Expanded each visible rescue-site placeholder into a basic humanoid silhouette with torso, head, arms and legs.
+- Disabled collision on the placeholder mesh pieces so they remain visual markers and do not obstruct Arin's movement.
+- The Chapter 2 generator validator checks the added limbs and collision configuration. These remain static meshes without NPC behavior, rigging or animation; editor execution and gameplay verification are still required.
