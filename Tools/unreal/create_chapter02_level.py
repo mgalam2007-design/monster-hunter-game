@@ -39,6 +39,7 @@ def add_quest_trigger(trigger_class, location, label, event_tag, scale=(1.0, 1.0
     set_property(trigger, "event_amount", 1)
     set_property(trigger, "trigger_once", True)
     set_property(trigger, "destroy_after_trigger", False)
+    set_property(trigger, "requires_interaction", event_tag == "SurvivorRescued")
     trigger.set_actor_scale3d(unreal.Vector(*scale))
     return trigger
 
