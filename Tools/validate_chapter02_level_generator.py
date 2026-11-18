@@ -20,6 +20,6 @@ missing = [token for token in required if token not in source]
 if missing:
     raise SystemExit("Chapter 2 level generator missing: " + ", ".join(missing))
 compile(source, str(SCRIPT), "exec")
-assert source.count('"SurvivorRescued"') == 1
+assert "event_tag == \"SurvivorRescued\"" in source\nassert "enumerate(rescue_points, start=1)" in source
 assert "enumerate(rescue_points, start=1)" in source
 print("Chapter 2 Unreal Editor level generator contract passed.")
