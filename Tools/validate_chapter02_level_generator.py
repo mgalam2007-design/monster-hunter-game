@@ -12,6 +12,8 @@ required = [
     "SurvivorDistrictLocated",
     "SurvivorRescued",
     "requires_interaction",
+    "interaction_prompt_text",
+    "E  RESCUE CIVILIAN",
     "rescue_points",
     "NavMeshBoundsVolume",
     "save_current_level",
