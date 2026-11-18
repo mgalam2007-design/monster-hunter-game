@@ -6,6 +6,7 @@
 #include "HunterQuestTriggerActor.generated.h"
 
 class UBoxComponent;
+class UTextRenderComponent;
 class UPrimitiveComponent;
 class AArinValeCharacter;
 class APlayerController;
@@ -29,6 +30,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quest Trigger")
     TObjectPtr<UBoxComponent> TriggerVolume;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quest Trigger|Interaction")
+    TObjectPtr<UTextRenderComponent> InteractionPrompt;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger")
     FName QuestEventTag = NAME_None;
 
@@ -46,6 +50,9 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Interaction")
     FKey InteractKey = EKeys::E;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Interaction")
+    FText InteractionPromptText = FText::FromString(TEXT("E  INTERACT"));
 
     UFUNCTION(BlueprintImplementableEvent, Category="Quest Trigger")
     void BP_OnQuestEventTriggered(AActor* TriggeringActor);
