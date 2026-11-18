@@ -291,3 +291,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Expanded each visible rescue-site placeholder into a basic humanoid silhouette with torso, head, arms and legs.
 - Disabled collision on the placeholder mesh pieces so they remain visual markers and do not obstruct Arin's movement.
 - The Chapter 2 generator validator checks the added limbs and collision configuration. These remain static meshes without NPC behavior, rigging or animation; editor execution and gameplay verification are still required.
+
+
+## Chapter 2 rescue interaction feedback (November 18, 2026)
+- Successful E-key interactions now replace the floating rescue prompt with a configurable completion message; Chapter 2 uses `CIVILIAN RESCUED`.
+- The success message remains visible after the one-shot trigger disables its collision, providing clear immediate feedback while preventing duplicate rescue counts.
+- Static validators check the completion message path and Chapter 2 configuration. This is source-level behavior only; it still requires Unreal compilation and in-editor testing.
