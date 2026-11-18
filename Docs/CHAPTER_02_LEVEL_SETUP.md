@@ -4,7 +4,7 @@
 
 1. Compile the `HunterGame` C++ module in Unreal Editor.
 2. Run **Tools → Execute Python Script** and select `Tools/unreal/create_chapter02_level.py`.
-3. The script creates `/Game/Maps/Chapter02/L_CH02_MissingSurvivors`, including the arena, PlayerStart, lighting, NavMesh bounds, district-location trigger, three civilian-rescue triggers and chapter exit.
+3. The script creates `/Game/Maps/Chapter02/L_CH02_MissingSurvivors`, including the arena, PlayerStart, lighting, NavMesh bounds, district-location trigger, three civilian-rescue triggers, simple visible civilian blockouts and chapter exit.
 4. Build navigation, open the generated map, press **P** to inspect the NavMesh, then Play.
 
 ## Objective flow
@@ -15,7 +15,7 @@ The native campaign subsystem starts Chapter 2's `CH02_MissingSurvivors` quest w
 - Enter each of the three marked rescue volumes. A native floating **E — RESCUE CIVILIAN** prompt appears; press **E** to rescue the civilian. Each successful interaction reports one `SurvivorRescued` event. Leaving the volume hides the prompt and cancels the interaction.
 - Reach the chapter exit only after all four objective counts are complete. The exit then completes and saves Chapter 2.
 
-The generated rescue volumes are invisible greybox interaction zones. The native text prompt appears automatically, while `BP_OnInteractionAvailable` and `BP_OnQuestEventTriggered` remain available for additional UI and rescue presentation. Add visible civilian placeholder meshes, dialogue, animation and AI in Unreal Editor before treating the mission as player-ready. The current implementation uses a direct E-key interaction; it does not yet implement civilian NPC AI or bespoke rescue animations.
+Each rescue marker now has a simple cube-body/sphere-head civilian silhouette placed beside it. These are visible editor-generated placeholders, not animated NPCs. The generated rescue volumes are invisible greybox interaction zones. The native text prompt appears automatically, while `BP_OnInteractionAvailable` and `BP_OnQuestEventTriggered` remain available for additional UI and rescue presentation. Add visible civilian placeholder meshes, dialogue, animation and AI in Unreal Editor before treating the mission as player-ready. The current implementation uses a direct E-key interaction; it does not yet implement civilian NPC AI or bespoke rescue animations.
 
 ## Chapter 1 to Chapter 2 travel
 
