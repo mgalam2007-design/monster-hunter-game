@@ -297,3 +297,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Successful E-key interactions now replace the floating rescue prompt with a configurable completion message; Chapter 2 uses `CIVILIAN RESCUED`.
 - The success message remains visible after the one-shot trigger disables its collision, providing clear immediate feedback while preventing duplicate rescue counts.
 - Static validators check the completion message path and Chapter 2 configuration. This is source-level behavior only; it still requires Unreal compilation and in-editor testing.
+
+
+## Chapter 3 guild evaluation greybox (November 18, 2026)
+- Added an Unreal Editor Python level generator for `/Game/Maps/Chapter03/L_CH03_GuildEvaluation`, including the native arena, five placed native monster opponents, lighting, NavMesh bounds, an E-key trial completion seal and a gated chapter exit.
+- Monster defeat quest-event tags are now editable per placed instance, allowing the five Chapter 3 opponents to report `TrialOpponentDefeated` instead of the generic monster event. The seal reports `TrialSealActivated`.
+- Chapter 2's generated exit now targets Chapter 3 after the chapter completion/save gate. Regenerate Chapter 2 after compiling the updated module to apply the destination.
+- Added a Chapter 3 setup guide and CI source-contract validator. The generator has not been executed in Unreal Editor; C++ compilation, NavMesh, event delivery, balance and runtime chapter transition remain unverified.
