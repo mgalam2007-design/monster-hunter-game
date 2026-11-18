@@ -4,7 +4,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HEADER = (ROOT / "Source/HunterGame/Quests/HunterQuestTriggerActor.h").read_text(encoding="utf-8")
 SOURCE = (ROOT / "Source/HunterGame/Quests/HunterQuestTriggerActor.cpp").read_text(encoding="utf-8")
 
-for token in ("bRequiresInteraction", "InteractKey", "BP_OnInteractionAvailable", "InteractionPromptText", "InteractionPrompt"):
+for token in ("bRequiresInteraction", "InteractKey", "BP_OnInteractionAvailable", "InteractionPromptText", "InteractionPrompt", "CompletionPromptText"):
     assert token in HEADER, f"Quest trigger header missing {token}"
 for token in (
     "OnComponentEndOverlap.AddDynamic",
@@ -17,6 +17,8 @@ for token in (
     "SetVisibility(true)",
     "SetVisibility(false)",
     "SetText(InteractionPromptText)",
+    "SetText(CompletionPromptText)",
+    "bRequiresInteraction && !bDestroyAfterTrigger",
 ):
     assert token in SOURCE, f"Quest trigger source missing {token}"
 
