@@ -2,6 +2,7 @@
 
 #include "ArinValeCharacter.h"
 #include "Components/BoxComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "Quests/HunterQuestSubsystem.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/PlayerController.h"
@@ -19,11 +20,26 @@ AHunterQuestTriggerActor::AHunterQuestTriggerActor()
     TriggerVolume->SetCollisionResponseToAllChannels(ECR_Ignore);
     TriggerVolume->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
     TriggerVolume->SetGenerateOverlapEvents(true);
+
+    InteractionPrompt = CreateDefaultSubobject<UTextRenderComponent>(TEXT("InteractionPrompt"));
+    InteractionPrompt->SetupAttachment(RootComponent);
+    InteractionPrompt->SetRelativeLocation(FVector(0.0f, 0.0f, 145.0f));
+    InteractionPrompt->SetHorizontalAlignment(EHTA_Center);
+    InteractionPrompt->SetVerticalAlignment(EVRTA_TextCenter);
+    InteractionPrompt->SetWorldSize(42.0f);
+    InteractionPrompt->SetTextRenderColor(FColor(255, 225, 145));
+    InteractionPrompt->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    InteractionPrompt->SetHiddenInGame(true);
 }
 
 void AHunterQuestTriggerActor::BeginPlay()
 {
     Super::BeginPlay();
+    if (InteractionPrompt)
+    {
+        InteractionPrompt->SetText(InteractionPromptText);
+        InteractionPrompt->SetVisibility(false);
+    }
     TriggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AHunterQuestTriggerActor::HandleOverlap);
     TriggerVolume->OnComponentEndOverlap.AddDynamic(this, &AHunterQuestTriggerActor::HandleEndOverlap);
 }
@@ -59,6 +75,10 @@ void AHunterQuestTriggerActor::HandleOverlap(UPrimitiveComponent* OverlappedComp
 
     NearbyArin = Arin;
     NearbyController = PC;
+    if (InteractionPrompt)
+    {
+        InteractionPrompt->SetVisibility(true);
+    }
     EnableInput(PC);
     if (InputComponent)
     {
@@ -78,6 +98,10 @@ void AHunterQuestTriggerActor::HandleEndOverlap(UPrimitiveComponent* OverlappedC
     }
 
     BP_OnInteractionAvailable(false);
+    if (InteractionPrompt)
+    {
+        InteractionPrompt->SetVisibility(false);
+    }
     ClearInteractionInput();
 }
 
@@ -109,6 +133,10 @@ bool AHunterQuestTriggerActor::TryRegisterQuestEvent(AArinValeCharacter* Arin)
     bHasTriggered = true;
     BP_OnQuestEventTriggered(Arin);
     BP_OnInteractionAvailable(false);
+    if (InteractionPrompt)
+    {
+        InteractionPrompt->SetVisibility(false);
+    }
 
     if (bDestroyAfterTrigger)
     {
