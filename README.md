@@ -43,5 +43,7 @@ This repository currently contains the C++ project scaffold:
 - 3: Shadow Echo (unlocks at Legendary; requires a configured actor Blueprint)
 - F: use the first usable health/energy consumable in inventory
 
+- E: interact with nearby vendors or rescue markers
+
 ## Important asset status
 The repository does **not** yet contain finished Arin/monster skeletal meshes, textures, animation assets, final environments, or authored cinematic sequences. The Chapter 1 generator creates a greybox map, not a finished production level. Unreal compilation, map generation and runtime gameplay still need to be verified in the editor; GitHub static checks do not perform those tests.
