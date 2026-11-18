@@ -15,6 +15,10 @@ required = [
     "interaction_prompt_text",
     "E  RESCUE CIVILIAN",
     "rescue_points",
+    "def add_civilian_blockout(point, index):",
+    "CH02_Civilian_%02d_Body",
+    "CH02_Civilian_%02d_Head",
+    "add_civilian_blockout(point, index)",
     "NavMeshBoundsVolume",
     "save_current_level",
 ]
