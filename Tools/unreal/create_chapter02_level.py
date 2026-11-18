@@ -130,6 +130,7 @@ def build_chapter_two():
     set_property(chapter_exit, "completion_experience_reward", 150)
     set_property(chapter_exit, "completion_currency_reward", 75)
     set_property(chapter_exit, "save_slot_name", "HunterCampaign")
+    set_property(chapter_exit, "next_chapter_map_name", unreal.Name("/Game/Maps/Chapter03/L_CH03_GuildEvaluation"))
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 250),
                 "CH02_NavMeshBounds")
