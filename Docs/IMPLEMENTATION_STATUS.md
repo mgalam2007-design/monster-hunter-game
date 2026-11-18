@@ -279,3 +279,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Chapter exits now expose an optional NextChapterMapName setting for an explicitly configured successor map.
 - The exit only opens that map after chapter completion and campaign save both succeed; an unset map name leaves the player in the current level, which supports the final chapter and avoids guessing nonexistent map assets.
 - This is a configurable transition hook, not evidence that successor maps have been created. Each destination must be generated/authored and assigned in its exit actor, then tested in Unreal Editor.
+
+
+## Chapter 2 visible civilian placeholders (November 18, 2026)
+- The Chapter 2 Unreal Editor generator now places a simple visible civilian silhouette (cube body and sphere head) beside each of the three rescue interaction markers.
+- The placeholders make the rescue locations legible in the greybox map and are intentionally temporary. They have no skeletal rig, animation, dialogue, AI, or bespoke materials.
+- The Chapter 2 static generator validator checks that all three civilian blockouts are generated. The script still needs to be run in Unreal Editor and visually checked; this does not claim an Unreal compile or runtime playtest.
