@@ -43,6 +43,8 @@ def add_quest_trigger(trigger_class, location, label, event_tag, scale=(1.0, 1.0
     if event_tag == "SurvivorRescued":
         set_property(trigger, "interaction_prompt_text",
                      unreal.Text("E  RESCUE CIVILIAN"))
+        set_property(trigger, "completion_prompt_text",
+                     unreal.Text("CIVILIAN RESCUED"))
     trigger.set_actor_scale3d(unreal.Vector(*scale))
     return trigger
 
