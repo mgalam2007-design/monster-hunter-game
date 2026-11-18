@@ -11,6 +11,7 @@ required = [
     "HunterChapterExitActor",
     "SurvivorDistrictLocated",
     "SurvivorRescued",
+    "requires_interaction",
     "rescue_points",
     "NavMeshBoundsVolume",
     "save_current_level",
