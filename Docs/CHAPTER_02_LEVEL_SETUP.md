@@ -12,10 +12,10 @@
 The native campaign subsystem starts Chapter 2's `CH02_MissingSurvivors` quest when this map is entered. The quest requires:
 
 - Enter the district marker to report `SurvivorDistrictLocated`.
-- Visit each of the three marked rescue volumes. Each reports one `SurvivorRescued` event.
+- Enter each of the three marked rescue volumes and press **E** to rescue the civilian. Each successful interaction reports one `SurvivorRescued` event. Leaving the volume cancels the interaction prompt/state.
 - Reach the chapter exit only after all four objective counts are complete. The exit then completes and saves Chapter 2.
 
-The generated rescue volumes are invisible greybox triggers. Add visible civilian placeholder meshes, markers, dialogue and rescue animations in Unreal Editor before treating the mission as player-ready. The current triggers report rescue completion on overlap; they do not yet implement an interaction key or civilian AI.
+The generated rescue volumes are invisible greybox interaction zones. Their Blueprint event `BP_OnInteractionAvailable` can show an **E — Rescue** prompt, and `BP_OnQuestEventTriggered` can play a rescue response. Add visible civilian placeholder meshes, dialogue, animation and AI in Unreal Editor before treating the mission as player-ready. The current implementation uses a direct E-key interaction; it does not yet implement civilian NPC AI or bespoke rescue animations.
 
 ## Chapter 1 to Chapter 2 travel
 
