@@ -58,13 +58,28 @@ def add_civilian_blockout(point, index):
     body = spawn(unreal.StaticMeshActor, (x, y + 170, z + 95),
                  "CH02_Civilian_%02d_Body" % index)
     body.static_mesh_component.set_static_mesh(cube_mesh)
+    body.static_mesh_component.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
     body.set_actor_scale3d(unreal.Vector(0.38, 0.28, 0.72))
-    body.set_actor_rotation(unreal.Rotator(0.0, 0.0, 0.0), False)
 
     head = spawn(unreal.StaticMeshActor, (x, y + 170, z + 205),
                  "CH02_Civilian_%02d_Head" % index)
     head.static_mesh_component.set_static_mesh(sphere_mesh)
+    head.static_mesh_component.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
     head.set_actor_scale3d(unreal.Vector(0.25, 0.25, 0.25))
+
+    for side, offset in (("Left", -32), ("Right", 32)):
+        arm = spawn(unreal.StaticMeshActor, (x + offset, y + 170, z + 115),
+                    "CH02_Civilian_%02d_%sArm" % (index, side))
+        arm.static_mesh_component.set_static_mesh(cube_mesh)
+        arm.static_mesh_component.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+        arm.set_actor_scale3d(unreal.Vector(0.12, 0.14, 0.48))
+
+    for side, offset in (("Left", -16), ("Right", 16)):
+        leg = spawn(unreal.StaticMeshActor, (x + offset, y + 170, z + 25),
+                    "CH02_Civilian_%02d_%sLeg" % (index, side))
+        leg.static_mesh_component.set_static_mesh(cube_mesh)
+        leg.static_mesh_component.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+        leg.set_actor_scale3d(unreal.Vector(0.14, 0.16, 0.42))
 
 
 def build_chapter_two():
