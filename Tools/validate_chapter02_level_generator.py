@@ -14,6 +14,8 @@ required = [
     "requires_interaction",
     "interaction_prompt_text",
     "E  RESCUE CIVILIAN",
+    "completion_prompt_text",
+    "CIVILIAN RESCUED",
     "rescue_points",
     "def add_civilian_blockout(point, index):",
     "CH02_Civilian_%02d_Body",
