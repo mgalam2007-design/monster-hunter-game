@@ -54,6 +54,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Interaction")
     FText InteractionPromptText = FText::FromString(TEXT("E  INTERACT"));
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Interaction")
+    FText CompletionPromptText = FText::FromString(TEXT("OBJECTIVE COMPLETE"));
+
     UFUNCTION(BlueprintImplementableEvent, Category="Quest Trigger")
     void BP_OnQuestEventTriggered(AActor* TriggeringActor);
 
