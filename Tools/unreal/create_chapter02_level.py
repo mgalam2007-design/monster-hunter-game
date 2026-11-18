@@ -47,6 +47,26 @@ def add_quest_trigger(trigger_class, location, label, event_tag, scale=(1.0, 1.0
     return trigger
 
 
+def add_civilian_blockout(point, index):
+    """Place a simple visible civilian silhouette beside each rescue marker."""
+    cube_mesh = unreal.load_asset("/Engine/BasicShapes/Cube.Cube")
+    sphere_mesh = unreal.load_asset("/Engine/BasicShapes/Sphere.Sphere")
+    if not cube_mesh or not sphere_mesh:
+        raise RuntimeError("Unreal basic cube/sphere meshes are unavailable.")
+
+    x, y, z = point
+    body = spawn(unreal.StaticMeshActor, (x, y + 170, z + 95),
+                 "CH02_Civilian_%02d_Body" % index)
+    body.static_mesh_component.set_static_mesh(cube_mesh)
+    body.set_actor_scale3d(unreal.Vector(0.38, 0.28, 0.72))
+    body.set_actor_rotation(unreal.Rotator(0.0, 0.0, 0.0), False)
+
+    head = spawn(unreal.StaticMeshActor, (x, y + 170, z + 205),
+                 "CH02_Civilian_%02d_Head" % index)
+    head.static_mesh_component.set_static_mesh(sphere_mesh)
+    head.set_actor_scale3d(unreal.Vector(0.25, 0.25, 0.25))
+
+
 def build_chapter_two():
     unreal.EditorAssetLibrary.make_directory("/Game/Maps/Chapter02")
     if not unreal.EditorLevelLibrary.new_level(LEVEL_PATH):
@@ -83,6 +103,7 @@ def build_chapter_two():
         (900, 250, 100),
     ]
     for index, point in enumerate(rescue_points, start=1):
+        add_civilian_blockout(point, index)
         add_quest_trigger(trigger_class, point,
                           "CH02_Rescue_Civilian_%02d" % index,
                           "SurvivorRescued", (1.2, 1.2, 1.2))
