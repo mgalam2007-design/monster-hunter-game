@@ -135,7 +135,15 @@ bool AHunterQuestTriggerActor::TryRegisterQuestEvent(AArinValeCharacter* Arin)
     BP_OnInteractionAvailable(false);
     if (InteractionPrompt)
     {
-        InteractionPrompt->SetVisibility(false);
+        if (bRequiresInteraction && !bDestroyAfterTrigger)
+        {
+            InteractionPrompt->SetText(CompletionPromptText);
+            InteractionPrompt->SetVisibility(true);
+        }
+        else
+        {
+            InteractionPrompt->SetVisibility(false);
+        }
     }
 
     if (bDestroyAfterTrigger)
