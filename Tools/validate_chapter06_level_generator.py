@@ -21,6 +21,8 @@ required = [
     "TRIAL OF STEEL PASSED",
     "NavMeshBoundsVolume",
     "save_current_level",
+    "next_chapter_map_name",
+    "CH07_BlueMark",
 ]
 missing = [token for token in required if token not in source]
 if missing:
