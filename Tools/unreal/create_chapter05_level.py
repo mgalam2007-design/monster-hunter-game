@@ -85,6 +85,7 @@ def build_chapter_five():
     set_property(exit_actor, "completion_experience_reward", 375)
     set_property(exit_actor, "completion_currency_reward", 185)
     set_property(exit_actor, "save_slot_name", "HunterCampaign")
+    set_property(exit_actor, "next_chapter_map_name", unreal.Name("/Game/Maps/Chapter06/L_CH06_TrialOfSteel"))
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 260), "CH05_NavMeshBounds")
     nav.set_actor_scale3d(unreal.Vector(40.0, 40.0, 7.0))
