@@ -304,3 +304,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Monster defeat quest-event tags are now editable per placed instance, allowing the five Chapter 3 opponents to report `TrialOpponentDefeated` instead of the generic monster event. The seal reports `TrialSealActivated`.
 - Chapter 2's generated exit now targets Chapter 3 after the chapter completion/save gate. Regenerate Chapter 2 after compiling the updated module to apply the destination.
 - Added a Chapter 3 setup guide and CI source-contract validator. The generator has not been executed in Unreal Editor; C++ compilation, NavMesh, event delivery, balance and runtime chapter transition remain unverified.
+
+
+## Chapter 4 transit guardian greybox (November 20, 2026)
+- Added an Unreal Editor generator for `/Game/Maps/Chapter04/L_CH04_TransitGate` with a native arena, PlayerStart, a `TransitGateReached` trigger, a configurable `HunterBossEncounterActor` using `HunterBossBase`, NavMesh bounds and a gated chapter exit.
+- The boss encounter reports `TransitGuardianDefeated` when its spawned boss dies; the campaign objective requires one guardian defeat. The existing native boss foundation supplies health-threshold phase transitions and escalating attack damage.
+- Chapter 3's generated exit now targets Chapter 4 after the completion/save gate. Regenerate Chapter 3 after compiling the updated module.
+- Added a Chapter 4 setup guide and static generator validator. The script has not been run in Unreal Editor; compilation, boss spawn, AI, phase behavior, event delivery and runtime travel remain unverified.
