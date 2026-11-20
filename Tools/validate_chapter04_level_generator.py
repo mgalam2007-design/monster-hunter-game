@@ -18,6 +18,8 @@ required = [
     "activation_radius",
     "NavMeshBoundsVolume",
     "save_current_level",
+    "next_chapter_map_name",
+    "CH05_MiningSettlement",
 ]
 missing = [token for token in required if token not in source]
 if missing:
