@@ -19,6 +19,8 @@ required = [
     "E  ACTIVATE TRIAL SEAL",
     "GUILD EVALUATION PASSED",
     "NavMeshBoundsVolume",
+    "next_chapter_map_name",
+    "CH04_TransitGate",
     "save_current_level",
 ]
 missing = [token for token in required if token not in source]
