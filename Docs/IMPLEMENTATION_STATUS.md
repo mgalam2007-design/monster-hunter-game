@@ -323,5 +323,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 ## Chapter 6 level integration
 - Added `Tools/unreal/create_chapter06_level.py` for `/Game/Maps/Chapter06/L_CH06_TrialOfSteel`: a native multi-phase elite boss encounter tagged `SteelTrialOpponentDefeated`, an E-key guild approval seal tagged `SteelTrialApproved`, a gated exit, lighting/fog and NavMesh bounds.
 - Added `Tools/validate_chapter06_level_generator.py`, `Docs/CHAPTER_06_LEVEL_SETUP.md`, and a Chapter 6 generator validation step in GitHub Actions.
-- Chapter 5's generated exit now targets `/Game/Maps/Chapter06/L_CH06_TrialOfSteel` after successful completion and save. Chapter 6's existing campaign quest requires the elite defeat and approval seal.
+- Chapter 5's generated exit now targets `/Game/Maps/Chapter06/L_CH06_TrialOfSteel` after successful completion and save. Chapter 6's existing campaign quest requires the elite defeat and approval seal, and its generated exit connects to Chapter 7.
 - The Chapter 6 map is a greybox generator only. No Unreal Editor execution, C++ compile or runtime test has been performed; boss art, bespoke attacks, animations, VFX/audio and environment art remain outstanding.
+
+## Chapters 7–8 level integration
+- Chapter 7 generator `Tools/unreal/create_chapter07_level.py` creates `/Game/Maps/Chapter07/L_CH07_BlueMark`, a blue-mark source reach event and three one-shot E-key resonance fragment interactions tagged `ResonanceFragmentCollected`. It connects its exit to Chapter 8.
+- Chapter 8 generator `Tools/unreal/create_chapter08_level.py` creates `/Game/Maps/Chapter08/L_CH08_HunterReborn`, six placed monsters tagged `AwakeningCreatureDefeated`, and an E-key awakening altar tagged `AwakeningAltarActivated`.
+- Added matching static validators, setup guides and GitHub Actions steps for both generators. Chapter 6 now connects to Chapter 7. The campaign quest definitions already existed and the generated event sources match their tags/counts.
+- Both maps remain greybox editor generators. Resonance collectible meshes, awakening cinematic/evolution presentation, production environments, enemy assets, animation, VFX/audio, Unreal compile and runtime tests remain outstanding.
