@@ -38,6 +38,7 @@ def build_chapter_8():
 
     arena_class = native_class("HunterPrototypeArenaActor")
     monster_class = native_class("HunterMonsterBase")
+    trigger_class = native_class("HunterQuestTriggerActor")
     exit_class = native_class("HunterChapterExitActor")
 
     arena = spawn(arena_class, (0, 0, 0), "CH08_Hunter_Reborn")
