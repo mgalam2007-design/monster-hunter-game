@@ -83,6 +83,7 @@ def build_chapter_six():
     set_property(exit_actor, "completion_experience_reward", 450)
     set_property(exit_actor, "completion_currency_reward", 220)
     set_property(exit_actor, "save_slot_name", "HunterCampaign")
+    set_property(exit_actor, "next_chapter_map_name", unreal.Name("/Game/Maps/Chapter07/L_CH07_BlueMark"))
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 260), "CH06_NavMeshBounds")
     nav.set_actor_scale3d(unreal.Vector(37.0, 37.0, 7.0))
