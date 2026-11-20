@@ -317,5 +317,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Added `Tools/unreal/create_chapter05_level.py` to generate `/Game/Maps/Chapter05/L_CH05_MiningSettlement` with a native arena, PlayerStart, four placed `HunterMonsterBase` enemies tagged `MiningCreatureDefeated`, three one-shot E-key ore-sample interactions tagged `CorruptedOreCollected`, lighting, fog and NavMesh bounds. The three sample markers report the existing Chapter 5 Collect objective; production ore meshes, pickup presentation, VFX/audio and environment art remain outstanding.
 - Added `Tools/validate_chapter05_level_generator.py`, `Docs/CHAPTER_05_LEVEL_SETUP.md`, and a Chapter 5 generator validation step in GitHub Actions.
 - Chapter 4's generated exit now targets `/Game/Maps/Chapter05/L_CH05_MiningSettlement` after successful completion and save.
-- Chapter 5's campaign quest was already authored in `HunterCampaignSubsystem`: defeat four mining creatures and recover three corrupted ore samples. The generated level now supplies the matching event sources.
+- Chapter 5's campaign quest was already authored in `HunterCampaignSubsystem`: defeat four mining creatures and recover three corrupted ore samples. The generated level now supplies the matching event sources and connects to Chapter 6.
 - These are editor-generation scripts and static source checks. The maps have not been generated or tested in Unreal Editor, and Unreal C++ compilation/runtime behavior remains unverified.
+
+## Chapter 6 level integration
+- Added `Tools/unreal/create_chapter06_level.py` for `/Game/Maps/Chapter06/L_CH06_TrialOfSteel`: a native multi-phase elite boss encounter tagged `SteelTrialOpponentDefeated`, an E-key guild approval seal tagged `SteelTrialApproved`, a gated exit, lighting/fog and NavMesh bounds.
+- Added `Tools/validate_chapter06_level_generator.py`, `Docs/CHAPTER_06_LEVEL_SETUP.md`, and a Chapter 6 generator validation step in GitHub Actions.
+- Chapter 5's generated exit now targets `/Game/Maps/Chapter06/L_CH06_TrialOfSteel` after successful completion and save. Chapter 6's existing campaign quest requires the elite defeat and approval seal.
+- The Chapter 6 map is a greybox generator only. No Unreal Editor execution, C++ compile or runtime test has been performed; boss art, bespoke attacks, animations, VFX/audio and environment art remain outstanding.
