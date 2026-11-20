@@ -80,6 +80,7 @@ def build_chapter_three():
     set_property(exit_actor, "completion_experience_reward", 225)
     set_property(exit_actor, "completion_currency_reward", 110)
     set_property(exit_actor, "save_slot_name", "HunterCampaign")
+    set_property(exit_actor, "next_chapter_map_name", unreal.Name("/Game/Maps/Chapter04/L_CH04_TransitGate"))
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 250), "CH03_NavMeshBounds")
     nav.set_actor_scale3d(unreal.Vector(34.0, 34.0, 7.0))
