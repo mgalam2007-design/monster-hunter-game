@@ -1,7 +1,7 @@
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "Tools" / "unreal" / "create_chapter08_level.py"
-source = SCRIPT.read_text(encoding="utf-8").read()
+source = SCRIPT.read_text(encoding="utf-8")
 required = [
     'LEVEL_PATH = "/Game/Maps/Chapter08/L_CH08_HunterReborn"',
     "HunterPrototypeArenaActor", "HunterMonsterBase", "HunterQuestTriggerActor",
