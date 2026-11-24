@@ -6,6 +6,7 @@
 #include "ArinValeCharacter.generated.h"
 
 class USpringArmComponent;
+class UStaticMeshComponent;
 class UCameraComponent;
 class UAnimMontage;
 class UArinProgressionComponent;
@@ -77,12 +78,25 @@ protected:
 
     void RespawnAtLastCheckpoint();
     void ApplyEvolutionStats();
+    void ApplyEvolutionVisuals();
     void InitializePlayerWidgets();
     void UseEnergyStrike();
     void UseShadowStep();
     void UseShadowEcho();
     void UseConsumable();
     void ToggleInventoryMenu();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Evolution|Visuals")
+    TObjectPtr<UStaticMeshComponent> EvolvedShoulderArmor;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Evolution|Visuals")
+    TObjectPtr<UStaticMeshComponent> EliteChestCore;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Evolution|Visuals")
+    TObjectPtr<UStaticMeshComponent> LegendaryCrown;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Evolution|Visuals")
+    TObjectPtr<UStaticMeshComponent> UltimateAuraCore;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
     TObjectPtr<USpringArmComponent> CameraBoom;
