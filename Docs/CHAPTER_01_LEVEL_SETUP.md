@@ -136,4 +136,9 @@ A starter level-generation script is now committed at `Tools/unreal/create_chapt
 4. It creates and saves `/Game/Maps/Chapter01/L_CH01_FirstBreach` with the native arena, player start, breach encounter director, three configured enemy spawn transforms, reward pickup configuration, an entry checkpoint, a chapter exit and a NavMesh bounds volume. The director is wired to the existing Chapter 1 quest event tags `MonsterDefeated` and `BreachShardCollected`. The native game mode now starts the current chapter quest automatically when a level begins, so launching the map directly does not leave the encounter events without an active quest. Basic directional light, skylight and fog are also added.
 5. Open the generated level, press **P** to inspect navigation coverage, and test enemy pursuit.
 
-The script is an editor-side greybox generator, not a committed binary `.umap`. It does not yet create the configured reward item/quest chain, Blueprint children, authored UI, meshes, animation assets or final lighting. Verify the generated level in the actual Unreal Editor before treating it as playable.
+The script is an editor-side greybox generator, not a committed binary `.umap`. It configures the reward item/quest chain and basic lighting, but it does not create Blueprint children, production meshes, animation assets or final lighting. Native blockout meshes now make Arin's checkpoint, chapter exit and breach-shard pickup visible without Blueprint art. Verify the generated level in the actual Unreal Editor before treating it as playable.
+
+
+## 12. Native Chapter 1 interaction markers
+
+The native pickup actor now assigns a simple engine sphere mesh by default, scaled into a shard-like placeholder. The checkpoint has a visible sphere marker, and the chapter exit has a three-piece blockout gate. These components have collision disabled so they do not obstruct Arin, enemy navigation or pickup overlaps. They are deliberately temporary visual cues; replace them with authored crystal, checkpoint and portal assets when production art is ready.
