@@ -83,6 +83,7 @@ def build_chapter_10():
     set_property(exit_actor, "completion_experience_reward", 750)
     set_property(exit_actor, "completion_currency_reward", 375)
     set_property(exit_actor, "save_slot_name", "HunterCampaign")
+    set_property(exit_actor, "next_chapter_map_name", unreal.Name("/Game/Maps/Chapter11/L_CH11_EchoesOfTheFallen"))
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 270), "CH10_NavMeshBounds")
     nav.set_actor_scale3d(unreal.Vector(41.0, 41.0, 7.0))
