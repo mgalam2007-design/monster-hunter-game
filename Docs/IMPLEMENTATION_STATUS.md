@@ -334,6 +334,12 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 
 ## Chapters 9–10 level integration
 - Chapter 9 generator `Tools/unreal/create_chapter09_level.py` creates `/Game/Maps/Chapter09/L_CH09_VanishedHunters`: a missing-signal reach trigger, four placed `HunterMonsterBase` enemies tagged `GateStalkerDefeated`, and an E-key recorder interaction tagged `ExpeditionRecorderRecovered`. Chapter 9 connects to Chapter 10.
-- Chapter 10 generator `Tools/unreal/create_chapter10_level.py` creates `/Game/Maps/Chapter10/L_CH10_HollowDistrict`: district-core reach trigger, three E-key shadow-anchor interactions tagged `ShadowAnchorDestroyed`, and a native boss encounter tagged `HollowWardenDefeated`.
+- Chapter 10 generator `Tools/unreal/create_chapter10_level.py` creates `/Game/Maps/Chapter10/L_CH10_HollowDistrict`: district-core reach trigger, three E-key shadow-anchor interactions tagged `ShadowAnchorDestroyed`, and a native boss encounter tagged `HollowWardenDefeated`; its exit now connects to Chapter 11.
 - Added matching validators, setup guides and CI steps. These generators supply the objective event tags/counts already authored in the campaign subsystem.
 - Both maps remain greybox generators. Recorder/anchor production assets, boss bespoke attacks, animation, VFX/audio, environment art, Unreal compilation and runtime testing remain outstanding.
+
+## Chapters 11–12 level integration
+- Chapter 11 generator `Tools/unreal/create_chapter11_level.py` creates `/Game/Maps/Chapter11/L_CH11_EchoesOfTheFallen`: three one-shot memory echo interactions tagged `ExpeditionMemoryRecovered` and a native boss encounter tagged `FallenCaptainDefeated`. Its exit connects to Chapter 12.
+- Chapter 12 generator `Tools/unreal/create_chapter12_level.py` creates `/Game/Maps/Chapter12/L_CH12_ShadowAccord`: faction contact reach trigger, three placed sentinels tagged `ShadowSentinelDefeated`, and an E-key pact altar tagged `ShadowPactResolved`. Chapter 12 exit connects to Chapter 13.
+- Added matching validators, setup guides and GitHub Actions steps. Chapter 10's generated exit now targets Chapter 11.
+- The Chapter 12 pact interaction currently completes a single objective; it does not yet present branching choice UI or persist a story decision. Both maps remain greybox generators; production art, animation, VFX/audio, Unreal compilation and runtime testing remain outstanding.
