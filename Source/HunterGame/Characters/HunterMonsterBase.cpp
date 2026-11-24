@@ -14,6 +14,8 @@
 #include "Engine/World.h"
 #include "Engine/StaticMesh.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/TextRenderComponent.h"
+#include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 AHunterMonsterBase::AHunterMonsterBase()
@@ -230,6 +232,39 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
     }
 
     BP_OnMonsterDamaged(DamageAmount, GetHealthPercent(), DamageSource);
+
+    // Lightweight native hit feedback remains visible even before a monster Blueprint exists.
+    if (UWorld* World = GetWorld())
+    {
+        UTextRenderComponent* DamageText = NewObject<UTextRenderComponent>(this);
+        if (DamageText)
+        {
+            DamageText->SetupAttachment(GetRootComponent());
+            DamageText->SetText(FText::AsNumber(FMath::RoundToInt(DamageAmount)));
+            DamageText->SetWorldSize(36.0f);
+            DamageText->SetTextRenderColor(FColor::White);
+            DamageText->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
+            DamageText->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
+            DamageText->SetRelativeLocation(FVector(0.0f, 0.0f, 170.0f + FMath::FRandRange(0.0f, 24.0f)));
+            DamageText->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            DamageText->SetCanEverAffectNavigation(false);
+            DamageText->RegisterComponent();
+
+            const TWeakObjectPtr<UTextRenderComponent> WeakDamageText(DamageText);
+            FTimerHandle DamageTextTimer;
+            World->GetTimerManager().SetTimer(
+                DamageTextTimer,
+                FTimerDelegate::CreateLambda([WeakDamageText]()
+                {
+                    if (UTextRenderComponent* Text = WeakDamageText.Get())
+                    {
+                        Text->DestroyComponent();
+                    }
+                }),
+                0.85f,
+                false);
+        }
+    }
 
     if (CurrentHealth <= 0.0f)
     {
