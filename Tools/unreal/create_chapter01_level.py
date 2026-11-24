@@ -75,7 +75,7 @@ def build_chapter_one():
 
     # The real Chapter 1 encounter emits three MonsterDefeated events, then
     # spawns a BreachShard pickup that emits BreachShardCollected on collection.
-    encounter = spawn(breach_class, (0, 0, 0), "CH01_FirstBreach_Encounter")
+    # Place the activation volume along the route from the entry checkpoint.\n    # The enemy spawn transforms below are world-space positions deeper in the arena.\n    encounter = spawn(breach_class, (0, -650, 0), "CH01_FirstBreach_Encounter")
     set_property(encounter, "monster_class", monster_class)
     set_property(encounter, "monster_spawn_points", [
         make_spawn_transform((-520, 350, 110)),
