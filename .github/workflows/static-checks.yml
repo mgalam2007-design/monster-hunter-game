@@ -114,6 +114,9 @@ jobs:
       - name: Validate Unreal boss foundation
         run: python Tools/validate_boss_foundation.py
 
+      - name: Validate dedicated Final Hunter boss
+        run: python Tools/validate_final_boss.py
+
       - name: Validate Arin blockout and Unreal input bindings
         run: python Tools/validate_playable_foundation.py
 
