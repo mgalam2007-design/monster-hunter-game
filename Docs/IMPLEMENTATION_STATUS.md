@@ -373,3 +373,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Shadow Step launch strength now scales with the stage movement multiplier.
 - All three abilities receive reduced energy costs (5% per stage, capped at 25%) and reduced cooldowns (5% per stage, capped at 20%).
 - The existing ability validator now checks these progression links. Gameplay balance still requires Unreal runtime testing.
+
+
+## Native Shadow Echo combat implementation
+- Added `AHunterShadowEchoActor`, a native short-lived echo silhouette with configurable pulse radius, damage, interval and lifetime. It periodically damages nearby living `AHunterMonsterBase` enemies, attributes the damage to Arin's controller, and scales pulse damage with Arin's evolution-stage damage multiplier.
+- The ability component now defaults to this native actor class, so Shadow Echo no longer requires a separately authored Blueprint class to spawn. Its existing progression unlock, energy cost and cooldown gates still apply.
+- Pulse and lifetime timers are cleared during expiry and `EndPlay`; overlap results are de-duplicated per pulse. The visual remains a primitive placeholder without final materials, animation, VFX or audio.
+- Added a static CI validator for actor wiring, damage targeting, evolution scaling and timer cleanup. This validates source contracts only; Unreal compilation and in-editor gameplay testing are still required.
