@@ -132,6 +132,9 @@ jobs:
       - name: Validate ability energy and tuning safeguards
         run: python Tools/validate_ability_component.py
 
+      - name: Validate native Shadow Echo combat and lifecycle
+        run: python Tools/validate_shadow_echo.py
+
       - name: Validate player damage intake safeguards
         run: python Tools/validate_player_damage.py
 
