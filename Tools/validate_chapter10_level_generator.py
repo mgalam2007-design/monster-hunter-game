@@ -9,6 +9,7 @@ required = [
     "ShadowAnchorDestroyed", "HollowWardenDefeated", "anchor_points =",
     "enumerate(anchor_points, start=1)", "requires_interaction", "E  DESTROY SHADOW ANCHOR",
     "boss_defeat_quest_event_tag", "boss_spawn_offset", "NavMeshBoundsVolume", "save_current_level",
+    "next_chapter_map_name", "CH11_EchoesOfTheFallen",
 ]
 missing = [token for token in required if token not in source]
 if missing: raise SystemExit("Chapter 10 generator missing: " + ", ".join(missing))
