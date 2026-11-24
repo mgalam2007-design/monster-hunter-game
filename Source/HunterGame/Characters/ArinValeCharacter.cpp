@@ -84,6 +84,32 @@ AArinValeCharacter::AArinValeCharacter()
     AddBlockoutPart(TEXT("ArinBlockoutHead"), Sphere, FVector(0, 0, 63), FVector(0.19f, 0.19f, 0.22f), FRotator::ZeroRotator);
     AddBlockoutPart(TEXT("ArinBlockoutHair"), Cube, FVector(-3, 0, 79), FVector(0.20f, 0.21f, 0.08f), FRotator::ZeroRotator);
     AddBlockoutPart(TEXT("ArinBlockoutSword"), Cube, FVector(17, 43, 8), FVector(0.07f, 0.07f, 0.48f), FRotator(0, 0, 8));
+    // Evolution cosmetics preserve Arin's base silhouette while adding
+    // progressively stronger armor and an unmistakable endgame aura.
+    auto AddEvolutionPart = [this](const FName Name, UStaticMesh* Mesh,
+        const FVector& Location, const FVector& Scale)
+    {
+        if (!Mesh) return static_cast<UStaticMeshComponent*>(nullptr);
+        UStaticMeshComponent* Part = CreateDefaultSubobject<UStaticMeshComponent>(Name);
+        Part->SetupAttachment(GetCapsuleComponent());
+        Part->SetStaticMesh(Mesh);
+        Part->SetRelativeLocation(Location);
+        Part->SetRelativeScale3D(Scale);
+        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Part->SetGenerateOverlapEvents(false);
+        Part->SetCanEverAffectNavigation(false);
+        Part->SetVisibility(false, true);
+        return Part;
+    };
+    EvolvedShoulderArmor = AddEvolutionPart(TEXT("ArinEvolvedShoulderArmor"), Cube,
+        FVector(0, 0, 38), FVector(0.23f, 0.36f, 0.19f));
+    EliteChestCore = AddEvolutionPart(TEXT("ArinEliteChestCore"), Sphere,
+        FVector(15, 0, 18), FVector(0.13f, 0.13f, 0.18f));
+    LegendaryCrown = AddEvolutionPart(TEXT("ArinLegendaryCrown"), Cube,
+        FVector(-2, 0, 86), FVector(0.10f, 0.25f, 0.18f));
+    UltimateAuraCore = AddEvolutionPart(TEXT("ArinUltimateAuraCore"), Sphere,
+        FVector(-22, 0, 12), FVector(0.52f, 0.52f, 0.70f));
+
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
@@ -139,6 +165,7 @@ void AArinValeCharacter::BeginPlay()
         HealthComponent->OnOwnerDied.AddDynamic(this, &AArinValeCharacter::HandleArinDeath);
     }
     ApplyEvolutionStats();
+    ApplyEvolutionVisuals();
     InitializePlayerWidgets();
     UnmodifiedWeaponDamage = WeaponTraceComponent ? WeaponTraceComponent->GetBaseDamage() : 35.0f;
 }
@@ -387,6 +414,7 @@ void AArinValeCharacter::UseShadowEcho()
 void AArinValeCharacter::HandleEvolutionStageChanged(EArinEvolutionStage PreviousStage, EArinEvolutionStage NewStage)
 {
     ApplyEvolutionStats();
+    ApplyEvolutionVisuals();
 }
 
 void AArinValeCharacter::ApplyEvolutionStats()
@@ -404,6 +432,18 @@ void AArinValeCharacter::ApplyEvolutionStats()
     {
         GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * FMath::Max(0.1f, Profile.MovementMultiplier);
     }
+}
+
+
+void AArinValeCharacter::ApplyEvolutionVisuals()
+{
+    const int32 Stage = ProgressionComponent
+        ? static_cast<int32>(ProgressionComponent->GetEvolutionStage()) : 0;
+
+    if (EvolvedShoulderArmor) EvolvedShoulderArmor->SetVisibility(Stage >= 1, true);
+    if (EliteChestCore) EliteChestCore->SetVisibility(Stage >= 2, true);
+    if (LegendaryCrown) LegendaryCrown->SetVisibility(Stage >= 3, true);
+    if (UltimateAuraCore) UltimateAuraCore->SetVisibility(Stage >= 4, true);
 }
 
 void AArinValeCharacter::UseConsumable()
