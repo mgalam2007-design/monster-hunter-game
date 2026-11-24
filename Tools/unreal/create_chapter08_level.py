@@ -76,6 +76,7 @@ def build_chapter_8():
     set_property(exit_actor, "completion_experience_reward", 600)
     set_property(exit_actor, "completion_currency_reward", 300)
     set_property(exit_actor, "save_slot_name", "HunterCampaign")
+    set_property(exit_actor, "next_chapter_map_name", unreal.Name("/Game/Maps/Chapter09/L_CH09_VanishedHunters"))
     
 
     nav = spawn(unreal.NavMeshBoundsVolume, (0, 0, 260), "CH08_NavMeshBounds")
