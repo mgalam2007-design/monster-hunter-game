@@ -109,6 +109,9 @@ protected:
     void BP_OnMonsterAttack(AActor* Target);
 
     UFUNCTION(BlueprintImplementableEvent, Category="Monster|Combat")
+    void BP_OnMonsterDamaged(float DamageAmount, float RemainingHealthPercent, AActor* DamageSource);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Monster|Combat")
     void BP_OnMonsterDeath();
 
 private:
