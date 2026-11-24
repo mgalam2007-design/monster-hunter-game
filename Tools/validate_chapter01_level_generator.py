@@ -25,4 +25,6 @@ if missing:
     raise SystemExit("Chapter 1 level generator missing: " + ", ".join(missing))
 compile(source, str(SCRIPT), "exec")
 assert "HunterBreachEncounterActor" in source and "BreachShardCollected" in source
+assert 'encounter = spawn(breach_class, (0, -650, 0), "CH01_FirstBreach_Encounter")' in source
+assert "CH01_Entry_Checkpoint" in source and "CH01_PlayerStart" in source
 print("Chapter 1 Unreal Editor level generator contract passed.")
