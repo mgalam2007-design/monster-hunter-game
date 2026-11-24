@@ -23,3 +23,11 @@ EXIT_HEADER = (ROOT / "Source/HunterGame/Items/HunterChapterExitActor.h").read_t
 assert "FName NextChapterMapName = NAME_None" in EXIT_HEADER
 assert "if (bSaved && !NextChapterMapName.IsNone() && GetWorld())" in EXIT
 assert "UGameplayStatics::OpenLevel(this, NextChapterMapName)" in EXIT
+
+# Core Chapter 1 navigation markers remain visible without Blueprint art.
+CHECKPOINT_HEADER = (ROOT / "Source/HunterGame/Items/HunterCheckpointActor.h").read_text(encoding="utf-8")
+EXIT_HEADER = (ROOT / "Source/HunterGame/Items/HunterChapterExitActor.h").read_text(encoding="utf-8")
+assert "CheckpointVisual" in CHECKPOINT_HEADER and "FObjectFinder<UStaticMesh> CheckpointMesh" in CHECKPOINT
+assert "ExitVisuals" in EXIT_HEADER and "ExitGateLeftPillar" in EXIT and "ExitGateHeader" in EXIT
+assert "SetCollisionEnabled(ECollisionEnabled::NoCollision)" in CHECKPOINT
+assert "SetCollisionEnabled(ECollisionEnabled::NoCollision)" in EXIT
