@@ -93,6 +93,12 @@ jobs:
       - name: Validate Chapter 18 Unreal Editor level generator
         run: python Tools/validate_chapter18_level_generator.py
 
+      - name: Validate Chapter 19 Unreal Editor level generator
+        run: python Tools/validate_chapter19_level_generator.py
+
+      - name: Validate Chapter 20 Unreal Editor level generator
+        run: python Tools/validate_chapter20_level_generator.py
+
       - name: Validate quest trigger interaction and cleanup
         run: python Tools/validate_quest_trigger_interaction.py
 
