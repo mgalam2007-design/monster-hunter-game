@@ -328,6 +328,12 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 
 ## Chapters 7–8 level integration
 - Chapter 7 generator `Tools/unreal/create_chapter07_level.py` creates `/Game/Maps/Chapter07/L_CH07_BlueMark`, a blue-mark source reach event and three one-shot E-key resonance fragment interactions tagged `ResonanceFragmentCollected`. It connects its exit to Chapter 8.
-- Chapter 8 generator `Tools/unreal/create_chapter08_level.py` creates `/Game/Maps/Chapter08/L_CH08_HunterReborn`, six placed monsters tagged `AwakeningCreatureDefeated`, and an E-key awakening altar tagged `AwakeningAltarActivated`.
+- Chapter 8 generator `Tools/unreal/create_chapter08_level.py` creates `/Game/Maps/Chapter08/L_CH08_HunterReborn`, six placed monsters tagged `AwakeningCreatureDefeated`, and an E-key awakening altar tagged `AwakeningAltarActivated`; its exit now connects to Chapter 9.
 - Added matching static validators, setup guides and GitHub Actions steps for both generators. Chapter 6 now connects to Chapter 7. The campaign quest definitions already existed and the generated event sources match their tags/counts.
 - Both maps remain greybox editor generators. Resonance collectible meshes, awakening cinematic/evolution presentation, production environments, enemy assets, animation, VFX/audio, Unreal compile and runtime tests remain outstanding.
+
+## Chapters 9–10 level integration
+- Chapter 9 generator `Tools/unreal/create_chapter09_level.py` creates `/Game/Maps/Chapter09/L_CH09_VanishedHunters`: a missing-signal reach trigger, four placed `HunterMonsterBase` enemies tagged `GateStalkerDefeated`, and an E-key recorder interaction tagged `ExpeditionRecorderRecovered`. Chapter 9 connects to Chapter 10.
+- Chapter 10 generator `Tools/unreal/create_chapter10_level.py` creates `/Game/Maps/Chapter10/L_CH10_HollowDistrict`: district-core reach trigger, three E-key shadow-anchor interactions tagged `ShadowAnchorDestroyed`, and a native boss encounter tagged `HollowWardenDefeated`.
+- Added matching validators, setup guides and CI steps. These generators supply the objective event tags/counts already authored in the campaign subsystem.
+- Both maps remain greybox generators. Recorder/anchor production assets, boss bespoke attacks, animation, VFX/audio, environment art, Unreal compilation and runtime testing remain outstanding.
