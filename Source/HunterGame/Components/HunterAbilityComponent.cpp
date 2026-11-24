@@ -125,24 +125,36 @@ bool UHunterAbilityComponent::IsAbilityUnlocked(EHunterAbility Ability) const
 
 float UHunterAbilityComponent::GetAbilityCost(EHunterAbility Ability) const
 {
+    float BaseCost = MaxEnergy;
     switch (Ability)
     {
-        case EHunterAbility::EnergyStrike: return 25.0f;
-        case EHunterAbility::ShadowStep: return 35.0f;
-        case EHunterAbility::ShadowEcho: return 60.0f;
+        case EHunterAbility::EnergyStrike: BaseCost = 25.0f; break;
+        case EHunterAbility::ShadowStep: BaseCost = 35.0f; break;
+        case EHunterAbility::ShadowEcho: BaseCost = 60.0f; break;
         default: return MaxEnergy;
     }
+
+    const AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
+    const UArinProgressionComponent* Progression = Arin ? Arin->GetProgressionComponent() : nullptr;
+    const int32 Stage = Progression ? FMath::Clamp(static_cast<int32>(Progression->GetEvolutionStage()), 0, 4) : 0;
+    return BaseCost * FMath::Max(0.75f, 1.0f - 0.05f * Stage);
 }
 
 float UHunterAbilityComponent::GetAbilityCooldown(EHunterAbility Ability) const
 {
+    float BaseCooldown = 1.0f;
     switch (Ability)
     {
-        case EHunterAbility::EnergyStrike: return 4.0f;
-        case EHunterAbility::ShadowStep: return 7.0f;
-        case EHunterAbility::ShadowEcho: return 25.0f;
-        default: return 1.0f;
+        case EHunterAbility::EnergyStrike: BaseCooldown = 4.0f; break;
+        case EHunterAbility::ShadowStep: BaseCooldown = 7.0f; break;
+        case EHunterAbility::ShadowEcho: BaseCooldown = 25.0f; break;
+        default: return BaseCooldown;
     }
+
+    const AArinValeCharacter* Arin = Cast<AArinValeCharacter>(GetOwner());
+    const UArinProgressionComponent* Progression = Arin ? Arin->GetProgressionComponent() : nullptr;
+    const int32 Stage = Progression ? FMath::Clamp(static_cast<int32>(Progression->GetEvolutionStage()), 0, 4) : 0;
+    return BaseCooldown * FMath::Max(0.80f, 1.0f - 0.05f * Stage);
 }
 
 bool UHunterAbilityComponent::ExecuteAbility(EHunterAbility Ability)
@@ -157,8 +169,17 @@ bool UHunterAbilityComponent::ExecuteAbility(EHunterAbility Ability)
     {
         case EHunterAbility::EnergyStrike:
         {
+            const UArinProgressionComponent* Progression = Arin->GetProgressionComponent();
+            const FArinStageProfile Profile = Progression
+                ? Progression->GetCurrentStageProfile() : FArinStageProfile();
+            const int32 Stage = Progression
+                ? FMath::Clamp(static_cast<int32>(Progression->GetEvolutionStage()), 0, 4) : 0;
+            const float DamageMultiplier = FMath::IsFinite(Profile.DamageMultiplier)
+                ? FMath::Clamp(Profile.DamageMultiplier, 0.5f, 3.0f) : 1.0f;
+            const float ScaledRadius = EnergyStrikeRadius * (1.0f + 0.05f * Stage);
+            const float ScaledDamage = EnergyStrikeDamage * DamageMultiplier;
             const FVector Origin = Arin->GetActorLocation() + Arin->GetActorForwardVector() * 150.0f;
-            const FCollisionShape Shape = FCollisionShape::MakeSphere(FMath::Max(0.0f, EnergyStrikeRadius));
+            const FCollisionShape Shape = FCollisionShape::MakeSphere(FMath::Max(0.0f, ScaledRadius));
             FCollisionQueryParams Params(SCENE_QUERY_STAT(EnergyStrike), false, Arin);
             TArray<FOverlapResult> Overlaps;
             GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity,
@@ -174,15 +195,20 @@ bool UHunterAbilityComponent::ExecuteAbility(EHunterAbility Ability)
                 }
 
                 DamagedActors.Add(Target);
-                UGameplayStatics::ApplyDamage(Target, EnergyStrikeDamage, Arin->GetController(), Arin, UDamageType::StaticClass());
+                UGameplayStatics::ApplyDamage(Target, ScaledDamage, Arin->GetController(), Arin, UDamageType::StaticClass());
             }
             return true;
         }
 
         case EHunterAbility::ShadowStep:
         {
+            const UArinProgressionComponent* Progression = Arin->GetProgressionComponent();
+            const FArinStageProfile Profile = Progression
+                ? Progression->GetCurrentStageProfile() : FArinStageProfile();
+            const float MovementMultiplier = FMath::IsFinite(Profile.MovementMultiplier)
+                ? FMath::Clamp(Profile.MovementMultiplier, 0.5f, 2.0f) : 1.0f;
             const FVector Direction = Arin->GetActorForwardVector();
-            Arin->LaunchCharacter(Direction * ShadowStepStrength, true, false);
+            Arin->LaunchCharacter(Direction * ShadowStepStrength * MovementMultiplier, true, false);
             return true;
         }
 
