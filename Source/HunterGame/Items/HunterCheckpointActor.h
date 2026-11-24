@@ -5,6 +5,7 @@
 #include "HunterCheckpointActor.generated.h"
 
 class USphereComponent;
+class UStaticMeshComponent;
 class UPrimitiveComponent;
 class AArinValeCharacter;
 
@@ -31,6 +32,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Checkpoint")
     TObjectPtr<USphereComponent> ActivationSphere;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Checkpoint|Visuals")
+    TObjectPtr<UStaticMeshComponent> CheckpointVisual;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Checkpoint|Save")
     FString SaveSlotName = TEXT("HunterCampaign");
