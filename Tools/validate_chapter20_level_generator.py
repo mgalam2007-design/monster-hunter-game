@@ -7,7 +7,7 @@ required = [
     "HunterPrototypeArenaActor",
     "HunterQuestTriggerActor",
     "HunterBossEncounterActor",
-    "HunterBossBase",
+    "HunterFinalBossBase",
     "HunterChapterExitActor",
     "OriginHeartExposed",
     "FinalHunterDefeated",
