@@ -30,6 +30,10 @@ assert "FMath::Clamp(ChaseSpeedIncreasePerPhase, 0.0f, 0.5f)" in SOURCE
 assert "AttackCooldown = BaseAttackCooldown * FMath::Max(" in SOURCE
 assert "ChaseSpeed = BaseChaseSpeed * (1.0f + ChaseSpeedIncreasePerPhase * CurrentBossPhase)" in SOURCE
 assert "GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed" in SOURCE
+assert "FMath::Clamp(AttackWindupReductionPerPhase, 0.0f, 0.2f)" in SOURCE
+assert "BaseAttackWindupDuration = AttackWindupDuration" in SOURCE
+assert "AttackWindupDuration = BaseAttackWindupDuration * FMath::Max(" in SOURCE
+assert "AttackWindupReductionPerPhase = 0.10f" in HEADER
 assert "AttackCooldownReductionPerPhase = 0.12f" in HEADER
 assert "ChaseSpeedIncreasePerPhase = 0.15f" in HEADER
 assert "if (!IsMonsterDead())" in SOURCE
