@@ -4,6 +4,8 @@
 #include "Components/HunterInventoryComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Quests/HunterQuestSubsystem.h"
 #include "Engine/GameInstance.h"
 
@@ -17,6 +19,17 @@ AHunterPickupActor::AHunterPickupActor()
     PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
     PickupMesh->SetupAttachment(SceneRoot);
     PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PickupMesh->SetGenerateOverlapEvents(false);
+    PickupMesh->SetCanEverAffectNavigation(false);
+
+    // Keep native pickups visible even before a Blueprint assigns production art.
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> ShardMesh(
+        TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+    if (ShardMesh.Succeeded())
+    {
+        PickupMesh->SetStaticMesh(ShardMesh.Object);
+        PickupMesh->SetRelativeScale3D(FVector(0.38f, 0.38f, 0.62f));
+    }
 
     PickupCollision = CreateDefaultSubobject<USphereComponent>(TEXT("PickupCollision"));
     PickupCollision->SetupAttachment(SceneRoot);
