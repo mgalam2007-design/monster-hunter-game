@@ -388,3 +388,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Updated static validators to check the pickup, checkpoint and exit presentation components. Updated the Chapter 1 setup guide to reflect the configured reward flow and temporary native markers.
 - The Chapter 1 generator's lighting block had escaped newline characters that made its Python source invalid; this was corrected. The existing generator validator compiles the script source and passed in CI after the fix.
 - These are source and greybox presentation improvements only. The map still must be generated in Unreal Editor, C++ must be compiled there, and the encounter, navigation, pickup overlap, checkpoint save and chapter transition must be play-tested.
+
+
+## Chapter 1 encounter trigger route correction
+- Review of the generated Chapter 1 level found the breach encounter trigger at the arena origin, while Arin's PlayerStart was 1,450 Unreal units away. With a 350-unit trigger radius, the encounter could not activate from the starting position or entry checkpoint.
+- Moved the trigger volume to (0, -650, 0), on the route between the entry checkpoint and the deeper enemy spawn positions. Arin must now advance into the arena to begin the wave.
+- Extended the Chapter 1 generator validator to assert this trigger placement and the presence of the player start/checkpoint. Updated the setup guide with the intended route.
+- This is a source-level correction. The generator still needs to be executed in Unreal Editor and the overlap distance verified in a real play session.
