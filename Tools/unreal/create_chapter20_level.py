@@ -36,7 +36,7 @@ def build_chapter_20():
     arena_class = native_class("HunterPrototypeArenaActor")
     trigger_class = native_class("HunterQuestTriggerActor")
     boss_encounter_class = native_class("HunterBossEncounterActor")
-    boss_class = native_class("HunterBossBase")
+    boss_class = native_class("HunterFinalBossBase")
     exit_class = native_class("HunterChapterExitActor")
 
     arena = spawn(arena_class, (0, 0, 0), "CH20_Origin_Heart_Final_Arena")
