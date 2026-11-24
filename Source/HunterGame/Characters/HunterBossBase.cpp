@@ -56,9 +56,12 @@ void AHunterBossBase::BeginPlay()
         ? FMath::Clamp(AttackCooldownReductionPerPhase, 0.0f, 0.8f) : 0.12f;
     ChaseSpeedIncreasePerPhase = FMath::IsFinite(ChaseSpeedIncreasePerPhase)
         ? FMath::Clamp(ChaseSpeedIncreasePerPhase, 0.0f, 0.5f) : 0.15f;
+    AttackWindupReductionPerPhase = FMath::IsFinite(AttackWindupReductionPerPhase)
+        ? FMath::Clamp(AttackWindupReductionPerPhase, 0.0f, 0.2f) : 0.10f;
     BaseAttackDamage = AttackDamage;
     BaseAttackCooldown = AttackCooldown;
     BaseChaseSpeed = ChaseSpeed;
+    BaseAttackWindupDuration = AttackWindupDuration;
 }
 
 float AHunterBossBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
@@ -95,6 +98,8 @@ void AHunterBossBase::UpdateBossPhase()
     AttackCooldown = BaseAttackCooldown * FMath::Max(
         0.25f, 1.0f - AttackCooldownReductionPerPhase * CurrentBossPhase);
     ChaseSpeed = BaseChaseSpeed * (1.0f + ChaseSpeedIncreasePerPhase * CurrentBossPhase);
+    AttackWindupDuration = BaseAttackWindupDuration * FMath::Max(
+        0.4f, 1.0f - AttackWindupReductionPerPhase * CurrentBossPhase);
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
