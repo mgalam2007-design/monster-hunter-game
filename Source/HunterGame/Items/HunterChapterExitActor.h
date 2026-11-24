@@ -5,6 +5,7 @@
 #include "HunterChapterExitActor.generated.h"
 
 class USphereComponent;
+class UStaticMeshComponent;
 class UPrimitiveComponent;
 class AArinValeCharacter;
 
@@ -31,6 +32,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Campaign")
     TObjectPtr<USphereComponent> ExitTrigger;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Campaign|Visuals")
+    TArray<TObjectPtr<UStaticMeshComponent>> ExitVisuals;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Campaign|Trigger", meta=(ClampMin="50.0"))
     float TriggerRadius = 220.0f;
