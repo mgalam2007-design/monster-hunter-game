@@ -22,3 +22,13 @@ for token in required:
     assert token in SOURCE, f"Missing ability safety guard: {token}"
 
 print("Validated ability energy, timing, cooldown and tuning safeguards.")
+
+# Evolution-stage scaling must affect combat output and resource pacing.
+for token in (
+    "GetEvolutionStage()", "BaseCost * FMath::Max(0.75f",
+    "BaseCooldown * FMath::Max(0.80f", "Profile.DamageMultiplier",
+    "ScaledRadius = EnergyStrikeRadius * (1.0f + 0.05f * Stage)",
+    "ApplyDamage(Target, ScaledDamage", "Profile.MovementMultiplier",
+    "ShadowStepStrength * MovementMultiplier",
+):
+    assert token in SOURCE, f"Missing evolution-scaled ability behavior: {token}"
