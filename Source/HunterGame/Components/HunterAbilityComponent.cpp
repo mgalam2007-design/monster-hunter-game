@@ -1,4 +1,5 @@
 #include "HunterAbilityComponent.h"
+#include "Characters/HunterShadowEchoActor.h"
 
 #include "ArinProgressionComponent.h"
 #include "ArinValeCharacter.h"
@@ -13,6 +14,7 @@
 UHunterAbilityComponent::UHunterAbilityComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
+    ShadowEchoActorClass = AHunterShadowEchoActor::StaticClass();
 }
 
 void UHunterAbilityComponent::BeginPlay()
