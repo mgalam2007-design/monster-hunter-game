@@ -9,6 +9,7 @@ required = [
     "spawn_points =", "enumerate(spawn_points, start=1)", "defeat_quest_event_tag",
     "E  ACTIVATE AWAKENING ALTAR", "AWAKENING COMPLETE", "NavMeshBoundsVolume",
     "save_current_level",
+    "next_chapter_map_name", "CH09_VanishedHunters",
 ]
 missing = [token for token in required if token not in source]
 if missing: raise SystemExit("Chapter 8 generator missing: " + ", ".join(missing))
