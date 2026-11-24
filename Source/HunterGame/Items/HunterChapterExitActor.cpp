@@ -28,11 +28,12 @@ AHunterChapterExitActor::AHunterChapterExitActor()
         TEXT("/Engine/BasicShapes/Cube.Cube"));
     if (GateMesh.Succeeded())
     {
-        auto AddGatePart = [this, GateMesh](const FName Name, const FVector& Location, const FVector& Scale)
+        UStaticMesh* GateStaticMesh = GateMesh.Object;
+        auto AddGatePart = [this, GateStaticMesh](const FName Name, const FVector& Location, const FVector& Scale)
         {
             UStaticMeshComponent* Part = CreateDefaultSubobject<UStaticMeshComponent>(Name);
             Part->SetupAttachment(ExitTrigger);
-            Part->SetStaticMesh(GateMesh.Object);
+            Part->SetStaticMesh(GateStaticMesh);
             Part->SetRelativeLocation(Location);
             Part->SetRelativeScale3D(Scale);
             Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
