@@ -36,12 +36,20 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Boss|Phases")
     float AttackDamageMultiplierPerPhase = 0.25f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Boss|Phases", meta=(ClampMin="0.0", ClampMax="0.8"))
+    float AttackCooldownReductionPerPhase = 0.12f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Boss|Phases", meta=(ClampMin="0.0", ClampMax="0.5"))
+    float ChaseSpeedIncreasePerPhase = 0.15f;
+
     UFUNCTION(BlueprintImplementableEvent, Category="Boss|Phases")
     void BP_OnBossPhaseChanged(int32 NewPhase, float HealthPercent);
 
 private:
     int32 CurrentBossPhase = 0;
     float BaseAttackDamage = 0.0f;
+    float BaseAttackCooldown = 0.0f;
+    float BaseChaseSpeed = 0.0f;
 
     void UpdateBossPhase();
 };
