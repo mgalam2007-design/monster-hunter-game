@@ -34,6 +34,8 @@ def main() -> None:
         fail("monster health percentage must be finite and clamped")
     if "BP_OnMonsterDamaged(DamageAmount, GetHealthPercent(), DamageSource);" not in receive:
         fail("accepted monster damage must notify Blueprint presentation with remaining health")
+    if "NewObject<UTextRenderComponent>(this)" not in receive or "DestroyComponent();" not in receive:
+        fail("accepted monster damage must create and clean up a short-lived native damage number")
 
     tick_start = source.find("void AHunterMonsterBase::Tick")
     target_start = source.find("void AHunterMonsterBase::FindTarget")
