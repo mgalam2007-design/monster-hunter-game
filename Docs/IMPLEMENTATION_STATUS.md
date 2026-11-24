@@ -358,3 +358,5 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 
 ## Boss phase combat escalation
 - `AHunterBossBase` now escalates more than damage across its configured health phases: attack cooldown shortens (default 12% per phase, bounded to a 25% minimum of base cooldown) and chase speed rises (default 15% per phase). Both are Blueprint-configurable with finite-value clamps; phase changes still broadcast the existing delegate and Blueprint event for authored telegraphs/VFX. This remains code-level combat tuning over the shared blockout boss; unique attack moves, animation and runtime balance testing are not yet authored.
+
+- Boss phase escalation also shortens the monster's attack telegraph/windup by a configurable default 10% per phase (bounded to at least 40% of its base duration). This preserves the warning window while making later phases more demanding; Blueprint telegraph events remain available for visual/audio cues.
