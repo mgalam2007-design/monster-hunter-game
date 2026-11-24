@@ -363,3 +363,7 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 
 ## Dedicated Chapter 20 Final Hunter
 - Added `AHunterFinalBossBase`, a distinct C++ boss class used by the Chapter 20 generator instead of the generic boss base. Its Origin Pulse has a telegraph/windup, configurable radius/damage/cooldown, phase-scaled damage and faster repeat cadence in later phases. Blueprint presentation events expose the telegraph and impact moments. Static checks cover class wiring and tuning; this is not yet a unique skeletal boss asset or a runtime-verified encounter.
+
+## Arin's stage-based visual evolution blockout
+- Arin now gains visible primitive armor details as he advances: shoulder armor at Evolved, a chest core at Elite, a crown detail at Legendary, and an enlarged aura-core silhouette at Ultimate Awakening. Existing body proportions and base blockout remain unchanged for character continuity.
+- Stage changes refresh both gameplay stats and cosmetic visibility. Static validation covers the stage thresholds and refresh hook. These are engine primitive placeholders, not final materials, particle effects, skeletal armor or animation assets.
