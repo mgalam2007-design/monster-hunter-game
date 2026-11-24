@@ -367,3 +367,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 ## Arin's stage-based visual evolution blockout
 - Arin now gains visible primitive armor details as he advances: shoulder armor at Evolved, a chest core at Elite, a crown detail at Legendary, and an enlarged aura-core silhouette at Ultimate Awakening. Existing body proportions and base blockout remain unchanged for character continuity.
 - Stage changes refresh both gameplay stats and cosmetic visibility. Static validation covers the stage thresholds and refresh hook. These are engine primitive placeholders, not final materials, particle effects, skeletal armor or animation assets.
+
+## Evolution-scaled special abilities
+- Energy Strike damage now uses Arin's stage damage multiplier, and its radius grows 5% per evolution stage.
+- Shadow Step launch strength now scales with the stage movement multiplier.
+- All three abilities receive reduced energy costs (5% per stage, capped at 25%) and reduced cooldowns (5% per stage, capped at 20%).
+- The existing ability validator now checks these progression links. Gameplay balance still requires Unreal runtime testing.
