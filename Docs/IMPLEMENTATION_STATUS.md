@@ -349,3 +349,9 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Chapter 18 generator `Tools/unreal/create_chapter18_level.py` creates `/Game/Maps/Chapter18/L_CH18_CrownOfRuin`: four throne wardens tagged `ThroneWardenDefeated` and three interactive command cores tagged `RuinCommandCoreDestroyed`. Exit connects to Chapter 19.
 - Added matching generator validators, setup guides and CI steps. Chapter 16 → 17 → 18 → 19 campaign chain is represented in level generators.
 - Chapter 17 evacuation points are interaction markers, not civilian escort AI. Both maps remain greybox. Unique art, animation, VFX/audio, Unreal compilation and runtime gameplay tests remain outstanding.
+
+## Chapters 19–20 — full campaign level-generator coverage
+- Chapter 19 generator `Tools/unreal/create_chapter19_level.py` creates `/Game/Maps/Chapter19/L_CH19_BeyondTheGate`: three interactive origin seals tagged `OriginGateSealStabilized` and two sentinels tagged `OriginSentinelDefeated`. Exit connects to Chapter 20.
+- Chapter 20 generator `Tools/unreal/create_chapter20_level.py` creates `/Game/Maps/Chapter20/L_CH20_TheFinalHunter`: interactive Origin Heart seal and native boss encounter tagged `FinalHunterDefeated`. The finale exit has no next map.
+- Added validators, setup guides and CI steps. Chapter 18 → 19 → 20 campaign transition chain is represented. This completes the first-pass generator coverage for all 20 campaign chapters.
+- Chapter 20 still uses the shared boss foundation; unique final boss phases, ending/cutscene, Arin final evolution presentation and all production art/animation/audio/VFX remain outstanding. All chapter generators still require execution in Unreal Editor, C++ compilation, NavMesh verification and runtime playtesting.
