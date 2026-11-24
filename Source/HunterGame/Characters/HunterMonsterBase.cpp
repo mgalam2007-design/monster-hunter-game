@@ -229,6 +229,8 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
         }
     }
 
+    BP_OnMonsterDamaged(DamageAmount, GetHealthPercent(), DamageSource);
+
     if (CurrentHealth <= 0.0f)
     {
         Die();
