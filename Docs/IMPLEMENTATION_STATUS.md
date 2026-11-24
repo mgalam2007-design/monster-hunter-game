@@ -380,3 +380,11 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - The ability component now defaults to this native actor class, so Shadow Echo no longer requires a separately authored Blueprint class to spawn. Its existing progression unlock, energy cost and cooldown gates still apply.
 - Pulse and lifetime timers are cleared during expiry and `EndPlay`; overlap results are de-duplicated per pulse. The visual remains a primitive placeholder without final materials, animation, VFX or audio.
 - Added a static CI validator for actor wiring, damage targeting, evolution scaling and timer cleanup. This validates source contracts only; Unreal compilation and in-editor gameplay testing are still required.
+
+
+## Chapter 1 greybox interaction readability
+- The native quest pickup now assigns a visible engine-mesh shard placeholder by default, so the Breach Shard reward is not an invisible trigger when no Blueprint child is assigned.
+- The checkpoint now has a visible non-colliding sphere marker, and the chapter exit has a visible three-piece gate blockout. Both retain their existing overlap/save behavior; the visuals do not obstruct player movement or NavMesh.
+- Updated static validators to check the pickup, checkpoint and exit presentation components. Updated the Chapter 1 setup guide to reflect the configured reward flow and temporary native markers.
+- The Chapter 1 generator's lighting block had escaped newline characters that made its Python source invalid; this was corrected. The existing generator validator compiles the script source and passed in CI after the fix.
+- These are source and greybox presentation improvements only. The map still must be generated in Unreal Editor, C++ must be compiled there, and the encounter, navigation, pickup overlap, checkpoint save and chapter transition must be play-tested.
