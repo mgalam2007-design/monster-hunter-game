@@ -23,5 +23,14 @@ assert "SetCanEverAffectNavigation(false)" in SOURCE
 assert "FMath::IsFinite(AttackDamageMultiplierPerPhase)" in SOURCE
 assert "PhaseHealthThresholds.Sort" in SOURCE
 assert "BaseAttackDamage = AttackDamage" in SOURCE
+assert "BaseAttackCooldown = AttackCooldown" in SOURCE
+assert "BaseChaseSpeed = ChaseSpeed" in SOURCE
+assert "FMath::Clamp(AttackCooldownReductionPerPhase, 0.0f, 0.8f)" in SOURCE
+assert "FMath::Clamp(ChaseSpeedIncreasePerPhase, 0.0f, 0.5f)" in SOURCE
+assert "AttackCooldown = BaseAttackCooldown * FMath::Max(" in SOURCE
+assert "ChaseSpeed = BaseChaseSpeed * (1.0f + ChaseSpeedIncreasePerPhase * CurrentBossPhase)" in SOURCE
+assert "GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed" in SOURCE
+assert "AttackCooldownReductionPerPhase = 0.12f" in HEADER
+assert "ChaseSpeedIncreasePerPhase = 0.15f" in HEADER
 assert "if (!IsMonsterDead())" in SOURCE
 print("Boss blockout, reward defaults and phase-scaling safeguards passed.")
