@@ -32,6 +32,8 @@ def main() -> None:
             fail(f"ReceiveHunterDamage is missing guard: {token}")
     if "FMath::Clamp(SafeCurrentHealth / SafeMaxHealth, 0.0f, 1.0f)" not in percent:
         fail("monster health percentage must be finite and clamped")
+    if "BP_OnMonsterDamaged(DamageAmount, GetHealthPercent(), DamageSource);" not in receive:
+        fail("accepted monster damage must notify Blueprint presentation with remaining health")
 
     tick_start = source.find("void AHunterMonsterBase::Tick")
     target_start = source.find("void AHunterMonsterBase::FindTarget")
