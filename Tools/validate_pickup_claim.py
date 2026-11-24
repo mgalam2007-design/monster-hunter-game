@@ -12,5 +12,8 @@ assert CPP.index("bPickupClaimed = true;") < CPP.index("Inventory->AddItem(Picku
 assert "bPickupClaimed = false;" in CPP
 assert CPP.index("Inventory->AddItem(PickupItem)") < CPP.index("BP_OnPickedUp(Arin)")
 assert "if (bDestroyAfterPickup)" in CPP
+assert "FObjectFinder<UStaticMesh> ShardMesh" in CPP
+assert "PickupMesh->SetStaticMesh(ShardMesh.Object)" in CPP
+assert "PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision)" in CPP
 
-print("Pickup duplicate-claim source checks passed.")
+print("Pickup duplicate-claim and visible blockout mesh source checks passed.")
