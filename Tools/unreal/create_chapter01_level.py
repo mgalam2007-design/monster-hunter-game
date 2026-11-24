@@ -64,7 +64,16 @@ def build_chapter_one():
     spawn(unreal.PlayerStart, (0, -1450, 110), "CH01_PlayerStart",
           unreal.Rotator(0.0, 90.0, 0.0))
 
-    # Add a readable, lit environment so the greybox can be inspected immediately.\n    sun = spawn(unreal.DirectionalLight, (0, 0, 900), "CH01_Sun",\n                unreal.Rotator(-42.0, -32.0, 0.0))\n    set_property(sun, "intensity", 8.0)\n    sky = spawn(unreal.SkyLight, (0, 0, 700), "CH01_SkyLight")\n    set_property(sky, "intensity", 1.2)\n    fog = spawn(unreal.ExponentialHeightFog, (0, 0, 0), "CH01_AtmosphereFog")\n    set_property(fog, "fog_density", 0.012)\n\n    # The real Chapter 1 encounter emits three MonsterDefeated events, then
+    # Add a readable, lit environment so the greybox can be inspected immediately.
+    sun = spawn(unreal.DirectionalLight, (0, 0, 900), "CH01_Sun",
+                unreal.Rotator(-42.0, -32.0, 0.0))
+    set_property(sun, "intensity", 8.0)
+    sky = spawn(unreal.SkyLight, (0, 0, 700), "CH01_SkyLight")
+    set_property(sky, "intensity", 1.2)
+    fog = spawn(unreal.ExponentialHeightFog, (0, 0, 0), "CH01_AtmosphereFog")
+    set_property(fog, "fog_density", 0.012)
+
+    # The real Chapter 1 encounter emits three MonsterDefeated events, then
     # spawns a BreachShard pickup that emits BreachShardCollected on collection.
     encounter = spawn(breach_class, (0, 0, 0), "CH01_FirstBreach_Encounter")
     set_property(encounter, "monster_class", monster_class)
