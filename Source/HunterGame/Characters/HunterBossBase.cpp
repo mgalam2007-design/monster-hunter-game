@@ -2,6 +2,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AHunterBossBase::AHunterBossBase()
@@ -51,7 +52,13 @@ void AHunterBossBase::BeginPlay()
         Threshold = FMath::IsFinite(Threshold) ? FMath::Clamp(Threshold, 0.0f, 1.0f) : 0.0f;
     }
     PhaseHealthThresholds.Sort([](const float A, const float B) { return A > B; });
+    AttackCooldownReductionPerPhase = FMath::IsFinite(AttackCooldownReductionPerPhase)
+        ? FMath::Clamp(AttackCooldownReductionPerPhase, 0.0f, 0.8f) : 0.12f;
+    ChaseSpeedIncreasePerPhase = FMath::IsFinite(ChaseSpeedIncreasePerPhase)
+        ? FMath::Clamp(ChaseSpeedIncreasePerPhase, 0.0f, 0.5f) : 0.15f;
     BaseAttackDamage = AttackDamage;
+    BaseAttackCooldown = AttackCooldown;
+    BaseChaseSpeed = ChaseSpeed;
 }
 
 float AHunterBossBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
@@ -85,6 +92,13 @@ void AHunterBossBase::UpdateBossPhase()
 
     CurrentBossPhase = NewPhase;
     AttackDamage = BaseAttackDamage * (1.0f + AttackDamageMultiplierPerPhase * CurrentBossPhase);
+    AttackCooldown = BaseAttackCooldown * FMath::Max(
+        0.25f, 1.0f - AttackCooldownReductionPerPhase * CurrentBossPhase);
+    ChaseSpeed = BaseChaseSpeed * (1.0f + ChaseSpeedIncreasePerPhase * CurrentBossPhase);
+    if (GetCharacterMovement())
+    {
+        GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
+    }
 
     OnBossPhaseChanged.Broadcast(CurrentBossPhase, HealthPercent);
     BP_OnBossPhaseChanged(CurrentBossPhase, HealthPercent);
