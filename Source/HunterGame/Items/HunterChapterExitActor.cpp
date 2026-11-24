@@ -5,6 +5,9 @@
 #include "Characters/ArinProgressionComponent.h"
 #include "Components/HunterCurrencyComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Engine/GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -20,6 +23,27 @@ AHunterChapterExitActor::AHunterChapterExitActor()
     ExitTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
     ExitTrigger->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
     ExitTrigger->SetGenerateOverlapEvents(true);
+
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> GateMesh(
+        TEXT("/Engine/BasicShapes/Cube.Cube"));
+    if (GateMesh.Succeeded())
+    {
+        auto AddGatePart = [this, GateMesh](const FName Name, const FVector& Location, const FVector& Scale)
+        {
+            UStaticMeshComponent* Part = CreateDefaultSubobject<UStaticMeshComponent>(Name);
+            Part->SetupAttachment(ExitTrigger);
+            Part->SetStaticMesh(GateMesh.Object);
+            Part->SetRelativeLocation(Location);
+            Part->SetRelativeScale3D(Scale);
+            Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            Part->SetGenerateOverlapEvents(false);
+            Part->SetCanEverAffectNavigation(false);
+            ExitVisuals.Add(Part);
+        };
+        AddGatePart(TEXT("ExitGateLeftPillar"), FVector(0.0f, -135.0f, 150.0f), FVector(0.18f, 0.18f, 1.5f));
+        AddGatePart(TEXT("ExitGateRightPillar"), FVector(0.0f, 135.0f, 150.0f), FVector(0.18f, 0.18f, 1.5f));
+        AddGatePart(TEXT("ExitGateHeader"), FVector(0.0f, 0.0f, 300.0f), FVector(0.18f, 1.5f, 0.18f));
+    }
 }
 
 void AHunterChapterExitActor::BeginPlay()
