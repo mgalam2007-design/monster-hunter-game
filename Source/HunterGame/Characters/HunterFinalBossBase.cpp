@@ -46,6 +46,7 @@ void AHunterFinalBossBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     GetWorldTimerManager().ClearTimer(OriginPulseCooldownHandle);
     GetWorldTimerManager().ClearTimer(OriginPulseImpactHandle);
+    GetWorldTimerManager().ClearTimer(OriginAftershockHandle);
     Super::EndPlay(EndPlayReason);
 }
 
@@ -75,22 +76,61 @@ void AHunterFinalBossBase::ResolveOriginPulse()
     }
 
     BP_OnOriginPulseImpact(OriginPulseRadius);
+    ApplyPulseDamage(OriginPulseRadius, OriginPulseDamage);
 
-    AArinValeCharacter* Arin = Cast<AArinValeCharacter>(
-        UGameplayStatics::GetPlayerCharacter(this, 0));
-    if (Arin && !Arin->IsActorBeingDestroyed() &&
-        FVector::DistSquared(GetActorLocation(), Arin->GetActorLocation()) <= FMath::Square(OriginPulseRadius))
+    // From phase 2 onward, the arena answers the first blast with a smaller
+    // delayed ring. The second warning gives the player a distinct dodge window.
+    if (GetCurrentBossPhase() >= 2)
     {
-        const UHunterHealthComponent* Health = Arin->GetHealthComponent();
-        if (!Health || !Health->IsDead())
-        {
-            const int32 Phase = FMath::Clamp(GetCurrentBossPhase(), 0, 3);
-            const float Damage = OriginPulseDamage * (1.0f + 0.20f * Phase);
-            UGameplayStatics::ApplyDamage(Arin, Damage, GetController(), this, nullptr);
-        }
+        const float AftershockRadius = OriginPulseRadius * 0.60f;
+        const float AftershockWindup = 0.55f;
+        BP_OnOriginAftershockTelegraph(AftershockRadius, AftershockWindup);
+        GetWorldTimerManager().SetTimer(
+            OriginAftershockHandle,
+            this,
+            &AHunterFinalBossBase::ResolveOriginAftershock,
+            AftershockWindup,
+            false);
     }
 
     ScheduleNextOriginPulse();
+}
+
+void AHunterFinalBossBase::ResolveOriginAftershock()
+{
+    if (IsMonsterDead() || !GetWorld())
+    {
+        return;
+    }
+
+    const float Radius = OriginPulseRadius * 0.60f;
+    BP_OnOriginAftershockImpact(Radius);
+    ApplyPulseDamage(Radius, OriginPulseDamage * 0.55f);
+}
+
+void AHunterFinalBossBase::ApplyPulseDamage(float Radius, float BaseDamage)
+{
+    if (!GetWorld() || !FMath::IsFinite(Radius) || Radius <= 0.0f ||
+        !FMath::IsFinite(BaseDamage) || BaseDamage <= 0.0f)
+    {
+        return;
+    }
+
+    AArinValeCharacter* Arin = Cast<AArinValeCharacter>(
+        UGameplayStatics::GetPlayerCharacter(this, 0));
+    if (!Arin || Arin->IsActorBeingDestroyed() ||
+        FVector::DistSquared(GetActorLocation(), Arin->GetActorLocation()) > FMath::Square(Radius))
+    {
+        return;
+    }
+
+    const UHunterHealthComponent* Health = Arin->GetHealthComponent();
+    if (!Health || !Health->IsDead())
+    {
+        const int32 Phase = FMath::Clamp(GetCurrentBossPhase(), 0, 3);
+        const float Damage = BaseDamage * (1.0f + 0.20f * Phase);
+        UGameplayStatics::ApplyDamage(Arin, Damage, GetController(), this, nullptr);
+    }
 }
 
 void AHunterFinalBossBase::ScheduleNextOriginPulse()
