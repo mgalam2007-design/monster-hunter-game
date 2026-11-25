@@ -12,7 +12,9 @@ for token in (
     "AHunterFinalBossBase", "BeginOriginPulse", "ResolveOriginPulse",
     "ScheduleNextOriginPulse", "BP_OnOriginPulseTelegraph",
     "BP_OnOriginPulseImpact", "OriginPulseCooldownHandle",
-    "OriginPulseImpactHandle", "EndPlay",
+    "OriginPulseImpactHandle", "OriginAftershockHandle", "ResolveOriginAftershock",
+    "ApplyPulseDamage", "BP_OnOriginAftershockTelegraph",
+    "BP_OnOriginAftershockImpact", "EndPlay",
 ):
     assert token in HEADER or token in SOURCE, f"Missing final boss behavior: {token}"
 
@@ -26,6 +28,12 @@ for token in (
     "UGameplayStatics::ApplyDamage(Arin, Damage",
     "GetCurrentBossPhase()", "ClearTimer(OriginPulseCooldownHandle)",
     "ClearTimer(OriginPulseImpactHandle)",
+    "ClearTimer(OriginAftershockHandle)",
+    "if (GetCurrentBossPhase() >= 2)",
+    "const float AftershockRadius = OriginPulseRadius * 0.60f",
+    "const float AftershockWindup = 0.55f",
+    "ApplyPulseDamage(Radius, OriginPulseDamage * 0.55f)",
+    "FMath::IsFinite(BaseDamage)",
 ):
     assert token in SOURCE, f"Missing final boss implementation contract: {token}"
 
