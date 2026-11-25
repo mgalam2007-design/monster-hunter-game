@@ -58,10 +58,16 @@ void AHunterBossBase::BeginPlay()
         ? FMath::Clamp(ChaseSpeedIncreasePerPhase, 0.0f, 0.5f) : 0.15f;
     AttackWindupReductionPerPhase = FMath::IsFinite(AttackWindupReductionPerPhase)
         ? FMath::Clamp(AttackWindupReductionPerPhase, 0.0f, 0.2f) : 0.10f;
+    AttackRangeIncreasePerPhase = FMath::IsFinite(AttackRangeIncreasePerPhase)
+        ? FMath::Clamp(AttackRangeIncreasePerPhase, 0.0f, 0.5f) : 0.12f;
     BaseAttackDamage = AttackDamage;
     BaseAttackCooldown = AttackCooldown;
     BaseChaseSpeed = ChaseSpeed;
     BaseAttackWindupDuration = AttackWindupDuration;
+    BaseAttackRange = AttackRange;
+    BaseAttackRange = AttackRange;
+    BaseAttackRange = AttackRange;
+    BaseAttackRange = AttackRange;
 }
 
 float AHunterBossBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
@@ -100,6 +106,8 @@ void AHunterBossBase::UpdateBossPhase()
     ChaseSpeed = BaseChaseSpeed * (1.0f + ChaseSpeedIncreasePerPhase * CurrentBossPhase);
     AttackWindupDuration = BaseAttackWindupDuration * FMath::Max(
         0.4f, 1.0f - AttackWindupReductionPerPhase * CurrentBossPhase);
+    // Later phases threaten a wider melee area, so Arin must dodge earlier and reposition.
+    AttackRange = BaseAttackRange * (1.0f + AttackRangeIncreasePerPhase * CurrentBossPhase);
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
