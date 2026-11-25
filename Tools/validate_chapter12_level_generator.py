@@ -7,7 +7,8 @@ required = [
     "HunterPrototypeArenaActor", "HunterQuestTriggerActor", "HunterMonsterBase",
     "HunterChapterExitActor", "ShadowContactReached", "ShadowSentinelDefeated",
     "ShadowPactResolved", "sentinel_points =", "enumerate(sentinel_points, start=1)",
-    "defeat_quest_event_tag", "requires_interaction", "E  RESOLVE SHADOW PACT",
+    "defeat_quest_event_tag", "requires_interaction", "E  BIND THE SHADOWS",
+    "E  FREE THE SHADOWS", "story_choice_value", "BindShadows", "FreeShadows",
     "next_chapter_map_name", "CH13_SiegeOfTheNorth", "NavMeshBoundsVolume", "save_current_level",
 ]
 missing = [token for token in required if token not in source]
