@@ -1,4 +1,5 @@
 #include "HunterMonsterBase.h"
+#include "AI/HunterLearningSubsystem.h"
 #include "Items/HunterPickupActor.h"
 
 #include "ArinValeCharacter.h"
@@ -180,12 +181,27 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
         {
             bAttackPending = false;
             PendingAttackTarget.Reset();
-            AttackTimer = FMath::Max(0.1f, AttackCooldown);
+            const float CooldownScale = LearningAction == EHunterCombatLearningAction::Aggressive ? 0.85f
+                : (LearningAction == EHunterCombatLearningAction::Cautious ? 1.20f : 1.0f);
+            const float DamageScale = LearningAction == EHunterCombatLearningAction::Aggressive ? 1.20f
+                : (LearningAction == EHunterCombatLearningAction::Cautious ? 0.85f : 1.0f);
+            AttackTimer = FMath::Max(0.1f, AttackCooldown * CooldownScale);
             if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
             BP_OnMonsterAttack(Target);
+            float AppliedDamage = 0.0f;
             if (FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
             {
-                UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, nullptr);
+                AppliedDamage = UGameplayStatics::ApplyDamage(
+                    Target, AttackDamage * DamageScale, GetController(), this, nullptr);
+            }
+
+            if (UGameInstance* GameInstance = GetGameInstance())
+            {
+                if (UHunterLearningSubsystem* Learning = GameInstance->GetSubsystem<UHunterLearningSubsystem>())
+                {
+                    Learning->RecordCombatOutcome(LearningState, LearningAction,
+                        AppliedDamage > 0.0f ? 0.8f : -0.2f, LearningState);
+                }
             }
         }
         else
@@ -209,9 +225,40 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
 
     if (AttackTimer <= 0.0f && !bAttackPending)
     {
+        LearningState = EHunterCombatLearningState::PlayerInRange;
+        if (ArinTarget && TargetHealth && TargetHealth->GetHealthPercent() <= 0.30f)
+        {
+            LearningState = EHunterCombatLearningState::PlayerLowHealth;
+        }
+        else if (Distance > AttackRange * 0.75f)
+        {
+            const FVector ToMonster = (GetActorLocation() - Target->GetActorLocation()).GetSafeNormal();
+            const float MovementIntent = FVector::DotProduct(Target->GetVelocity().GetSafeNormal(), ToMonster);
+            LearningState = MovementIntent > 0.2f
+                ? EHunterCombatLearningState::PlayerApproaching
+                : EHunterCombatLearningState::PlayerRetreating;
+        }
+
+        LearningAction = EHunterCombatLearningAction::Balanced;
+        if (UGameInstance* GameInstance = GetGameInstance())
+        {
+            if (UHunterLearningSubsystem* Learning = GameInstance->GetSubsystem<UHunterLearningSubsystem>())
+            {
+                LearningAction = Learning->ChooseCombatAction(LearningState);
+            }
+        }
+
         bAttackPending = true;
         PendingAttackTarget = Target;
         AttackWindupTimer = AttackWindupDuration;
+        if (LearningAction == EHunterCombatLearningAction::Aggressive)
+        {
+            AttackWindupTimer *= 0.85f;
+        }
+        else if (LearningAction == EHunterCombatLearningAction::Cautious)
+        {
+            AttackWindupTimer *= 1.20f;
+        }
         if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(false);
         BP_OnMonsterAttackTelegraph(Target);
         if (AttackWindupTimer <= 0.0f)
@@ -265,6 +312,17 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
     }
 
     BP_OnMonsterDamaged(DamageAmount, GetHealthPercent(), DamageSource);
+
+    if (DamageSource && DamageSource != this)
+    {
+        if (UGameInstance* GameInstance = GetGameInstance())
+        {
+            if (UHunterLearningSubsystem* Learning = GameInstance->GetSubsystem<UHunterLearningSubsystem>())
+            {
+                Learning->RecordCombatOutcome(LearningState, LearningAction, -0.35f, LearningState);
+            }
+        }
+    }
 
     // Lightweight native hit feedback remains visible even before a monster Blueprint exists.
     if (UWorld* World = GetWorld())
