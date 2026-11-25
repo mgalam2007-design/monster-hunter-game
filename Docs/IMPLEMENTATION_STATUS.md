@@ -4,7 +4,7 @@ This repository is an Unreal Engine 5 C++ project scaffold. This document distin
 
 
 ## Standalone machine-learning plan
-- Added native `UHunterLearningSubsystem`: a fully offline tabular Q-learning agent with six combat states, three tactics, bounded rewards/Q-values, epsilon-greedy exploration, discounting, and versioned local SaveGame persistence. Monster combat now consults this shared policy when choosing Balanced/Aggressive/Cautious tactics and feeds back hit/miss and received-damage rewards. This is an initial combat-learning implementation, not yet a complete adaptive AI suite.
+- Added native `UHunterLearningSubsystem`: a fully offline tabular Q-learning agent with six combat states, three tactics, bounded rewards/Q-values, epsilon-greedy exploration, discounting, and versioned local SaveGame persistence. Monster combat now consults this shared policy when choosing Balanced/Aggressive/Cautious tactics and feeds back hit/miss and received-damage rewards. This is an initial combat-learning implementation, not yet a complete adaptive AI suite. The learning table is saved in its own `HunterAILearning` slot every 20 updates and on game-instance shutdown.
 - `Docs/AI_MACHINE_LEARNING_ARCHITECTURE.md` defines a fully offline, modular AI roadmap: reinforcement learning, player clustering, supervised behaviour prediction, small neural decision models, equipment recommendations, local semantic retrieval, and authored NPC dialogue with local intent classification. It explicitly distinguishes these feasible game systems from training or reproducing GPT-scale models. No external AI API or internet dependency is planned.
 
 ## Committed C++ foundations
