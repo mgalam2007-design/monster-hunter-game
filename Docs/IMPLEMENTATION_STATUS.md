@@ -401,3 +401,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Moved the trigger volume to (0, -650, 0), on the route between the entry checkpoint and the deeper enemy spawn positions. Arin must now advance into the arena to begin the wave.
 - Extended the Chapter 1 generator validator to assert this trigger placement and the presence of the player start/checkpoint. Updated the setup guide with the intended route.
 - This is a source-level correction. The generator still needs to be executed in Unreal Editor and the overlap distance verified in a real play session.
+
+
+## Standalone offline supervised behaviour prediction
+- Added `UHunterBehaviourPredictionSubsystem`, a separate native GameInstance subsystem implementing a small online logistic-regression classifier. It predicts a player's likelihood of evading a telegraphed attack from three bounded, normalized features: distance ratio, movement-speed ratio and health deficit.
+- Gameplay systems or Blueprint logic can submit labelled outcomes through `RecordOutcome`; gradient-descent updates are bounded, non-finite inputs are guarded, and model weights plus training-sample count persist locally in the `HunterBehaviourModel` SaveGame slot.
+- Added a static validator and GitHub Actions step. This is an available standalone model API, not yet wired into enemy combat decisions or trained from actual in-game outcomes. It has not been compiled or runtime-tested in Unreal Editor.
+- The project now has separate offline Q-learning, online k-means player profiling and supervised logistic-regression foundations. These are small game-AI methods, not a GPT-scale language model.
