@@ -72,6 +72,7 @@ void UHunterCampaignSubsystem::BuildDefaultCampaign()
     }
 
     CurrentChapterNumber = 1;
+    Chapter12StoryChoice = NAME_None;
 }
 
 bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
@@ -1311,6 +1312,23 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
     return true;
 }
 
+bool UHunterCampaignSubsystem::SetChapter12StoryChoice(FName Choice)
+{
+    if (CurrentChapterNumber != 12 ||
+        (Choice != FName(TEXT("BindShadows")) && Choice != FName(TEXT("FreeShadows"))))
+    {
+        return false;
+    }
+
+    if (!Chapter12StoryChoice.IsNone() && Chapter12StoryChoice != Choice)
+    {
+        return false;
+    }
+
+    Chapter12StoryChoice = Choice;
+    return true;
+}
+
 bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FString& SlotName, int32 UserIndex)
 {
     if (!Arin || SlotName.IsEmpty() ||
@@ -1334,6 +1352,7 @@ bool UHunterCampaignSubsystem::SaveCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     SaveObject->CurrentChapterNumber = CurrentChapterNumber;
+    SaveObject->Chapter12StoryChoice = Chapter12StoryChoice;
     SaveObject->ArinWorldTransform = ArinTransform;
     SaveObject->bHasArinWorldTransform = true;
     SaveObject->CompletedChapterNumbers.Reset();
@@ -1389,7 +1408,7 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
     }
 
     UHunterSaveGame* SaveObject = Cast<UHunterSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 6)
+    if (!SaveObject || SaveObject->SaveVersion < 1 || SaveObject->SaveVersion > 7)
     {
         return false;
     }
