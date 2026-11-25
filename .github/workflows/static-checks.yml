@@ -135,6 +135,9 @@ jobs:
       - name: Validate standalone offline supervised learning
         run: python Tools/validate_supervised_learning.py
 
+      - name: Validate offline loadout recommendations
+        run: python Tools/validate_loadout_recommendations.py
+
       - name: Validate ability energy and tuning safeguards
         run: python Tools/validate_ability_component.py
 
