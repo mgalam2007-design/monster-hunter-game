@@ -305,10 +305,15 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
             if (UHunterBehaviourPredictionSubsystem* Behaviour =
                 GetGameInstance()->GetSubsystem<UHunterBehaviourPredictionSubsystem>())
             {
-                const float EvasionChance = Behaviour->PredictEvasionProbability(
-                    PendingEvasionDistanceRatio, PendingEvasionSpeedRatio, PendingEvasionHealthDeficit);
-                AttackWindupTimer *= EvasionChance >= 0.65f ? 0.90f
-                    : (EvasionChance <= 0.35f ? 1.10f : 1.0f);
+                // Keep the authored windup until the model has enough local
+                // examples; early predictions from an untrained model are noise.
+                if (Behaviour->GetTrainingSampleCount() >= 12)
+                {
+                    const float EvasionChance = Behaviour->PredictEvasionProbability(
+                        PendingEvasionDistanceRatio, PendingEvasionSpeedRatio, PendingEvasionHealthDeficit);
+                    AttackWindupTimer *= EvasionChance >= 0.65f ? 0.90f
+                        : (EvasionChance <= 0.35f ? 1.10f : 1.0f);
+                }
             }
         }
         if (LearningAction == EHunterCombatLearningAction::Aggressive)
