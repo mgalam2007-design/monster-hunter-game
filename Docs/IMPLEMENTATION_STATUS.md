@@ -1,5 +1,8 @@
 # HUNTER 2.0 — Implementation Status
 
+## Latest campaign improvement
+- Chapter 12 now presents two mutually exclusive pact interaction stations: `BindShadows` and `FreeShadows`. The first accepted selection is stored in `UHunterCampaignSubsystem`, exposed through a Blueprint-pure getter, and persisted in save version 7; version 1–6 saves remain supported and restore with no choice. The quest trigger records the choice alongside `ShadowPactResolved`. Static validation covers the two map stations, allowed values, campaign save/load migration and trigger wiring. Downstream chapter consequences and in-editor UI/presentation still need authoring and playtesting.
+
 ## Latest combat improvement
 - Chapter 20 Final Hunter now chains a second, smaller Origin Pulse aftershock from boss phase 2 onward. It uses a distinct 0.55-second telegraph, 60% of the primary radius and 55% of its base damage (with the same phase damage multiplier). Blueprint hooks expose aftershock warning/impact presentation; its timer is cleared on EndPlay. The static validator checks the phase gate, telegraph hooks, damage bounds and timer cleanup. This remains code-level behavior: Unreal compilation, Blueprint VFX hookup and in-editor combat testing have not yet been performed.
 
