@@ -7,6 +7,7 @@
 
 class AHunterPickupActor;
 class UStaticMeshComponent;
+class UTextRenderComponent;
 
 USTRUCT(BlueprintType)
 struct FHunterMonsterLootDrop
@@ -53,6 +54,9 @@ public:
     // Temporary engine-native silhouette; replace with a rigged skeletal mesh in production.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Monster|Visuals")
     TArray<TObjectPtr<UStaticMeshComponent>> BlockoutVisuals;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Monster|Visuals")
+    TObjectPtr<UTextRenderComponent> AttackWarningVisual;
 
 protected:
     virtual void BeginPlay() override;
