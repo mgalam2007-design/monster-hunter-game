@@ -6,6 +6,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 HEADER = ROOT / "Source/HunterGame/AI/HunterBehaviourPredictionSubsystem.h"
 SOURCE = ROOT / "Source/HunterGame/AI/HunterBehaviourPredictionSubsystem.cpp"
+MONSTER = ROOT / "Source/HunterGame/Characters/HunterMonsterBase.cpp"
 SAVE = ROOT / "Source/HunterGame/AI/HunterBehaviourModelSaveGame.h"
 
 
@@ -18,6 +19,7 @@ def main() -> None:
     header = HEADER.read_text(encoding="utf-8")
     source = SOURCE.read_text(encoding="utf-8")
     save = SAVE.read_text(encoding="utf-8")
+    monster = MONSTER.read_text(encoding="utf-8")
 
     for token in ("PredictEvasionProbability", "RecordOutcome", "GetTrainingSampleCount",
                   "SaveModel", "LoadModel", "ResetModel"):
@@ -33,10 +35,16 @@ def main() -> None:
     for token in ("SaveVersion", "Weights", "TrainingSamples"):
         if token not in save:
             fail(f"supervised model save data is missing: {token}")
-    if any(token in header + source for token in ("https://", "OpenAI API", "GPT API")):
+    for token in ("PredictEvasionProbability", "RecordOutcome", "PendingEvasionDistanceRatio",
+                  "PendingEvasionSpeedRatio", "PendingEvasionHealthDeficit"):
+        if token not in monster:
+            fail(f"monster combat integration is missing: {token}")
+    if "const_cast<AArinValeCharacter" in monster:
+        fail("monster target should be mutable without const_cast")
+    if any(token in header + source + monster for token in ("https://", "OpenAI API", "GPT API")):
         fail("supervised model must not contain hosted AI dependencies")
 
-    print("Validated offline supervised logistic regression, bounded training and local persistence.")
+    print("Validated offline supervised learning, local persistence and monster combat integration.")
 
 
 if __name__ == "__main__":
