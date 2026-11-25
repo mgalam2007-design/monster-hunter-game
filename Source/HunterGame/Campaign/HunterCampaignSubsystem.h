@@ -50,6 +50,12 @@ public:
     UFUNCTION(BlueprintCallable, Category="Campaign")
     bool CompleteCurrentChapter();
 
+    UFUNCTION(BlueprintCallable, Category="Campaign|Story")
+    bool SetChapter12StoryChoice(FName Choice);
+
+    UFUNCTION(BlueprintPure, Category="Campaign|Story")
+    FName GetChapter12StoryChoice() const { return Chapter12StoryChoice; }
+
     UFUNCTION(BlueprintCallable, Category="Campaign|Save")
     bool SaveCampaign(AArinValeCharacter* Arin, const FString& SlotName = TEXT("HunterCampaign"), int32 UserIndex = 0);
 
@@ -83,6 +89,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Campaign")
     int32 CurrentChapterNumber = 1;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Campaign|Story")
+    FName Chapter12StoryChoice = NAME_None;
 
 private:
     void BuildDefaultCampaign();
