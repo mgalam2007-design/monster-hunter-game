@@ -14,6 +14,7 @@ def fail(message: str) -> None:
 
 def main() -> None:
     source = SOURCE.read_text(encoding="utf-8")
+    validate_loot_drop_probability(source)
     take_start = source.find("float AHunterMonsterBase::TakeDamage")
     receive_start = source.find("void AHunterMonsterBase::ReceiveHunterDamage")
     percent_start = source.find("float AHunterMonsterBase::GetHealthPercent")
@@ -63,3 +64,13 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def validate_loot_drop_probability(source: str) -> None:
+    start = source.find("void AHunterMonsterBase::SpawnLootDrops")
+    if start < 0:
+        fail("could not locate monster loot drop function")
+    loot = source[start:]
+    for token in ("!FMath::IsFinite(Drop.DropChance)", "FMath::Clamp(Drop.DropChance, 0.0f, 1.0f)", "SafeDropChance <= 0.0f"):
+        if token not in loot:
+            fail(f"loot drop probability is missing safeguard: {token}")
