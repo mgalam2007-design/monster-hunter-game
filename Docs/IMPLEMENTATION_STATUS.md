@@ -415,3 +415,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Aggressive profiles prioritize weapon damage; defensive and evasive profiles give more weight to armor mitigation. Candidate values are finite-checked and clamped, locked items are excluded, result count is bounded, and ties are sorted deterministically by item ID.
 - Added a static validator and GitHub Actions step. The API is ready for inventory/shop UI integration, but no automatic equipment changes occur and no live UI currently calls it. Unreal compilation and gameplay testing remain outstanding.
 - The project now has four independent offline AI foundations: Q-learning combat tactics, k-means player profiling, supervised evasion prediction, and content-based equipment recommendations.
+
+
+## AI model gameplay integration update
+- The supervised evasion predictor is now queried when a monster begins a telegraphed attack. The model receives bounded distance, movement-speed and health-deficit features; a high predicted evasion chance modestly shortens the windup, while a low chance modestly lengthens it.
+- A target that leaves melee range during the telegraph is recorded as an evasion example; a target still in range when the strike resolves is recorded as a non-evasion example. This is an intentionally simple outcome proxy and needs playtesting/tuning before it is treated as a reliable behavioural label.
+- The inventory widget now queries the local equipment recommender and displays up to three eligible weapon/armor recommendations, including a score and an Equip action. Recommendations use the player's current evolution stage and learned archetype; the system does not equip items automatically.
+- Static validators now check these gameplay/UI integration points. Unreal compilation and runtime validation remain outstanding.
