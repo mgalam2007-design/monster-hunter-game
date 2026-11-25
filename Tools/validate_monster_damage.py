@@ -54,6 +54,9 @@ def main() -> None:
         fail("monster combat must drop defeated player targets")
     if "FMath::IsFinite(AttackDamage)" not in combat:
         fail("monster attacks must validate damage before applying it")
+    for token in ("AttackWarningVisual->SetHiddenInGame(false)", "AttackWarningVisual->SetHiddenInGame(true)", "AttackWarningVisual->SetText(FText::FromString(TEXT(\"!\")))"):
+        if token not in source:
+            fail(f"native monster attack warning is missing lifecycle behavior: {token}")
 
     print("Validated monster damage, health percentage and AI safety guards.")
 
