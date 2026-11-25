@@ -1,6 +1,7 @@
 #include "HunterMonsterBase.h"
 #include "AI/HunterLearningSubsystem.h"
 #include "AI/HunterPlayerProfileSubsystem.h"
+#include "AI/HunterBehaviourPredictionSubsystem.h"
 #include "Items/HunterPickupActor.h"
 
 #include "ArinValeCharacter.h"
@@ -141,7 +142,7 @@ void AHunterMonsterBase::FindTarget()
 void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
 {
     ACharacter* Target = TargetCharacter.Get();
-    const AArinValeCharacter* ArinTarget = Cast<AArinValeCharacter>(Target);
+    AArinValeCharacter* ArinTarget = Cast<AArinValeCharacter>(Target);
     const UHunterHealthComponent* TargetHealth = ArinTarget ? ArinTarget->GetHealthComponent() : nullptr;
     if (!Target || Target->IsActorBeingDestroyed() || (TargetHealth && TargetHealth->IsDead()))
     {
@@ -172,6 +173,16 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
     {
         if (!PendingAttackTarget.IsValid() || PendingAttackTarget.Get() != Target || Distance > AttackRange)
         {
+            if (PendingAttackTarget.IsValid() && PendingAttackTarget.Get() == Target &&
+                Distance > AttackRange && ArinTarget && GetGameInstance())
+            {
+                if (UHunterBehaviourPredictionSubsystem* Behaviour =
+                    GetGameInstance()->GetSubsystem<UHunterBehaviourPredictionSubsystem>())
+                {
+                    Behaviour->RecordOutcome(PendingEvasionDistanceRatio, PendingEvasionSpeedRatio,
+                        PendingEvasionHealthDeficit, true);
+                }
+            }
             bAttackPending = false;
             PendingAttackTarget.Reset();
             AttackWindupTimer = 0.0f;
@@ -182,6 +193,15 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
         {
             bAttackPending = false;
             PendingAttackTarget.Reset();
+            if (ArinTarget && GetGameInstance())
+            {
+                if (UHunterBehaviourPredictionSubsystem* Behaviour =
+                    GetGameInstance()->GetSubsystem<UHunterBehaviourPredictionSubsystem>())
+                {
+                    Behaviour->RecordOutcome(PendingEvasionDistanceRatio, PendingEvasionSpeedRatio,
+                        PendingEvasionHealthDeficit, false);
+                }
+            }
             const float CooldownScale = LearningAction == EHunterCombatLearningAction::Aggressive ? 0.85f
                 : (LearningAction == EHunterCombatLearningAction::Cautious ? 1.20f : 1.0f);
             const float DamageScale = LearningAction == EHunterCombatLearningAction::Aggressive ? 1.20f
@@ -274,7 +294,23 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
 
         bAttackPending = true;
         PendingAttackTarget = Target;
+        PendingEvasionDistanceRatio = AttackRange > KINDA_SMALL_NUMBER
+            ? FMath::Clamp(Distance / AttackRange, 0.0f, 1.5f) : 1.5f;
+        PendingEvasionSpeedRatio = FMath::Clamp(Target->GetVelocity().Size() / 600.0f, 0.0f, 2.0f);
+        PendingEvasionHealthDeficit = TargetHealth
+            ? FMath::Clamp(1.0f - TargetHealth->GetHealthPercent(), 0.0f, 1.0f) : 0.0f;
         AttackWindupTimer = AttackWindupDuration;
+        if (ArinTarget && GetGameInstance())
+        {
+            if (UHunterBehaviourPredictionSubsystem* Behaviour =
+                GetGameInstance()->GetSubsystem<UHunterBehaviourPredictionSubsystem>())
+            {
+                const float EvasionChance = Behaviour->PredictEvasionProbability(
+                    PendingEvasionDistanceRatio, PendingEvasionSpeedRatio, PendingEvasionHealthDeficit);
+                AttackWindupTimer *= EvasionChance >= 0.65f ? 0.90f
+                    : (EvasionChance <= 0.35f ? 1.10f : 1.0f);
+            }
+        }
         if (LearningAction == EHunterCombatLearningAction::Aggressive)
         {
             AttackWindupTimer *= 0.85f;
