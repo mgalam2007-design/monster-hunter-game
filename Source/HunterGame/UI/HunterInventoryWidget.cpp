@@ -133,13 +133,14 @@ void UHunterInventoryWidget::RefreshInventory()
 
 TArray<FHunterEquipmentRecommendation> UHunterInventoryWidget::GetRecommendedEquipment(int32 MaxResults) const
 {
-    if (!ArinCharacter || !InventoryComponent || !GetGameInstance())
+    UGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance() : nullptr;
+    if (!ArinCharacter || !InventoryComponent || !GameInstance)
     {
         return {};
     }
 
     UHunterLoadoutRecommendationSubsystem* Recommender =
-        GetGameInstance()->GetSubsystem<UHunterLoadoutRecommendationSubsystem>();
+        GameInstance->GetSubsystem<UHunterLoadoutRecommendationSubsystem>();
     if (!Recommender)
     {
         return {};
@@ -150,7 +151,7 @@ TArray<FHunterEquipmentRecommendation> UHunterInventoryWidget::GetRecommendedEqu
         ? static_cast<int32>(Progression->GetEvolutionStage()) : 0;
     EHunterPlayerArchetype Archetype = EHunterPlayerArchetype::Balanced;
     if (UHunterPlayerProfileSubsystem* Profile =
-        GetGameInstance()->GetSubsystem<UHunterPlayerProfileSubsystem>())
+        GameInstance->GetSubsystem<UHunterPlayerProfileSubsystem>())
     {
         Archetype = Profile->GetCurrentArchetype();
     }
