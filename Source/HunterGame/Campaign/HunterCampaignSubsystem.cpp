@@ -1521,6 +1521,14 @@ bool UHunterCampaignSubsystem::LoadCampaign(AArinValeCharacter* Arin, const FStr
         Arin->SetActorTransform(SaveObject->ArinWorldTransform, false, nullptr, ETeleportType::TeleportPhysics);
     }
 
+    Chapter12StoryChoice = NAME_None;
+    if (SaveObject->SaveVersion >= 7 &&
+        (SaveObject->Chapter12StoryChoice == FName(TEXT("BindShadows")) ||
+         SaveObject->Chapter12StoryChoice == FName(TEXT("FreeShadows"))))
+    {
+        Chapter12StoryChoice = SaveObject->Chapter12StoryChoice;
+    }
+
     OnChapterChanged.Broadcast(CurrentChapterNumber);
     return true;
 }
