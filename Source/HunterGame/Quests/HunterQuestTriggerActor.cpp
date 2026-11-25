@@ -4,6 +4,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Quests/HunterQuestSubsystem.h"
+#include "Campaign/HunterCampaignSubsystem.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/InputComponent.h"
@@ -128,6 +129,18 @@ bool AHunterQuestTriggerActor::TryRegisterQuestEvent(AArinValeCharacter* Arin)
     if (!Quest || !Quest->RegisterQuestEvent(QuestEventTag, EventAmount))
     {
         return false;
+    }
+
+    if (!StoryChoiceValue.IsNone())
+    {
+        UHunterCampaignSubsystem* Campaign = GameInstance
+            ? GameInstance->GetSubsystem<UHunterCampaignSubsystem>()
+            : nullptr;
+        if (!Campaign || !Campaign->SetChapter12StoryChoice(StoryChoiceValue))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("HUNTER: Story choice %s was not accepted."), *StoryChoiceValue.ToString());
+            return false;
+        }
     }
 
     bHasTriggered = true;
