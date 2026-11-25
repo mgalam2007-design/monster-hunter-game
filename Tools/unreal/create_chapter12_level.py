@@ -65,14 +65,26 @@ def build_chapter_12():
         sentinel = spawn(monster_class, point, "CH12_Shadow_Sentinel_%02d" % index)
         set_property(sentinel, "defeat_quest_event_tag", unreal.Name("ShadowSentinelDefeated"))
 
-    pact = spawn(trigger_class, (0, 1200, 100), "CH12_Shadow_Pact_Altar")
-    set_property(pact, "quest_event_tag", unreal.Name("ShadowPactResolved"))
-    set_property(pact, "event_amount", 1)
-    set_property(pact, "trigger_once", True)
-    set_property(pact, "destroy_after_trigger", False)
-    set_property(pact, "requires_interaction", True)
-    set_property(pact, "interaction_prompt_text", unreal.Text("E  RESOLVE SHADOW PACT"))
-    set_property(pact, "completion_prompt_text", unreal.Text("SHADOW ACCORD SEALED"))
+    # Two distinct interaction points make the pact a real, mutually exclusive choice.
+    bind_choice = spawn(trigger_class, (-560, 1200, 100), "CH12_Bind_Shadow_Faction")
+    set_property(bind_choice, "quest_event_tag", unreal.Name("ShadowPactResolved"))
+    set_property(bind_choice, "event_amount", 1)
+    set_property(bind_choice, "trigger_once", True)
+    set_property(bind_choice, "destroy_after_trigger", False)
+    set_property(bind_choice, "requires_interaction", True)
+    set_property(bind_choice, "story_choice_value", unreal.Name("BindShadows"))
+    set_property(bind_choice, "interaction_prompt_text", unreal.Text("E  BIND THE SHADOWS"))
+    set_property(bind_choice, "completion_prompt_text", unreal.Text("SHADOWS BOUND"))
+
+    free_choice = spawn(trigger_class, (560, 1200, 100), "CH12_Free_Shadow_Faction")
+    set_property(free_choice, "quest_event_tag", unreal.Name("ShadowPactResolved"))
+    set_property(free_choice, "event_amount", 1)
+    set_property(free_choice, "trigger_once", True)
+    set_property(free_choice, "destroy_after_trigger", False)
+    set_property(free_choice, "requires_interaction", True)
+    set_property(free_choice, "story_choice_value", unreal.Name("FreeShadows"))
+    set_property(free_choice, "interaction_prompt_text", unreal.Text("E  FREE THE SHADOWS"))
+    set_property(free_choice, "completion_prompt_text", unreal.Text("SHADOWS FREED"))
 
     exit_actor = spawn(exit_class, (0, 1580, 100), "CH12_Chapter_Exit")
     set_property(exit_actor, "completion_experience_reward", 900)
@@ -84,7 +96,7 @@ def build_chapter_12():
     nav.set_actor_scale3d(unreal.Vector(40.0, 40.0, 7.0))
     if not unreal.EditorLevelLibrary.save_current_level():
         raise RuntimeError("Unreal Editor did not save " + LEVEL_PATH)
-    unreal.log("HUNTER: Saved Chapter 12 with faction contact, three sentinels and pact altar.")
+    unreal.log("HUNTER: Saved Chapter 12 with faction contact, three sentinels and two-choice pact.")
     unreal.log_warning("HUNTER: Build NavMesh and test enemy AI, pact interaction, quest gating and campaign travel in Unreal Editor.")
 
 
