@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Components/HunterInventoryComponent.h"
 #include "AI/HunterLearningSubsystem.h"
+#include "AI/HunterBehaviourPredictionSubsystem.h"
 #include "HunterMonsterBase.generated.h"
 
 class AHunterPickupActor;
@@ -129,6 +130,9 @@ private:
     bool bIsDead = false;
     EHunterCombatLearningState LearningState = EHunterCombatLearningState::PlayerInRange;
     EHunterCombatLearningAction LearningAction = EHunterCombatLearningAction::Balanced;
+    float PendingEvasionDistanceRatio = 0.0f;
+    float PendingEvasionSpeedRatio = 0.0f;
+    float PendingEvasionHealthDeficit = 0.0f;
 
     void FindTarget();
     void UpdateCombat(float DeltaSeconds);
