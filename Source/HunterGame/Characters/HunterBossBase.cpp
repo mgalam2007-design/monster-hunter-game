@@ -65,9 +65,6 @@ void AHunterBossBase::BeginPlay()
     BaseChaseSpeed = ChaseSpeed;
     BaseAttackWindupDuration = AttackWindupDuration;
     BaseAttackRange = AttackRange;
-    BaseAttackRange = AttackRange;
-    BaseAttackRange = AttackRange;
-    BaseAttackRange = AttackRange;
 }
 
 float AHunterBossBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
