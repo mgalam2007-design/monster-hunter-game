@@ -75,6 +75,9 @@ jobs:
       - name: Validate Chapter 12 Unreal Editor level generator
         run: python Tools/validate_chapter12_level_generator.py
 
+      - name: Validate persistent Chapter 12 story choice
+        run: python Tools/validate_story_choice.py
+
       - name: Validate Chapter 13 Unreal Editor level generator
         run: python Tools/validate_chapter13_level_generator.py
 
