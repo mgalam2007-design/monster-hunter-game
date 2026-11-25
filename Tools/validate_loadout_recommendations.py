@@ -29,6 +29,10 @@ def main() -> None:
                   "FMath::IsFinite", "FMath::Clamp", "Results.Sort", "Results.SetNum"):
         if token not in source:
             fail(f"recommendation scoring or safety is missing: {token}")
+    for token in ("BalancedResults", "AddBestOfType(EHunterItemType::Weapon)",
+                  "AddBestOfType(EHunterItemType::Armor)", "ContainsByPredicate"):
+        if token not in source:
+            fail(f"recommendation shortlist must balance weapon and armor slots: {token}")
     for token in ("GetRecommendedEquipment", "FHunterEquipmentRecommendation"):
         if token not in widget_h or token not in widget_cpp:
             fail(f"inventory UI recommendation integration is missing: {token}")
