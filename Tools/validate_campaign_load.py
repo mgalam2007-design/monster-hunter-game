@@ -35,6 +35,11 @@ def main() -> None:
         fail("checkpoint transform must be validated before creating/writing a save object")
 
 
+    if "SaveObject->SaveVersion > 7" not in body:
+        fail("campaign loader must accept version 7 story-choice saves")
+    if "Chapter12StoryChoice = SaveObject->Chapter12StoryChoice" not in body:
+        fail("campaign loader must restore a valid saved Chapter 12 choice")
+
     required = {
         "chapter lower/upper bounds": "SaveObject->CurrentChapterNumber > Chapters.Num()",
         "nonnegative experience": "SaveObject->ArinExperience < 0",
