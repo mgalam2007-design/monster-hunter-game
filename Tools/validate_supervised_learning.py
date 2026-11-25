@@ -39,6 +39,8 @@ def main() -> None:
                   "PendingEvasionSpeedRatio", "PendingEvasionHealthDeficit"):
         if token not in monster:
             fail(f"monster combat integration is missing: {token}")
+    if "GetTrainingSampleCount() >= 12" not in monster:
+        fail("monster must wait for a minimum supervised training sample count")
     if "const_cast<AArinValeCharacter" in monster:
         fail("monster target should be mutable without const_cast")
     if any(token in header + source + monster for token in ("https://", "OpenAI API", "GPT API")):
