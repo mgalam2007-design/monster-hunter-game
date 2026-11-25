@@ -106,6 +106,17 @@ void AHunterMonsterBase::Tick(float DeltaSeconds)
     AttackWindupTimer = FMath::Max(0.0f, AttackWindupTimer - DeltaSeconds);
     ChaseRepathTimer = FMath::Max(0.0f, ChaseRepathTimer - DeltaSeconds);
 
+    // Pulse the warning marker and intensify its color as the strike approaches.
+    if (AttackWarningVisual && bAttackPending)
+    {
+        const float WindupRatio = AttackWindupDuration > KINDA_SMALL_NUMBER
+            ? FMath::Clamp(AttackWindupTimer / AttackWindupDuration, 0.0f, 1.0f) : 0.0f;
+        const float Pulse = 0.5f + 0.5f * FMath::Sin(GetWorld()->GetTimeSeconds() * 12.0f);
+        AttackWarningVisual->SetWorldSize(72.0f + Pulse * 18.0f);
+        const uint8 GreenChannel = static_cast<uint8>(FMath::Lerp(70.0f, 175.0f, 1.0f - WindupRatio));
+        AttackWarningVisual->SetTextRenderColor(FColor(255, GreenChannel, 25));
+    }
+
     if (!TargetCharacter.IsValid())
     {
         FindTarget();
