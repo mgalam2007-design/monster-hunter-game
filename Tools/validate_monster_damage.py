@@ -22,9 +22,24 @@ def validate_loot_drop_probability(source: str) -> None:
         if token not in loot:
             fail(f"loot drop probability is missing safeguard: {token}")
 
+
+def validate_offline_q_learning_integration(source: str) -> None:
+    for token in (
+        "UHunterLearningSubsystem",
+        "ChooseCombatAction(LearningState)",
+        "RecordCombatOutcome(LearningState, LearningAction",
+        "EHunterCombatLearningAction::Aggressive",
+        "EHunterCombatLearningAction::Cautious",
+        "PlayerLowHealth",
+        "PlayerRetreating",
+    ):
+        if token not in source:
+            fail(f"monster combat is missing offline learning integration: {token}")
+
 def main() -> None:
     source = SOURCE.read_text(encoding="utf-8")
     validate_loot_drop_probability(source)
+    validate_offline_q_learning_integration(source)
     take_start = source.find("float AHunterMonsterBase::TakeDamage")
     receive_start = source.find("void AHunterMonsterBase::ReceiveHunterDamage")
     percent_start = source.find("float AHunterMonsterBase::GetHealthPercent")
