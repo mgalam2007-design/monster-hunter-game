@@ -15,6 +15,7 @@
 #include "Engine/StaticMesh.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -27,6 +28,19 @@ AHunterMonsterBase::AHunterMonsterBase()
     GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+
+    // Native warning marker makes the melee windup readable without a Blueprint asset.
+    AttackWarningVisual = CreateDefaultSubobject<UTextRenderComponent>(TEXT("MonsterAttackWarning"));
+    AttackWarningVisual->SetupAttachment(GetRootComponent());
+    AttackWarningVisual->SetText(FText::FromString(TEXT("!")));
+    AttackWarningVisual->SetWorldSize(76.0f);
+    AttackWarningVisual->SetTextRenderColor(FColor(255, 170, 35));
+    AttackWarningVisual->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
+    AttackWarningVisual->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
+    AttackWarningVisual->SetRelativeLocation(FVector(0.0f, 0.0f, 205.0f));
+    AttackWarningVisual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    AttackWarningVisual->SetCanEverAffectNavigation(false);
+    AttackWarningVisual->SetHiddenInGame(true);
 
     // Temporary readable silhouette. The inherited capsule remains responsible for collision.
     static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
@@ -119,6 +133,10 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
     if (!Target || Target->IsActorBeingDestroyed() || (TargetHealth && TargetHealth->IsDead()))
     {
         TargetCharacter.Reset();
+        if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
+        bAttackPending = false;
+        PendingAttackTarget.Reset();
+        AttackWindupTimer = 0.0f;
         return;
     }
 
@@ -128,6 +146,7 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
         bAttackPending = false;
         PendingAttackTarget.Reset();
         AttackWindupTimer = 0.0f;
+        if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
         TargetCharacter.Reset();
         if (AAIController* AI = Cast<AAIController>(GetController()))
         {
@@ -143,6 +162,7 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
             bAttackPending = false;
             PendingAttackTarget.Reset();
             AttackWindupTimer = 0.0f;
+            if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
             AttackTimer = FMath::Min(AttackTimer, 0.2f);
         }
         else if (AttackWindupTimer <= 0.0f)
@@ -150,6 +170,7 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
             bAttackPending = false;
             PendingAttackTarget.Reset();
             AttackTimer = FMath::Max(0.1f, AttackCooldown);
+            if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
             BP_OnMonsterAttack(Target);
             if (FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
             {
@@ -180,6 +201,7 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
         bAttackPending = true;
         PendingAttackTarget = Target;
         AttackWindupTimer = AttackWindupDuration;
+        if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(false);
         BP_OnMonsterAttackTelegraph(Target);
         if (AttackWindupTimer <= 0.0f)
         {
@@ -287,6 +309,7 @@ void AHunterMonsterBase::Die()
     }
 
     bIsDead = true;
+    if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
     bAttackPending = false;
     PendingAttackTarget.Reset();
     AttackWindupTimer = 0.0f;
