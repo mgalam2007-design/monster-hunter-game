@@ -408,3 +408,10 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 - Gameplay systems or Blueprint logic can submit labelled outcomes through `RecordOutcome`; gradient-descent updates are bounded, non-finite inputs are guarded, and model weights plus training-sample count persist locally in the `HunterBehaviourModel` SaveGame slot.
 - Added a static validator and GitHub Actions step. This is an available standalone model API, not yet wired into enemy combat decisions or trained from actual in-game outcomes. It has not been compiled or runtime-tested in Unreal Editor.
 - The project now has separate offline Q-learning, online k-means player profiling and supervised logistic-regression foundations. These are small game-AI methods, not a GPT-scale language model.
+
+
+## Offline equipment and loadout recommendation
+- Added `UHunterLoadoutRecommendationSubsystem`, a deterministic, local content-based recommender that ranks candidate weapons and armor from the player's available inventory. It considers damage bonus, damage reduction, evolution-stage eligibility and the learned player archetype from the local profile model.
+- Aggressive profiles prioritize weapon damage; defensive and evasive profiles give more weight to armor mitigation. Candidate values are finite-checked and clamped, locked items are excluded, result count is bounded, and ties are sorted deterministically by item ID.
+- Added a static validator and GitHub Actions step. The API is ready for inventory/shop UI integration, but no automatic equipment changes occur and no live UI currently calls it. Unreal compilation and gameplay testing remain outstanding.
+- The project now has four independent offline AI foundations: Q-learning combat tactics, k-means player profiling, supervised evasion prediction, and content-based equipment recommendations.
