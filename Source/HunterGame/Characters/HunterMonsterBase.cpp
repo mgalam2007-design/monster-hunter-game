@@ -275,7 +275,7 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
                 if (UHunterPlayerProfileSubsystem* Profile = GameInstance->GetSubsystem<UHunterPlayerProfileSubsystem>())
                 {
                     const EHunterPlayerArchetype Archetype =
-                        Profile->ObservePlayer(const_cast<AArinValeCharacter*>(ArinTarget), GetActorLocation());
+                        Profile->ObservePlayer(ArinTarget, GetActorLocation());
                     if (LearningAction == EHunterCombatLearningAction::Balanced)
                     {
                         if (Archetype == EHunterPlayerArchetype::Aggressive ||
