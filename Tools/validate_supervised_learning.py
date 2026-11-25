@@ -25,7 +25,7 @@ def main() -> None:
             fail(f"supervised model header is missing: {token}")
     for token in ("BuildFeatures", "1.0f / (1.0f + FMath::Exp(-Logit))",
                   "const float Gradient", "LearningRate * Gradient",
-                  "FMath::Clamp(Weights[Index] +", "FMath::IsFinite",
+                  "LearningRate * Gradient", "FMath::Clamp(Weights[Index] + LearningRate * Gradient", "FMath::IsFinite",
                   "SaveGameToSlot", "LoadGameFromSlot", "DoesSaveGameExist",
                   "SamplesSinceSave >= 20"):
         if token not in source:
