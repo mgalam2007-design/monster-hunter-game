@@ -37,11 +37,20 @@ protected:
     UFUNCTION(BlueprintImplementableEvent, Category="Final Boss|Origin Pulse")
     void BP_OnOriginPulseImpact(float Radius);
 
+    UFUNCTION(BlueprintImplementableEvent, Category="Final Boss|Origin Pulse")
+    void BP_OnOriginAftershockTelegraph(float Radius, float WindupSeconds);
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Final Boss|Origin Pulse")
+    void BP_OnOriginAftershockImpact(float Radius);
+
 private:
     FTimerHandle OriginPulseCooldownHandle;
     FTimerHandle OriginPulseImpactHandle;
+    FTimerHandle OriginAftershockHandle;
 
     void BeginOriginPulse();
     void ResolveOriginPulse();
+    void ResolveOriginAftershock();
+    void ApplyPulseDamage(float Radius, float BaseDamage);
     void ScheduleNextOriginPulse();
 };
