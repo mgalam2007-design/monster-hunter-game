@@ -1,5 +1,8 @@
 # HUNTER 2.0 — Implementation Status
 
+## Latest combat improvement
+- Chapter 20 Final Hunter now chains a second, smaller Origin Pulse aftershock from boss phase 2 onward. It uses a distinct 0.55-second telegraph, 60% of the primary radius and 55% of its base damage (with the same phase damage multiplier). Blueprint hooks expose aftershock warning/impact presentation; its timer is cleared on EndPlay. The static validator checks the phase gate, telegraph hooks, damage bounds and timer cleanup. This remains code-level behavior: Unreal compilation, Blueprint VFX hookup and in-editor combat testing have not yet been performed.
+
 This repository is an Unreal Engine 5 C++ project scaffold. This document distinguishes committed code foundations from assets, editor integration, and runtime validation that remain outstanding. A lightweight GitHub Actions workflow checks Blender script syntax and the Unreal project descriptor; it does not compile Unreal C++.
 
 
