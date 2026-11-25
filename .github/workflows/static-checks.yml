@@ -129,6 +129,9 @@ jobs:
       - name: Validate monster damage finite-value safeguards
         run: python Tools/validate_monster_damage.py
 
+      - name: Validate standalone offline Q-learning
+        run: python Tools/validate_offline_learning.py
+
       - name: Validate ability energy and tuning safeguards
         run: python Tools/validate_ability_component.py
 
