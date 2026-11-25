@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Validate the standalone offline supervised behaviour prediction model."""
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+HEADER = ROOT / "Source/HunterGame/AI/HunterBehaviourPredictionSubsystem.h"
+SOURCE = ROOT / "Source/HunterGame/AI/HunterBehaviourPredictionSubsystem.cpp"
+SAVE = ROOT / "Source/HunterGame/AI/HunterBehaviourModelSaveGame.h"
+
+
+def fail(message: str) -> None:
+    print(f"ERROR: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def main() -> None:
+    header = HEADER.read_text(encoding="utf-8")
+    source = SOURCE.read_text(encoding="utf-8")
+    save = SAVE.read_text(encoding="utf-8")
+
+    for token in ("PredictEvasionProbability", "RecordOutcome", "GetTrainingSampleCount",
+                  "SaveModel", "LoadModel", "ResetModel"):
+        if token not in header:
+            fail(f"supervised model header is missing: {token}")
+    for token in ("BuildFeatures", "1.0f / (1.0f + FMath::Exp(-Logit))",
+                  "const float Gradient", "LearningRate * Gradient",
+                  "FMath::Clamp(Weights[Index] +", "FMath::IsFinite",
+                  "SaveGameToSlot", "LoadGameFromSlot", "DoesSaveGameExist",
+                  "SamplesSinceSave >= 20"):
+        if token not in source:
+            fail(f"supervised model implementation is missing: {token}")
+    for token in ("SaveVersion", "Weights", "TrainingSamples"):
+        if token not in save:
+            fail(f"supervised model save data is missing: {token}")
+    if any(token in header + source for token in ("https://", "OpenAI API", "GPT API")):
+        fail("supervised model must not contain hosted AI dependencies")
+
+    print("Validated offline supervised logistic regression, bounded training and local persistence.")
+
+
+if __name__ == "__main__":
+    main()
