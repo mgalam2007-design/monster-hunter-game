@@ -5,7 +5,7 @@
 
 namespace
 {
-    constexpr TCHAR LearningSlotName[] = TEXT("HunterAILearning");
+    const FString LearningSlotName = TEXT("HunterAILearning");
 }
 
 void UHunterLearningSubsystem::Initialize(FSubsystemCollectionBase& Collection)
