@@ -156,8 +156,21 @@ TArray<FHunterEquipmentRecommendation> UHunterInventoryWidget::GetRecommendedEqu
         Archetype = Profile->GetCurrentArchetype();
     }
 
+    TArray<FHunterInventoryItem> EligibleCandidates = InventoryComponent->GetItems();
+    // A duplicate stack can remain after equipping one copy. Do not recommend
+    // the already-equipped item again when another copy remains in inventory.
+    const FHunterEquipmentItem EquippedWeapon = EquipmentComponent
+        ? EquipmentComponent->GetWeapon() : FHunterEquipmentItem();
+    const FHunterEquipmentItem EquippedArmor = EquipmentComponent
+        ? EquipmentComponent->GetArmor() : FHunterEquipmentItem();
+    EligibleCandidates.RemoveAll([&EquippedWeapon, &EquippedArmor](const FHunterInventoryItem& Item)
+    {
+        return (!EquippedWeapon.ItemId.IsNone() && Item.ItemId == EquippedWeapon.ItemId) ||
+            (!EquippedArmor.ItemId.IsNone() && Item.ItemId == EquippedArmor.ItemId);
+    });
+
     return Recommender->RecommendEquipment(
-        InventoryComponent->GetItems(), EvolutionStage, Archetype, MaxResults);
+        EligibleCandidates, EvolutionStage, Archetype, MaxResults);
 }
 
 void UHunterInventoryWidget::BuildNativeLayout()
