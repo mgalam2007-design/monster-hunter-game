@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/HunterInventoryComponent.h"
+#include "AI/HunterLearningSubsystem.h"
 #include "HunterMonsterBase.generated.h"
 
 class AHunterPickupActor;
@@ -126,6 +127,8 @@ private:
     TWeakObjectPtr<ACharacter> PendingAttackTarget;
     bool bAttackPending = false;
     bool bIsDead = false;
+    EHunterCombatLearningState LearningState = EHunterCombatLearningState::PlayerInRange;
+    EHunterCombatLearningAction LearningAction = EHunterCombatLearningAction::Balanced;
 
     void FindTarget();
     void UpdateCombat(float DeltaSeconds);
