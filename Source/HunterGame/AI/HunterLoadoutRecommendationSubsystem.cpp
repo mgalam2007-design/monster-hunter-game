@@ -84,9 +84,42 @@ TArray<FHunterEquipmentRecommendation> UHunterLoadoutRecommendationSubsystem::Re
         return A.Item.ItemId.LexicalLess(B.Item.ItemId);
     });
 
-    if (Results.Num() > ResultLimit)
+    // Keep the shortlist useful as a loadout: reserve the first two places
+    // for the strongest weapon and strongest armor when both slots are present.
+    // Remaining places are filled by the best-scoring candidates overall.
+    TArray<FHunterEquipmentRecommendation> BalancedResults;
+    BalancedResults.Reserve(Results.Num());
+    auto AddBestOfType = [&Results, &BalancedResults](EHunterItemType Type)
     {
-        Results.SetNum(ResultLimit);
+        const FHunterEquipmentRecommendation* Best = Results.FindByPredicate(
+            [Type](const FHunterEquipmentRecommendation& Entry)
+            {
+                return Entry.Item.ItemType == Type;
+            });
+        if (Best)
+        {
+            BalancedResults.Add(*Best);
+        }
+    };
+    AddBestOfType(EHunterItemType::Weapon);
+    AddBestOfType(EHunterItemType::Armor);
+
+    for (const FHunterEquipmentRecommendation& Candidate : Results)
+    {
+        if (BalancedResults.ContainsByPredicate(
+            [&Candidate](const FHunterEquipmentRecommendation& Existing)
+            {
+                return Existing.Item.ItemId == Candidate.Item.ItemId;
+            }))
+        {
+            continue;
+        }
+        BalancedResults.Add(Candidate);
     }
-    return Results;
+
+    if (BalancedResults.Num() > ResultLimit)
+    {
+        BalancedResults.SetNum(ResultLimit);
+    }
+    return BalancedResults;
 }
