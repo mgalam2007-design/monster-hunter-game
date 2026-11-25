@@ -23,6 +23,8 @@ required = [
 missing = [token for token in required if token not in source]
 if missing:
     raise SystemExit("Chapter 1 level generator missing: " + ", ".join(missing))
+if "\\n    #" in source:
+    raise SystemExit("Chapter 1 level generator contains a literal escaped newline in Python source")
 compile(source, str(SCRIPT), "exec")
 assert "HunterBreachEncounterActor" in source and "BreachShardCollected" in source
 assert 'encounter = spawn(breach_class, (0, -650, 0), "CH01_FirstBreach_Encounter")' in source
