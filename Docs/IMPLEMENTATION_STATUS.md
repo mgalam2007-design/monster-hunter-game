@@ -2,6 +2,10 @@
 
 This repository is an Unreal Engine 5 C++ project scaffold. This document distinguishes committed code foundations from assets, editor integration, and runtime validation that remain outstanding. A lightweight GitHub Actions workflow checks Blender script syntax and the Unreal project descriptor; it does not compile Unreal C++.
 
+
+## Standalone machine-learning plan
+- `Docs/AI_MACHINE_LEARNING_ARCHITECTURE.md` defines a fully offline, modular AI roadmap: reinforcement learning, player clustering, supervised behaviour prediction, small neural decision models, equipment recommendations, local semantic retrieval, and authored NPC dialogue with local intent classification. It explicitly distinguishes these feasible game systems from training or reproducing GPT-scale models. No external AI API or internet dependency is planned.
+
 ## Committed C++ foundations
 - Arin Vale third-person character with camera, movement, jump, sprint, dodge with a configurable 0.22-second default damage-invulnerability window (maximum 0.5 seconds), sword attack montage hook, progression, health and weapon-trace components. The dodge window is cleared on death and respawn. Defeat handling closes the inventory UI, restores game-only input/cursor state, blocks movement and camera input while dead, and safely handles a missing movement component during no-checkpoint respawn. Respawn now resets sprint speed to the progression-adjusted walk speed, clears stale attack/dodge/weapon-trace timers, and ends any active melee trace; MoveRight also rejects non-finite axis input.
 - Arin progression component with five evolution stages, XP thresholds, stage profiles, exact save restoration and ability-unlock queries.
