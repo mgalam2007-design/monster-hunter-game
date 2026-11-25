@@ -1,6 +1,10 @@
 #include "HunterInventoryWidget.h"
 
 #include "ArinValeCharacter.h"
+#include "ArinProgressionComponent.h"
+#include "AI/HunterLoadoutRecommendationSubsystem.h"
+#include "AI/HunterPlayerProfileSubsystem.h"
+#include "Engine/GameInstance.h"
 #include "Components/HunterHealthComponent.h"
 #include "Components/HunterAbilityComponent.h"
 #include "Blueprint/WidgetTree.h"
@@ -127,6 +131,34 @@ void UHunterInventoryWidget::RefreshInventory()
     BP_OnInventorySnapshotUpdated(Snapshot);
 }
 
+TArray<FHunterEquipmentRecommendation> UHunterInventoryWidget::GetRecommendedEquipment(int32 MaxResults) const
+{
+    if (!ArinCharacter || !InventoryComponent || !GetGameInstance())
+    {
+        return {};
+    }
+
+    UHunterLoadoutRecommendationSubsystem* Recommender =
+        GetGameInstance()->GetSubsystem<UHunterLoadoutRecommendationSubsystem>();
+    if (!Recommender)
+    {
+        return {};
+    }
+
+    const UArinProgressionComponent* Progression = ArinCharacter->GetProgressionComponent();
+    const int32 EvolutionStage = Progression
+        ? static_cast<int32>(Progression->GetEvolutionStage()) : 0;
+    EHunterPlayerArchetype Archetype = EHunterPlayerArchetype::Balanced;
+    if (UHunterPlayerProfileSubsystem* Profile =
+        GetGameInstance()->GetSubsystem<UHunterPlayerProfileSubsystem>())
+    {
+        Archetype = Profile->GetCurrentArchetype();
+    }
+
+    return Recommender->RecommendEquipment(
+        InventoryComponent->GetItems(), EvolutionStage, Archetype, MaxResults);
+}
+
 void UHunterInventoryWidget::BuildNativeLayout()
 {
     if (!WidgetTree || WidgetTree->RootWidget)
@@ -217,6 +249,38 @@ void UHunterInventoryWidget::ApplyNativeLayout()
                 UseButton->OnClicked.AddLambda([this, ItemId = Entry.Item.ItemId]() { UseConsumableById(ItemId); });
                 ItemRow->AddChildToHorizontalBox(UseButton);
             }
+        }
+    }
+    AddLine(FText::FromString(TEXT("AI LOADOUT RECOMMENDATIONS")), 13, FLinearColor(0.35f, 0.72f, 1.0f, 1.0f));
+    const TArray<FHunterEquipmentRecommendation> Recommendations = GetRecommendedEquipment(3);
+    if (Recommendations.IsEmpty())
+    {
+        AddLine(FText::FromString(TEXT("No eligible equipment to recommend.")), 11,
+            FLinearColor(0.65f, 0.7f, 0.78f, 1.0f));
+    }
+    else
+    {
+        for (const FHunterEquipmentRecommendation& Recommendation : Recommendations)
+        {
+            const FString RecommendedName = Recommendation.Item.DisplayName.IsEmpty()
+                ? Recommendation.Item.ItemId.ToString() : Recommendation.Item.DisplayName.ToString();
+            UHorizontalBox* RecommendationRow =
+                WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+            NativeStack->AddChildToVerticalBox(RecommendationRow);
+            UTextBlock* RecommendationLabel =
+                WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            RecommendationLabel->SetText(FText::FromString(FString::Printf(
+                TEXT("%s  //  SCORE %.1f"), *RecommendedName, Recommendation.Score)));
+            RecommendationRow->AddChildToHorizontalBox(RecommendationLabel);
+            UButton* RecommendationEquip =
+                WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+            UTextBlock* RecommendationEquipLabel =
+                WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+            RecommendationEquipLabel->SetText(FText::FromString(TEXT("EQUIP")));
+            RecommendationEquip->SetContent(RecommendationEquipLabel);
+            RecommendationEquip->OnClicked.AddLambda(
+                [this, ItemId = Recommendation.Item.ItemId]() { EquipItemById(ItemId); });
+            RecommendationRow->AddChildToHorizontalBox(RecommendationEquip);
         }
     }
     AddLine(FText::FromString(TEXT("Press I to close")), 11, FLinearColor(0.45f, 0.65f, 0.82f, 1.0f));
