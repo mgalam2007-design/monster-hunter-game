@@ -1,5 +1,6 @@
 #include "HunterMonsterBase.h"
 #include "AI/HunterLearningSubsystem.h"
+#include "AI/HunterPlayerProfileSubsystem.h"
 #include "Items/HunterPickupActor.h"
 
 #include "ArinValeCharacter.h"
@@ -245,6 +246,29 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
             if (UHunterLearningSubsystem* Learning = GameInstance->GetSubsystem<UHunterLearningSubsystem>())
             {
                 LearningAction = Learning->ChooseCombatAction(LearningState);
+            }
+
+            // Online k-means identifies the player's broad combat style and helps
+            // the learned policy choose a counter-tactic without external services.
+            if (ArinTarget)
+            {
+                if (UHunterPlayerProfileSubsystem* Profile = GameInstance->GetSubsystem<UHunterPlayerProfileSubsystem>())
+                {
+                    const EHunterPlayerArchetype Archetype =
+                        Profile->ObservePlayer(const_cast<AArinValeCharacter*>(ArinTarget), GetActorLocation());
+                    if (LearningAction == EHunterCombatLearningAction::Balanced)
+                    {
+                        if (Archetype == EHunterPlayerArchetype::Aggressive ||
+                            Archetype == EHunterPlayerArchetype::Evasive)
+                        {
+                            LearningAction = EHunterCombatLearningAction::Cautious;
+                        }
+                        else if (Archetype == EHunterPlayerArchetype::Defensive)
+                        {
+                            LearningAction = EHunterCombatLearningAction::Aggressive;
+                        }
+                    }
+                }
             }
         }
 
