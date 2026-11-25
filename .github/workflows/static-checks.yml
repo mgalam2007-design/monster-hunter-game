@@ -132,6 +132,9 @@ jobs:
       - name: Validate standalone offline Q-learning
         run: python Tools/validate_offline_learning.py
 
+      - name: Validate standalone offline supervised learning
+        run: python Tools/validate_supervised_learning.py
+
       - name: Validate ability energy and tuning safeguards
         run: python Tools/validate_ability_component.py
 
