@@ -5,6 +5,7 @@
 #include "Components/HunterInventoryComponent.h"
 #include "Components/HunterEquipmentComponent.h"
 #include "Components/HunterItemCatalog.h"
+#include "AI/HunterLoadoutRecommendationSubsystem.h"
 #include "HunterInventoryWidget.generated.h"
 
 class AArinValeCharacter;
@@ -67,6 +68,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Inventory")
     bool EquipItemById(FName ItemId);
+
+    UFUNCTION(BlueprintCallable, Category="AI|Recommendation")
+    TArray<FHunterEquipmentRecommendation> GetRecommendedEquipment(int32 MaxResults = 3) const;
 
     UFUNCTION(BlueprintCallable, Category="Equipment")
     bool UnequipSlot(EHunterEquipmentSlot Slot);
