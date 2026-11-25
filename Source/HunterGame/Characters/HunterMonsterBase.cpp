@@ -365,8 +365,14 @@ void AHunterMonsterBase::SpawnLootDrops()
 
     for (const FHunterMonsterLootDrop& Drop : LootDrops)
     {
-        if (Drop.Item.ItemId.IsNone() || Drop.Item.Quantity <= 0 ||
-            FMath::FRand() > FMath::Clamp(Drop.DropChance, 0.0f, 1.0f))
+        // Reject invalid probabilities instead of letting NaN bypass the random-roll comparison.
+        if (Drop.Item.ItemId.IsNone() || Drop.Item.Quantity <= 0 || !FMath::IsFinite(Drop.DropChance))
+        {
+            continue;
+        }
+
+        const float SafeDropChance = FMath::Clamp(Drop.DropChance, 0.0f, 1.0f);
+        if (SafeDropChance <= 0.0f || (SafeDropChance < 1.0f && FMath::FRand() >= SafeDropChance))
         {
             continue;
         }
