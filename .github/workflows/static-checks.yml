@@ -117,6 +117,9 @@ jobs:
       - name: Validate dedicated Final Hunter boss
         run: python Tools/validate_final_boss.py
 
+      - name: Validate boss phase reach escalation
+        run: python Tools/validate_boss_phase_reach.py
+
       - name: Validate Arin blockout and Unreal input bindings
         run: python Tools/validate_playable_foundation.py
 
