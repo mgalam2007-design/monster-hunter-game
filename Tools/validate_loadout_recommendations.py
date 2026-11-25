@@ -35,6 +35,9 @@ def main() -> None:
     for token in ("AI LOADOUT RECOMMENDATIONS", "GetRecommendedEquipment(3)", "EquipItemById"):
         if token not in widget_cpp:
             fail(f"inventory UI recommendation presentation is missing: {token}")
+    for token in ("EligibleCandidates.RemoveAll", "EquippedWeapon.ItemId", "EquippedArmor.ItemId"):
+        if token not in widget_cpp:
+            fail(f"recommendations must exclude already equipped gear: {token}")
     if any(token in header + source + widget_h + widget_cpp for token in ("https://", "OpenAI API", "GPT API")):
         fail("recommendation subsystem must remain fully offline")
     print("Validated offline equipment ranking, player-style weighting and inventory UI integration.")
