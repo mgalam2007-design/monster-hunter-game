@@ -11,7 +11,10 @@ namespace
 void UHunterBehaviourPredictionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
-    ResetModel();
+    // Initialize defaults without deleting the player's persisted model.
+    Weights.Init(0.0f, FeatureCount);
+    TrainingSamples = 0;
+    SamplesSinceSave = 0;
     LoadModel();
 }
 
@@ -43,6 +46,8 @@ void UHunterBehaviourPredictionSubsystem::ResetModel()
     Weights.Init(0.0f, FeatureCount);
     TrainingSamples = 0;
     SamplesSinceSave = 0;
+    // Reset means reset across launches too, not just until the next restart.
+    UGameplayStatics::DeleteGameInSlot(BehaviourModelSlot, BehaviourModelUser);
 }
 
 TArray<float> UHunterBehaviourPredictionSubsystem::BuildFeatures(
