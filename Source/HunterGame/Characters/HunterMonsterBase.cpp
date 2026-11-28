@@ -18,7 +18,6 @@
 #include "Engine/StaticMesh.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
-#include "Components/TextRenderComponent.h"
 #include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -447,6 +446,15 @@ void AHunterMonsterBase::Die()
     bAttackPending = false;
     PendingAttackTarget.Reset();
     AttackWindupTimer = 0.0f;
+    // Stop every active combat/pursuit path before death callbacks or rewards run.
+    AttackTimer = 0.0f;
+    ChaseRepathTimer = 0.0f;
+    TargetCharacter.Reset();
+    if (AAIController* AI = Cast<AAIController>(GetController()))
+    {
+        AI->StopMovement();
+    }
+    GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->DisableMovement();
     SetActorEnableCollision(false);
     BP_OnMonsterDeath();
