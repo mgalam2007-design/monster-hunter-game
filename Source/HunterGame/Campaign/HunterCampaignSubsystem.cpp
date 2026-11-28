@@ -1316,6 +1316,16 @@ bool UHunterCampaignSubsystem::CompleteCurrentChapter()
         }
     }
 
+    // Chapter completion is the campaign's guaranteed XP reward point.
+    // The completed guard above prevents farming rewards by re-entering a chapter.
+    if (AArinValeCharacter* Arin = Cast<AArinValeCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+    {
+        if (UArinProgressionComponent* Progression = Arin->GetProgressionComponent())
+        {
+            Progression->AddExperience(100);
+        }
+    }
+
     Chapters[Index].bCompleted = true;
     OnChapterCompleted.Broadcast(CurrentChapterNumber);
 

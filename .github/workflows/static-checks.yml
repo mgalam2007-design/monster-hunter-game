@@ -177,6 +177,9 @@ jobs:
       - name: Validate Chapter 1 objective-to-completion flow
         run: python Tools/validate_chapter_one_flow.py
 
+      - name: Validate chapter experience rewards
+        run: python Tools/validate_chapter_experience_rewards.py
+
       - name: Validate browser demo features and JavaScript syntax
         run: python Tools/validate_browser_demo.py
 
