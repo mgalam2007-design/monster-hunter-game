@@ -144,6 +144,9 @@ jobs:
       - name: Validate monster melee-range movement stopping
         run: python Tools/validate_monster_melee_stop.py
 
+      - name: Validate monster melee line of sight
+        run: python Tools/validate_monster_melee_line_of_sight.py
+
       - name: Validate standalone offline Q-learning
         run: python Tools/validate_offline_learning.py
 
