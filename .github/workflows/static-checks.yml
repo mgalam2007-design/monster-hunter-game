@@ -141,6 +141,9 @@ jobs:
       - name: Validate monster death AI and movement cleanup
         run: python Tools/validate_monster_death_cleanup.py
 
+      - name: Validate monster melee-range movement stopping
+        run: python Tools/validate_monster_melee_stop.py
+
       - name: Validate standalone offline Q-learning
         run: python Tools/validate_offline_learning.py
 
