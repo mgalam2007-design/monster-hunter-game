@@ -30,7 +30,7 @@ Event tag matching is exact and case-sensitive. Objective counts are required ev
 | 10 — The Hollow District | `CH10_HollowDistrict` | Reach core: `HollowDistrictCoreReached` ×1; destroy anchors: `ShadowAnchorDestroyed` ×3; defeat Warden: `HollowWardenDefeated` ×1 |
 | 11 — Echoes of the Fallen | `CH11_EchoesOfTheFallen` | Recover memories: `ExpeditionMemoryRecovered` ×3; defeat captain: `FallenCaptainDefeated` ×1 |
 | 12 — The Shadow Accord | `CH12_ShadowAccord` | Meet contact: `ShadowContactReached` ×1; defeat sentinels: `ShadowSentinelDefeated` ×3; resolve pact: `ShadowPactResolved` ×1 |
-| 13 — Siege of the North | `CH13_SiegeOfTheNorth` | Defeat siege creatures: `NorthernSiegeCreatureDefeated` ×5; activate beacons: `FortressBeaconActivated` ×2 |
+| 13 — Siege of the North | `CH13_SiegeOfTheNorth` | Defeat siege creatures: `NorthernSiegeCreatureDefeated` ×5; activate beacons: `FortressBeaconActivated`. `ShadowVanguardCommanded` and `ShadowRefugeesProtected` are mutually exclusive Chapter 13 pact-branch objectives selected by the saved Chapter 12 choice. ×2 |
 | 14 — The Broken Citadel | `CH14_BrokenCitadel` | Destroy pylons: `CitadelPylonDestroyed` ×3; defeat commander: `CitadelCommanderDefeated` ×1 |
 | 15 — A World Unsealed | `CH15_WorldsUnsealed` | Stabilize anchors: `BreachAnchorStabilized` ×4; defeat guardians: `BreachGuardianDefeated` ×2 |
 | 16 — The Seven Beacons | `CH16_SevenBeacons` | Activate boundary beacons: `BoundaryBeaconActivated` ×7; defeat attackers: `BeaconAttackerDefeated` ×3 |
