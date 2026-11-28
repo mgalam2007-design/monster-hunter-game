@@ -57,6 +57,10 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Story")
     FName StoryChoiceValue = NAME_None;
 
+    // If set, this world interaction only exists for the matching saved campaign choice.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Story")
+    FName RequiredStoryChoice = NAME_None;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Quest Trigger|Interaction")
     FText CompletionPromptText = FText::FromString(TEXT("OBJECTIVE COMPLETE"));
 
