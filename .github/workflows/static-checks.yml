@@ -150,6 +150,9 @@ jobs:
       - name: Validate monster melee facing
         run: python Tools/validate_monster_melee_facing.py
 
+      - name: Validate monster hit interruption
+        run: python Tools/validate_monster_hit_interrupt.py
+
       - name: Validate standalone offline Q-learning
         run: python Tools/validate_offline_learning.py
 
