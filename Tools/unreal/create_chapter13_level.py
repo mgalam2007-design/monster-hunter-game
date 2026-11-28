@@ -70,6 +70,23 @@ def build_chapter_13():
         set_property(beacon, "interaction_prompt_text", unreal.Text("E  RESTORE FORTRESS BEACON"))
         set_property(beacon, "completion_prompt_text", unreal.Text("DEFENSE BEACON RESTORED"))
 
+    # The Chapter 12 pact determines which ally interaction is active.
+    branch_interactions = [
+        ((-650, 650, 100), "CH13_Shadow_Vanguard_Command",
+         "ShadowVanguardCommanded", "BindShadows", "E  COMMAND SHADOW VANGUARD"),
+        ((650, 650, 100), "CH13_Shadow_Refugee_Escort",
+         "ShadowRefugeesProtected", "FreeShadows", "E  PROTECT SHADOW REFUGEES"),
+    ]
+    for point, label, event_tag, required_choice, prompt in branch_interactions:
+        branch_trigger = spawn(trigger_class, point, label)
+        set_property(branch_trigger, "quest_event_tag", unreal.Name(event_tag))
+        set_property(branch_trigger, "event_amount", 1)
+        set_property(branch_trigger, "trigger_once", True)
+        set_property(branch_trigger, "requires_interaction", True)
+        set_property(branch_trigger, "required_story_choice", unreal.Name(required_choice))
+        set_property(branch_trigger, "interaction_prompt_text", unreal.Text(prompt))
+        set_property(branch_trigger, "completion_prompt_text", unreal.Text("PACT ALLY OBJECTIVE COMPLETE"))
+
     exit_actor = spawn(exit_class, (0, 1740, 100), "CH13_Chapter_Exit")
     set_property(exit_actor, "completion_experience_reward", 975)
     set_property(exit_actor, "completion_currency_reward", 490)
