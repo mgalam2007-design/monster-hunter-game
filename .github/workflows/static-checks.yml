@@ -81,6 +81,9 @@ jobs:
       - name: Validate Chapter 13 Unreal Editor level generator
         run: python Tools/validate_chapter13_level_generator.py
 
+      - name: Validate Chapter 13 pact-dependent story branch
+        run: python Tools/validate_chapter13_story_branch.py
+
       - name: Validate Chapter 14 Unreal Editor level generator
         run: python Tools/validate_chapter14_level_generator.py
 
