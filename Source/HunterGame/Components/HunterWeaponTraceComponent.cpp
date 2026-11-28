@@ -110,9 +110,22 @@ void UHunterWeaponTraceComponent::TraceWeaponSegment(const FVector& CurrentBase,
     Params.AddIgnoredActor(OwnerActor);
 
     const FCollisionShape BladeShape = FCollisionShape::MakeSphere(TraceRadius);
+
+    // Sweep intermediate points along the blade as well as its edges. Tracing
+    // only the perimeter can miss a target crossing the interior of a fast,
+    // wide swing between frames.
+    const FVector PreviousQuarter = FMath::Lerp(PreviousBase, PreviousTip, 0.25f);
+    const FVector PreviousMidpoint = FMath::Lerp(PreviousBase, PreviousTip, 0.50f);
+    const FVector PreviousThreeQuarter = FMath::Lerp(PreviousBase, PreviousTip, 0.75f);
+    const FVector CurrentQuarter = FMath::Lerp(CurrentBase, CurrentTip, 0.25f);
+    const FVector CurrentMidpoint = FMath::Lerp(CurrentBase, CurrentTip, 0.50f);
+    const FVector CurrentThreeQuarter = FMath::Lerp(CurrentBase, CurrentTip, 0.75f);
     const FVector SweepSegments[][2] =
     {
         { PreviousBase, CurrentBase },
+        { PreviousQuarter, CurrentQuarter },
+        { PreviousMidpoint, CurrentMidpoint },
+        { PreviousThreeQuarter, CurrentThreeQuarter },
         { PreviousTip, CurrentTip },
         { PreviousBase, PreviousTip },
         { CurrentBase, CurrentTip }
