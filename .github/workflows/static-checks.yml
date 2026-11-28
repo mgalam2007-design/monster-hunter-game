@@ -165,6 +165,9 @@ jobs:
       - name: Validate Arin visual evolution stages
         run: python Tools/validate_arin_evolution_visuals.py
 
+      - name: Validate Arin progression restore safety
+        run: python Tools/validate_arin_progression_restore.py
+
       - name: Validate checkpoint and chapter-exit trigger safety
         run: python Tools/validate_world_trigger_safety.py
 
