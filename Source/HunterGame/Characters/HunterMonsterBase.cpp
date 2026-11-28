@@ -389,6 +389,20 @@ void AHunterMonsterBase::ReceiveHunterDamage(float DamageAmount, AActor* DamageS
         0.0f,
         SafeMaxHealth);
 
+    // A successful player hit interrupts the monster's telegraphed strike.
+    // This gives melee timing and dodge/counterplay a meaningful combat reward.
+    if (bAttackPending)
+    {
+        bAttackPending = false;
+        PendingAttackTarget.Reset();
+        AttackWindupTimer = 0.0f;
+        AttackTimer = FMath::Min(AttackTimer, 0.25f);
+        if (AttackWarningVisual)
+        {
+            AttackWarningVisual->SetHiddenInGame(true);
+        }
+    }
+
     if (!TargetCharacter.IsValid())
     {
         if (ACharacter* PlayerCharacter = Cast<ACharacter>(DamageSource))
