@@ -41,6 +41,25 @@ void AHunterQuestTriggerActor::BeginPlay()
         InteractionPrompt->SetText(InteractionPromptText);
         InteractionPrompt->SetVisibility(false);
     }
+
+    // Branch-specific interactions are disabled before overlap delegates are bound.
+    if (!RequiredStoryChoice.IsNone())
+    {
+        UGameInstance* GameInstance = GetGameInstance();
+        const UHunterCampaignSubsystem* Campaign = GameInstance
+            ? GameInstance->GetSubsystem<UHunterCampaignSubsystem>()
+            : nullptr;
+        if (!Campaign || Campaign->GetChapter12StoryChoice() != RequiredStoryChoice)
+        {
+            SetActorEnableCollision(false);
+            if (InteractionPrompt)
+            {
+                InteractionPrompt->SetVisibility(false);
+            }
+            return;
+        }
+    }
+
     TriggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AHunterQuestTriggerActor::HandleOverlap);
     TriggerVolume->OnComponentEndOverlap.AddDynamic(this, &AHunterQuestTriggerActor::HandleEndOverlap);
 }
