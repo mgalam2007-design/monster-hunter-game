@@ -263,6 +263,12 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
     }
     GetCharacterMovement()->StopMovementImmediately();
 
+    // Face the target during the melee windup so the telegraphed strike is readable.
+    FRotator FacingRotation = (Target->GetActorLocation() - GetActorLocation()).Rotation();
+    FacingRotation.Pitch = 0.0f;
+    FacingRotation.Roll = 0.0f;
+    SetActorRotation(FMath::RInterpTo(GetActorRotation(), FacingRotation, DeltaSeconds, 10.0f));
+
     if (AttackTimer <= 0.0f && !bAttackPending)
     {
         LearningState = EHunterCombatLearningState::PlayerInRange;
