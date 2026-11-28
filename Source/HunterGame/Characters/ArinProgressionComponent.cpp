@@ -51,13 +51,23 @@ bool UArinProgressionComponent::SetEvolutionStage(EArinEvolutionStage NewStage)
 
 void UArinProgressionComponent::RestoreProgression(int32 SavedExperience, EArinEvolutionStage SavedStage)
 {
-    const int32 SafeStageIndex = FMath::Clamp(GetStageIndex(SavedStage), 0, StageProfiles.Num() - 1);
     const int32 SafeExperience = FMath::Max(0, SavedExperience);
     const int32 PreviousExperience = Experience;
     const EArinEvolutionStage PreviousStage = CurrentStage;
 
-    Experience = FMath::Max(SafeExperience, StageProfiles[SafeStageIndex].RequiredExperience);
-    RecalculateStage();
+    // A Blueprint may override the default stage table with an empty array.
+    // Restore safely instead of clamping to an invalid index and dereferencing it.
+    if (StageProfiles.IsEmpty())
+    {
+        Experience = SafeExperience;
+        CurrentStage = EArinEvolutionStage::Awakening;
+    }
+    else
+    {
+        const int32 SafeStageIndex = FMath::Clamp(GetStageIndex(SavedStage), 0, StageProfiles.Num() - 1);
+        Experience = FMath::Max(SafeExperience, StageProfiles[SafeStageIndex].RequiredExperience);
+        RecalculateStage();
+    }
 
     if (Experience != PreviousExperience) OnExperienceChanged.Broadcast(Experience);
     if (CurrentStage != PreviousStage) OnStageChanged.Broadcast(PreviousStage, CurrentStage);
