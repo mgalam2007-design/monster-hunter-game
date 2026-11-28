@@ -35,6 +35,16 @@ def main() -> None:
     for token in ("SaveVersion", "Weights", "TrainingSamples"):
         if token not in save:
             fail(f"supervised model save data is missing: {token}")
+    initialize = source.split("void UHunterBehaviourPredictionSubsystem::Initialize", 1)[1].split(
+        "void UHunterBehaviourPredictionSubsystem::Deinitialize", 1
+    )[0]
+    reset = source.split("void UHunterBehaviourPredictionSubsystem::ResetModel", 1)[1].split(
+        "TArray<float> UHunterBehaviourPredictionSubsystem::BuildFeatures", 1
+    )[0]
+    if "LoadModel();" not in initialize or "ResetModel();" in initialize:
+        fail("initialization must load saved weights without invoking the destructive reset")
+    if "DeleteGameInSlot" not in reset:
+        fail("explicit model reset must delete the persisted model slot")
     for token in ("PredictEvasionProbability", "RecordOutcome", "PendingEvasionDistanceRatio",
                   "PendingEvasionSpeedRatio", "PendingEvasionHealthDeficit"):
         if token not in monster:
