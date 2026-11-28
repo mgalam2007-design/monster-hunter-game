@@ -26,7 +26,7 @@ MISSIONS = {
     10: ("CH10_HollowDistrict", (("HollowDistrictCoreReached", 1), ("ShadowAnchorDestroyed", 3), ("HollowWardenDefeated", 1))),
     11: ("CH11_EchoesOfTheFallen", (("ExpeditionMemoryRecovered", 3), ("FallenCaptainDefeated", 1))),
     12: ("CH12_ShadowAccord", (("ShadowContactReached", 1), ("ShadowSentinelDefeated", 3), ("ShadowPactResolved", 1))),
-    13: ("CH13_SiegeOfTheNorth", (("NorthernSiegeCreatureDefeated", 5), ("FortressBeaconActivated", 2))),
+    13: ("CH13_SiegeOfTheNorth", (("NorthernSiegeCreatureDefeated", 5), ("FortressBeaconActivated", 2), ("ShadowVanguardCommanded", 1), ("ShadowRefugeesProtected", 1))),
     14: ("CH14_BrokenCitadel", (("CitadelPylonDestroyed", 3), ("CitadelCommanderDefeated", 1))),
     15: ("CH15_WorldsUnsealed", (("BreachAnchorStabilized", 4), ("BreachGuardianDefeated", 2))),
     16: ("CH16_SevenBeacons", (("BoundaryBeaconActivated", 7), ("BeaconAttackerDefeated", 3))),
