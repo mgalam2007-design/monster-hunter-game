@@ -433,3 +433,8 @@ No Unreal Editor build or gameplay test is claimed by this status file. The code
 ## Boss phase combat pressure
 - Boss phases now also expand melee reach from the captured baseline, in addition to increasing damage and chase speed and reducing cooldown and telegraph windup. The per-phase reach increase is configurable and clamped to 0–0.5. This makes later phases more demanding at close range, but still uses the existing melee attack; unique area attacks and phase-specific animation/VFX remain future work.
 - Added a static CI validator for baseline capture, bounded tuning and phase reach recalculation. This does not compile or play-test the Unreal project.
+
+## Chapter 12 choice now affects Chapter 13
+- Chapter 13 now reads the persisted Chapter 12 pact choice when building its quest. **BindShadows** adds a command-the-shadow-vanguard objective; **FreeShadows** instead adds a protect-the-refugees objective.
+- The Chapter 13 level generator places both branch interactions. Each native quest trigger checks the saved choice at BeginPlay and disables collision unless it is the matching branch, preventing the inactive faction interaction from being used.
+- Added a dedicated static validator and CI step, and extended the Chapter 13 generator validator and setup guide. This is a code/generator implementation only: the level must still be generated in Unreal Editor and both save/load branches must be play-tested. No Unreal C++ compile or runtime test is claimed.
