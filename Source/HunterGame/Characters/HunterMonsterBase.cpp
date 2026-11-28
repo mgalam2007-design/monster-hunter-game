@@ -208,8 +208,20 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
             AttackTimer = FMath::Max(0.1f, AttackCooldown * CooldownScale);
             if (AttackWarningVisual) AttackWarningVisual->SetHiddenInGame(true);
             BP_OnMonsterAttack(Target);
+
+            // A close-range strike must not damage Arin through solid level geometry.
+            FHitResult AttackSightHit;
+            FCollisionQueryParams AttackSightParams(SCENE_QUERY_STAT(MonsterAttackLineOfSight), true);
+            AttackSightParams.AddIgnoredActor(this);
+            const FVector SightStart = GetActorLocation() + FVector(0.0f, 0.0f, 90.0f);
+            const FVector SightEnd = Target->GetActorLocation() + FVector(0.0f, 0.0f, 60.0f);
+            const bool bAttackBlocked = GetWorld() &&
+                GetWorld()->LineTraceSingleByChannel(AttackSightHit, SightStart, SightEnd,
+                    ECC_Visibility, AttackSightParams) &&
+                AttackSightHit.GetActor() != Target;
+
             float AppliedDamage = 0.0f;
-            if (FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
+            if (!bAttackBlocked && FMath::IsFinite(AttackDamage) && AttackDamage > 0.0f)
             {
                 AppliedDamage = UGameplayStatics::ApplyDamage(
                     Target, AttackDamage * DamageScale, GetController(), this, nullptr);
