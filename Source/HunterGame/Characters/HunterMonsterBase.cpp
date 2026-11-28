@@ -243,6 +243,14 @@ void AHunterMonsterBase::UpdateCombat(float DeltaSeconds)
         return;
     }
 
+    // Cancel the previous chase request once in melee range. Otherwise the
+    // controller can keep pushing the monster through the player during windup.
+    if (AAIController* AI = Cast<AAIController>(GetController()))
+    {
+        AI->StopMovement();
+    }
+    GetCharacterMovement()->StopMovementImmediately();
+
     if (AttackTimer <= 0.0f && !bAttackPending)
     {
         LearningState = EHunterCombatLearningState::PlayerInRange;
