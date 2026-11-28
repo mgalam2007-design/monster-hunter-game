@@ -718,6 +718,28 @@ bool UHunterCampaignSubsystem::StartChapter(int32 ChapterNumber)
             BeaconObjective.RequiredCount = 2;
             Objectives.Add(BeaconObjective);
 
+            // Chapter 12's pact changes who answers Arin's call during the siege.
+            if (Chapter12StoryChoice == FName(TEXT("BindShadows")))
+            {
+                FHunterObjective PactObjective;
+                PactObjective.ObjectiveId = TEXT("CommandShadowVanguard");
+                PactObjective.Description = FText::FromString(TEXT("Command the bound shadow vanguard to break the siege line"));
+                PactObjective.Type = EHunterObjectiveType::Interact;
+                PactObjective.EventTag = TEXT("ShadowVanguardCommanded");
+                PactObjective.RequiredCount = 1;
+                Objectives.Add(PactObjective);
+            }
+            else if (Chapter12StoryChoice == FName(TEXT("FreeShadows")))
+            {
+                FHunterObjective PactObjective;
+                PactObjective.ObjectiveId = TEXT("ProtectFreedShadowRefugees");
+                PactObjective.Description = FText::FromString(TEXT("Protect the freed shadow refugees as they escape the fortress"));
+                PactObjective.Type = EHunterObjectiveType::Interact;
+                PactObjective.EventTag = TEXT("ShadowRefugeesProtected");
+                PactObjective.RequiredCount = 1;
+                Objectives.Add(PactObjective);
+            }
+
             if (!Quest->StartQuest(TEXT("CH13_SiegeOfTheNorth"), Objectives))
             {
                 return false;
